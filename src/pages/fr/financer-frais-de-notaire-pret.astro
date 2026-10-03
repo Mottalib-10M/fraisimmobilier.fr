@@ -1,0 +1,43 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, F } from '../../lib/tables';
+import { apportNecessaire } from '../../lib/engine/notaire';
+import { src } from '../../lib/sources';
+const lang = 'fr';
+const a = apportNecessaire(260000, '35', 25000);
+const n = F(260000, '35', 'neuf');
+const faqs = [
+  { q: 'Peut-on emprunter les frais de notaire ?', a: 'Certaines banques acceptent de financer une partie ou la totalité des frais, surtout pour des emprunteurs aux revenus solides et stables, ou pour des primo-accédants qu’elles cherchent à attirer. La plupart demandent toutefois que l’apport personnel couvre au moins les frais, parce que ces sommes ne correspondent à aucune valeur du bien que la banque pourrait récupérer en cas de défaut.' },
+  { q: 'Quel apport faut-il pour un achat de 260 000 € ?', a: `Pour couvrir les frais dans l’ancien en Ille-et-Vilaine, environ ${$(a.frais)}, soit ${pct((a.frais / 260000) * 100, lang, 1)} du prix, avant les frais de garantie du prêt et de dossier. Dans le neuf, ${$(n.total)} suffisent. Beaucoup de banques apprécient un apport de 10 % du prix, qui couvre les frais et une petite partie du capital.` },
+  { q: 'Les frais de notaire comptent-ils dans le taux d’endettement ?', a: 'Pas directement : le taux d’endettement rapporte vos mensualités de crédit à vos revenus. Mais si la banque finance les frais, le montant emprunté augmente, et avec lui la mensualité. Les recommandations du Haut Conseil de stabilité financière limitent ce taux à 35 % des revenus, assurance comprise, et la durée à 25 ans dans la plupart des cas.' },
+  { q: 'Le prêt à taux zéro peut-il payer les frais de notaire ?', a: 'Non. Le prêt à taux zéro finance une partie du prix d’achat de la résidence principale d’un primo-accédant, sous conditions de ressources, de zone et de type de logement. Il ne finance ni les frais de notaire ni les frais de garantie. Il réduit en revanche le capital emprunté au taux du marché, ce qui libère de la capacité pour le reste.' },
+  { q: 'Quand dois-je disposer des fonds pour les frais ?', a: 'Avant la signature de l’acte authentique. Le notaire envoie un appel de fonds quelques jours avant le rendez-vous ; le virement doit être crédité sur le compte de l’étude au jour de la signature. Les fonds du prêt sont versés directement par la banque au notaire ; votre apport, lui, part de votre compte. Anticipez les plafonds de virement de votre banque.' },
+  { q: 'Les frais de garantie du prêt sont-ils inclus dans les frais de notaire ?', a: 'Non, ils s’y ajoutent. Une hypothèque ou un privilège de prêteur de deniers est un acte notarié distinct, avec ses propres émoluments, taxes et formalités ; une caution par un organisme spécialisé suit d’autres règles. Le notaire les inclut dans son appel de fonds, ce qui explique que la provision dépasse les seuls frais d’acquisition calculés ici.' },
+];
+---
+<GuideLayout lang={lang} id="pret" breadcrumbLabel="Financer les frais"
+  title={`Financer les frais de notaire ${YEAR} : apport, prêt, PTZ`}
+  h1="Financer les frais de notaire : apport personnel, prêt immobilier ou les deux"
+  description={`Frais de notaire et prêt immobilier ${YEAR} : la banque les finance rarement. Apport nécessaire selon le prix et le département, PTZ, garantie, calendrier.`}
+  intro="Les frais de notaire sont souvent le vrai minimum d’apport exigé par la banque."
+  resume={`Les frais de notaire se paient le jour de la signature, et la plupart des banques veulent qu’ils soient couverts par votre apport personnel. La raison est simple : ces sommes partent en impôts et en rémunération et ne laissent aucune valeur dans le bien qui garantit le prêt. Pour un logement ancien de 260 000 € à Rennes, les frais atteignent ${$(a.frais)} ; avec 25 000 € d’apport, il faut emprunter ${$(a.emprunt)} pour couvrir le prix et les frais. Dans le neuf, les frais tombent à ${$(n.total)}. Le prêt à taux zéro ne finance pas les frais, mais allège le capital emprunté au taux du marché. Les frais de garantie du prêt, hypothèque ou caution, s’ajoutent à ce budget et ne sont pas compris dans le calcul.`}
+  faqs={faqs}
+  related={[{ href: route('primo', lang), name: 'Primo-accédant', description: 'Moins de droits, donc moins d’apport.' }, { href: route('neuf', lang), name: 'Frais dans le neuf', description: 'L’apport le plus faible.' }, { href: route('home', lang), name: 'Calcul des frais de notaire', description: 'Le montant exact à couvrir.' }]}
+  sources={src(lang, 'sp_ptz', 'sp_frais_notaire', 'dgfip_dmto')}>
+  <MiniSim client:visible kind="pret" lang={lang} href={route('home', lang)} />
+  <h2>L’apport minimal selon le prix</h2>
+  <ContentTable headers={['Prix', 'Frais ancien (5 %)', 'Frais ancien, primo-accédant', 'Frais neuf']} align={['r', 'r', 'r', 'r']} rows={[150000, 200000, 260000, 350000, 500000].map((x) => [$(x), $(F(x, '35').total), $(F(x, '35', 'ancien', 'primo').total), $(F(x, '35', 'neuf').total)])} caption="Ille-et-Vilaine. Hors frais de garantie du prêt et de dossier." />
+  <h2>Pourquoi la banque rechigne à financer les frais</h2>
+  <p>Un prêt immobilier est adossé au bien acheté. Si l’emprunteur ne rembourse plus, la banque peut faire jouer sa garantie. Or le bien ne vaut que son prix, pas le prix augmenté des frais : les 7 à 8 % de frais d’un achat dans l’ancien sont perdus dès la signature, du point de vue de la valeur de revente. Un prêt qui finance « 110 % » du prix laisse donc la banque exposée dès le premier jour. C’est pourquoi l’apport sert d’abord à couvrir les frais, et ensuite seulement à réduire le capital.</p>
+  <p>Il existe des exceptions. Les jeunes actifs aux revenus élevés et aux perspectives solides, les fonctionnaires, certains clients que la banque veut fidéliser obtiennent parfois un financement intégral. Le coût se reporte sur le taux, la durée ou les conditions de domiciliation des revenus.</p>
+  <h2>Les règles du Haut Conseil de stabilité financière</h2>
+  <p>Depuis 2022, les recommandations du Haut Conseil de stabilité financière sont juridiquement contraignantes pour les banques : un taux d’effort maximal de 35 % des revenus, assurance comprise, et une durée de 25 ans au plus, portée à 27 ans pour certains achats dans le neuf avec différé. Une marge de dérogation permet aux banques de s’en écarter pour une fraction de leur production, en priorité pour les primo-accédants et la résidence principale. Financer les frais de notaire augmente le capital et la mensualité, donc rapproche du plafond de 35 %.</p>
+  <h2>Réduire le besoin d’apport</h2>
+  <p>Trois leviers diminuent la somme à réunir. Le statut de primo-accédant, d’abord, qui ramène les droits à 4,50 % dans les départements qui ont voté 5 %. Le neuf, ensuite, dont les frais sont trois fois plus faibles. La liste des meubles et la prise en charge de la commission d’agence par l’acquéreur, enfin, qui réduisent l’assiette des droits. Le guide <a href={route('reduire', lang)}>réduire ses frais de notaire</a> les compare sur un même achat.</p>
+  <h2>Le jour de la signature</h2>
+  <p>Votre banque verse les fonds du prêt directement au notaire, sur demande de celui-ci. Votre apport doit, lui, être viré par vos soins : prévenez votre banque à l’avance si le montant dépasse votre plafond de virement, et évitez les chèques, refusés au-delà d’un certain montant pour des raisons de lutte contre le blanchiment. Le notaire ne peut signer que lorsque la totalité des fonds est arrivée sur son compte.</p>
+</GuideLayout>

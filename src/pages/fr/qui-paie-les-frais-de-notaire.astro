@@ -1,0 +1,47 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, F } from '../../lib/tables';
+import { src } from '../../lib/sources';
+const lang = 'fr';
+const f = F(240000, '59');
+const faqs = [
+  { q: 'Le vendeur paie-t-il des frais de notaire ?', a: 'Pas les frais d’acquisition, qui sont à la charge de l’acheteur selon l’article 1593 du code civil, sauf clause contraire. Le vendeur paie en revanche ce qui le concerne : la mainlevée d’une hypothèque qui grève encore le bien, les diagnostics obligatoires, le certificat d’état daté de la copropriété demandé au syndic, et l’impôt sur la plus-value s’il est dû, que le notaire prélève sur le prix.' },
+  { q: 'Peut-on convenir que le vendeur paie les frais de notaire ?', a: 'Oui, la règle du code civil est supplétive : l’acte peut prévoir une répartition différente, on parle alors de vente « acte en main ». Le prix est en général augmenté d’autant. La répartition doit être écrite dans l’acte ; faites chiffrer par le notaire le prix global et la base sur laquelle les droits seront calculés.' },
+  { q: 'Qui paie quand l’acheteur et le vendeur ont chacun leur notaire ?', a: 'L’acheteur paie les mêmes frais que s’il n’y avait qu’un notaire. Les deux études se partagent les émoluments de l’acte selon les règles de la profession, sans supplément pour personne. Chacun peut donc choisir son notaire librement, ce qui est souvent recommandé quand le vendeur est un professionnel ou un proche du notaire de l’autre partie.' },
+  { q: 'Les frais de notaire sont-ils déductibles des impôts ?', a: 'Pas pour l’achat de sa résidence principale. Pour un investissement locatif, le traitement dépend du régime : dans certains cas ils peuvent être pris en compte dans les charges ou amortis, dans d’autres non. À la revente, ils majorent le prix d’acquisition retenu pour calculer la plus-value imposable, au réel ou par un forfait de 7,5 % du prix d’achat.' },
+  { q: 'Que deviennent les frais si la vente n’a pas lieu ?', a: 'Les droits de mutation ne sont dus que si l’acte authentique est signé. Si la vente échoue avant, par exemple pour refus de prêt dans le délai de la condition suspensive, vous ne payez pas de frais d’acquisition. Le notaire peut facturer certains débours déjà engagés pour préparer le dossier, et l’éventuel enregistrement d’une promesse de vente.' },
+  { q: 'Pourquoi parle-t-on de « frais de notaire » si l’État en garde la plus grande part ?', a: `Par habitude : le notaire les encaisse en un seul virement et les reverse ensuite. Sur un achat de 240 000 € dans le Nord, ${$(f.partEtat)} vont à l’État et aux collectivités, sous forme de droits, de contribution de sécurité immobilière et de TVA, et ${$(f.partNotaire)} rémunèrent le notaire hors taxes. Le reste, ${$(f.debours)}, rembourse les débours.` },
+];
+---
+<GuideLayout lang={lang} id="quipaie" breadcrumbLabel="Qui paie les frais ?"
+  title={`Qui paie les frais de notaire ? Acheteur, vendeur, État ${YEAR}`}
+  h1="Qui paie les frais de notaire, et à qui revient chaque euro"
+  description={`Qui paie les frais de notaire en ${YEAR} : l’acheteur, sauf clause contraire. Ce que paie le vendeur, vente acte en main, deux notaires, part de l’État chiffrée.`}
+  intro="L’acheteur paie, l’État encaisse, le notaire perçoit une part minoritaire."
+  resume={`Les frais d’acquisition sont à la charge de l’acheteur : c’est la règle de l’article 1593 du code civil, que l’acte peut écarter par une clause contraire, dite vente « acte en main ». Le vendeur, lui, paie ce qui le concerne : la mainlevée de son hypothèque, les diagnostics obligatoires, l’état daté de la copropriété et l’impôt sur la plus-value éventuelle. Faire intervenir deux notaires, un pour chaque partie, ne coûte rien de plus à l’acheteur : les études se partagent les émoluments. Quant à la destination de l’argent, elle surprend souvent : sur un achat de 240 000 € à Lille, ${$(f.partEtat)} sur ${$(f.total)} vont à l’État, au département et à la commune, soit ${pct((f.partEtat / f.total) * 100, lang, 0)} des frais. Le notaire garde ${$(f.partNotaire)} hors taxes pour son travail.`}
+  faqs={faqs}
+  related={[{ href: route('home', lang), name: 'Calcul des frais de notaire', description: 'La répartition exacte de votre achat.' }, { href: route('emoluments', lang), name: 'Émoluments du notaire', description: 'Ce qui revient vraiment au notaire.' }, { href: route('plusvalue', lang), name: 'Frais et plus-value', description: 'Ce que deviennent les frais à la revente.' }]}
+  sources={src(lang, 'sp_frais_notaire', 'notaires_frais', 'dgfip_dmto')}>
+  <MiniSim client:visible kind="quipaie" lang={lang} href={route('home', lang)} />
+  <h2>À qui revient chaque euro</h2>
+  <ContentTable headers={['Destinataire', 'Ce qu’il perçoit', 'Montant (240 000 €, Nord)']} align={['l', 'l', 'r']} rows={[
+    ['Département', 'Taxe départementale', $(f.droitsDepartement)],
+    ['Commune', 'Taxe additionnelle', $(f.droitsCommune)],
+    ['État', 'Frais d’assiette, CSI, TVA sur les émoluments et formalités', $(f.droitsAssiette + f.csi + f.emoluments.tva + f.formalitesTTC - f.formalitesHT)],
+    ['Notaire', 'Émoluments et formalités hors taxes', $(f.partNotaire)],
+    ['Tiers (débours)', 'Documents, géomètre, syndic…', $(f.debours)],
+  ]} />
+  <h2>Ce que paie l’acheteur, ce que paie le vendeur</h2>
+  <p>L’acheteur règle les frais d’acquisition : droits de mutation, émoluments de l’acte de vente, formalités, contribution de sécurité immobilière, débours liés à la vente. S’il emprunte, il paie aussi les frais de la garantie du prêt. Le vendeur, de son côté, finance la mainlevée de l’hypothèque ou du privilège de prêteur de deniers qui grève encore le bien, les diagnostics techniques exigés par la loi, l’état daté de la copropriété établi par le syndic, et l’impôt sur la plus-value lorsqu’il est dû. Ce dernier est calculé et prélevé par le notaire sur le prix de vente, avant le versement du solde au vendeur.</p>
+  <p>La commission d’agence obéit à sa propre logique, fixée par le mandat. Elle peut être à la charge de l’un ou de l’autre ; à la charge de l’acquéreur, elle réduit les droits de mutation, comme l’explique le guide sur les <a href={route('agence', lang)}>frais d’agence</a>.</p>
+  <h2>La vente « acte en main »</h2>
+  <p>Dans une vente acte en main, le vendeur prend les frais d’acquisition à sa charge et l’acheteur paie un prix global. La formule se rencontre surtout dans le neuf, où les promoteurs offrent les frais de notaire comme argument commercial. Entre particuliers, elle est rare. Si vous la négociez, demandez au notaire de préciser dans l’acte le prix du bien, le montant des frais pris en charge et l’assiette retenue pour les droits, afin que chacun sache exactement ce qu’il paie.</p>
+  <h2>Un notaire ou deux</h2>
+  <p>L’acheteur comme le vendeur peuvent choisir leur notaire. S’ils en désignent chacun un, l’acte est signé en présence des deux, ou à distance par procuration, et les émoluments sont partagés entre les études. Le coût pour l’acheteur ne change pas. Cette faculté est utile quand une partie souhaite un conseil indépendant, par exemple face à un vendeur professionnel ou dans une vente entre membres d’une même famille.</p>
+  <h2>Quand l’argent change de mains</h2>
+  <p>L’acheteur vire les fonds sur le compte de l’étude, ouvert à la Caisse des dépôts, avant la signature. Le notaire reverse ensuite les droits au service de l’enregistrement, paie les débours, verse le prix au vendeur après déduction de ce qui lui incombe, et conserve ses émoluments. Le décompte définitif permet de vérifier chaque mouvement.</p>
+</GuideLayout>

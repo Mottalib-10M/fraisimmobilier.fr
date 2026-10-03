@@ -1,0 +1,33 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import NotaireCalculator from '../../components/calc/NotaireCalculator';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, F } from '../../lib/tables';
+import { src } from '../../lib/sources';
+const lang = 'en';
+const PRIX = [50000, 75000, 100000, 125000, 150000, 175000, 200000, 250000, 300000, 350000, 400000, 500000, 600000, 750000, 1000000];
+const rows = PRIX.map((p) => [$(p, lang), $(F(p, '75').total, lang), $(F(p, '06').total, lang), $(F(p, '36').total, lang), $(F(p, '75', 'neuf').total, lang)]);
+const faqs = [
+  { q: 'How do I use the French notary fees table?', a: 'Find the row closest to your price and the column for your département’s rate: 5% for most of France, 4.50% for eleven départements, 3.80% for Indre, or the new-build column for a VAT-able sale. For an in-between price or a special case, use the calculator above the table.' },
+  { q: 'Does the table include all the fees?', a: 'It includes transfer tax, the notary’s emoluments and the flat formalities fee with their VAT, the land registry contribution and €500 of estimated disbursements. It does not include loan guarantee costs, the agency commission, or the adjustments of service charges and property tax between seller and buyer.' },
+  { q: 'Why are fees higher in percentage terms at €50,000?', a: 'Because some items are not proportional: the flat formalities fee, the disbursements and the first emolument bracket, the most expensive one, weigh more on a small price. At €50,000 they push fees above 9% of the price in a 5% département, while the tax share stays the same.' },
+];
+---
+<GuideLayout lang={lang} id="tableau" breadcrumbLabel="Fees table"
+  title={`Notary fees table France ${YEAR}: €50,000 to €1 million`}
+  h1={`French notary fees table ${YEAR} by price and département rate`}
+  description={`French notary fees table ${YEAR}: 15 prices from €50,000 to €1,000,000, départements at 5%, 4.50% and 3.80%, and new builds. Full fees, calculator for your case.`}
+  intro="Fifteen prices, four regimes: the grid to keep at hand during a property search."
+  resume={`This table gives the full French notary fees for fifteen purchase prices, from €50,000 to one million euros, in the four situations that exist in France in ${YEAR}. A 5% département, the case for most of the country since the increase voted from April 2025. A département still at 4.50%, such as Alpes-Maritimes, Oise or Drôme. Indre, the only département at 3.80%. And new builds, where the reduced tax is identical everywhere. Each cell is calculated by the same engine as the calculator: transfer tax, emoluments by bracket and formalities with VAT, land registry contribution and estimated disbursements. At €250,000, the gap between the most expensive column and new builds exceeds ${$(F(250000, '75').total - F(250000, '75', 'neuf').total, lang)}. Amounts are in euros; convert them at your own bank’s rate if you are budgeting from abroad.`}
+  faqs={faqs}
+  related={[{ href: route('home', lang), name: 'Notary fees calculator', description: 'Your exact price, your département.' }, { href: route('departements', lang), name: 'Fees by département', description: 'Which rate applies to you?' }, { href: route('amount-250000', lang), name: '€250,000 purchase', description: 'One price, analysed in detail.' }]}
+  sources={src(lang, 'dgfip_dmto', 'sp_frais_notaire', 'notaires_frais')}>
+  <div slot="tool" data-outil><NotaireCalculator client:load lang={lang} defaultPrix={200000} methodHref={route('method', lang)} /></div>
+  <h2>Full notary fees by price</h2>
+  <ContentTable headers={['Price', 'Resale, 5% rate', 'Resale, 4.50% rate', 'Resale, Indre 3.80%', 'New build (VAT)']} align={['r', 'r', 'r', 'r', 'r']} rows={rows} caption="Standard case, disbursements estimated at €500. 4.50% columns: Alpes-Maritimes; 5%: Paris." />
+  <h2>What the table teaches</h2>
+  <p>From one column to the next, the gap grows with the price, because transfer tax is proportional. From one row to the next, the percentage falls slowly, because the emoluments slide and the fixed items are diluted. The new-build column varies little in proportion: on a VAT-able sale, tax weighs less than the notary’s pay, and it is the sliding scale that shapes the curve.</p>
+  <p>For a first-time buyer purchasing a main home, the 5% column does not apply: they pay the fees in the 4.50% column, whatever their département, except in Indre where the rate is lower still. The calculator lets you check this by choosing your situation.</p>
+</GuideLayout>

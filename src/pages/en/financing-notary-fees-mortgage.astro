@@ -1,0 +1,43 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, F } from '../../lib/tables';
+import { apportNecessaire } from '../../lib/engine/notaire';
+import { src } from '../../lib/sources';
+const lang = 'en';
+const a = apportNecessaire(260000, '35', 25000);
+const n = F(260000, '35', 'neuf');
+const faqs = [
+  { q: 'Can I borrow to pay French notary fees?', a: 'Some banks agree to finance part or all of the fees, especially for borrowers with strong, stable incomes or for first-time buyers they want to attract. Most still expect your personal deposit to cover at least the fees, because this money buys nothing the bank could recover if the loan went unpaid.' },
+  { q: 'What deposit do I need for a €260,000 purchase?', a: `To cover the fees on a resale in Ille-et-Vilaine, about ${$(a.frais, lang)}, or ${pct((a.frais / 260000) * 100, lang, 1)} of the price, before loan guarantee and arrangement costs. On a new build, ${$(n.total, lang)} is enough. Many French banks like a deposit of 10% of the price, which covers the fees and a small part of the capital.` },
+  { q: 'Do notary fees count in the French debt-to-income ratio?', a: 'Not directly: the ratio compares your loan repayments with your income. But if the bank finances the fees, the amount borrowed rises, and so does the monthly payment. The rules of the High Council for Financial Stability cap the ratio at 35% of income, insurance included, and the term at 25 years in most cases.' },
+  { q: 'Can the zero-interest loan (PTZ) pay the notary fees?', a: 'No. The PTZ finances part of the purchase price of a first-time buyer’s main home, subject to income, area and property-type conditions. It finances neither notary fees nor guarantee costs. It does reduce the capital borrowed at market rate, which frees up capacity for the rest.' },
+  { q: 'When must the money for the fees be available?', a: 'Before the final deed is signed. The notary sends a call for funds a few days before the appointment; the transfer must reach the office’s account by signing day. The loan funds are paid by the bank directly to the notary; your deposit is sent from your own account. If the money comes from abroad, allow extra time for international transfers and the bank’s checks.' },
+  { q: 'Are loan guarantee costs included in notary fees?', a: 'No, they come on top. A mortgage or lender’s lien is a separate notarial deed, with its own emoluments, taxes and formalities; a guarantee from a specialist body follows different rules. The notary includes them in the call for funds, which is why the deposit requested exceeds the acquisition costs calculated here.' },
+];
+---
+<GuideLayout lang={lang} id="pret" breadcrumbLabel="Financing the fees"
+  title={`Financing notary fees in France ${YEAR}: deposit, loan, PTZ`}
+  h1="Financing French notary fees: personal deposit, mortgage or both"
+  description={`French notary fees and mortgages ${YEAR}: banks rarely finance them. Deposit needed by price and département, zero-interest loan, guarantee, timing of funds.`}
+  intro="Notary fees are often the real minimum deposit a French bank will ask for."
+  resume={`French notary fees are paid on signing day, and most French banks want them covered by your personal deposit (apport). The reason is simple: the money goes on tax and fees and leaves no value in the property that secures the loan. For a €260,000 resale home in Rennes, the fees reach ${$(a.frais, lang)}; with a €25,000 deposit, you need to borrow ${$(a.emprunt, lang)} to cover the price and the fees. On a new build the fees drop to ${$(n.total, lang)}. The zero-interest loan does not finance the fees, but it reduces the capital borrowed at market rate. Loan guarantee costs, mortgage or guarantee, come on top of this budget and are not included in the calculation. The mini-calculator below shows how much you would need to borrow on your own figures.`}
+  faqs={faqs}
+  related={[{ href: route('primo', lang), name: 'First-time buyers', description: 'Less tax, so a smaller deposit.' }, { href: route('neuf', lang), name: 'New-build fees', description: 'The smallest deposit.' }, { href: route('home', lang), name: 'Notary fees calculator', description: 'The exact amount to cover.' }]}
+  sources={src(lang, 'sp_ptz', 'sp_frais_notaire', 'dgfip_dmto')}>
+  <MiniSim client:visible kind="pret" lang={lang} href={route('home', lang)} />
+  <h2>The minimum deposit by price</h2>
+  <ContentTable headers={['Price', 'Resale fees (5%)', 'Resale, first-time buyer', 'New-build fees']} align={['r', 'r', 'r', 'r']} rows={[150000, 200000, 260000, 350000, 500000].map((x) => [$(x, lang), $(F(x, '35').total, lang), $(F(x, '35', 'ancien', 'primo').total, lang), $(F(x, '35', 'neuf').total, lang)])} caption="Ille-et-Vilaine. Excluding loan guarantee and arrangement costs." />
+  <h2>Why banks are reluctant to finance the fees</h2>
+  <p>A French mortgage is backed by the property bought. If the borrower stops paying, the bank can enforce its security. But the property is worth only its price, not its price plus fees: from a resale-value standpoint, the 7 to 8% of fees on a resale purchase are lost on signing day. A loan that finances “110%” of the price leaves the bank exposed from day one. That is why the deposit first covers the fees, and only then reduces the capital.</p>
+  <p>There are exceptions. Young professionals with high incomes and good prospects, civil servants and clients the bank wants to keep sometimes obtain full financing. The cost shows up in the rate, the term or a requirement to pay your salary into the bank.</p>
+  <h2>The High Council for Financial Stability rules</h2>
+  <p>Since 2022, the recommendations of the High Council for Financial Stability (HCSF) have been legally binding on French banks: a maximum debt-to-income ratio of 35%, insurance included, and a term of 25 years at most, extended to 27 years for some new-build purchases with a deferral. A margin lets banks depart from these rules for a share of their lending, in priority for first-time buyers and main homes. Financing the notary fees increases the capital and the monthly payment, bringing you closer to the 35% ceiling.</p>
+  <h2>Reducing the deposit needed</h2>
+  <p>Three levers reduce the sum to raise. First-time buyer status, first, which brings transfer tax back to 4.50% in départements that voted 5%. New builds, second, whose fees are three times lower. The furniture list and an agency commission paid by the buyer, third, which shrink the taxable base. The guide to <a href={route('reduire', lang)}>reducing notary fees</a> compares them on the same purchase.</p>
+  <h2>On signing day</h2>
+  <p>Your bank pays the loan funds directly to the notary, at the notary’s request. Your deposit must be transferred by you: warn your bank in advance if the amount exceeds your transfer limit, and avoid cheques, refused above a certain amount for anti-money-laundering reasons. The notary can only sign once all the funds have reached the office account.</p>
+</GuideLayout>

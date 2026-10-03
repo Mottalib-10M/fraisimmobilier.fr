@@ -1,0 +1,33 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import NotaireCalculator from '../../components/calc/NotaireCalculator';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, F } from '../../lib/tables';
+import { src } from '../../lib/sources';
+const lang = 'fr';
+const PRIX = [50000, 75000, 100000, 125000, 150000, 175000, 200000, 250000, 300000, 350000, 400000, 500000, 600000, 750000, 1000000];
+const rows = PRIX.map((p) => [$(p), $(F(p, '75').total), $(F(p, '06').total), $(F(p, '36').total), $(F(p, '75', 'neuf').total)]);
+const faqs = [
+  { q: 'Comment utiliser le tableau des frais de notaire ?', a: 'Repérez la ligne la plus proche de votre prix et la colonne qui correspond au taux de votre département : 5 % pour la grande majorité, 4,50 % pour onze départements, 3,80 % pour l’Indre, ou la colonne neuf pour une vente soumise à la TVA. Pour un prix intermédiaire ou un cas particulier, utilisez le calculateur au-dessus du tableau.' },
+  { q: 'Le tableau comprend-il tous les frais ?', a: 'Il comprend les droits de mutation, les émoluments du notaire et le forfait de formalités avec leur TVA, la contribution de sécurité immobilière et 500 € de débours estimés. Il ne comprend pas les frais de garantie du prêt, la commission d’agence ni les régularisations de charges et de taxe foncière entre vendeur et acheteur.' },
+  { q: 'Pourquoi les frais en pourcentage sont-ils plus élevés à 50 000 € ?', a: 'Parce que certains postes ne sont pas proportionnels : le forfait de formalités, les débours et la première tranche du barème des émoluments, la plus chère, pèsent plus lourd sur un petit prix. À 50 000 €, ils font monter les frais au-dessus de 9 % du prix dans un département à 5 %, alors que la part fiscale reste la même.' },
+];
+---
+<GuideLayout lang={lang} id="tableau" breadcrumbLabel="Tableau des frais"
+  title={`Tableau des frais de notaire ${YEAR} : de 50 000 € à 1 million`}
+  h1={`Tableau des frais de notaire ${YEAR} selon le prix et le taux du département`}
+  description={`Tableau des frais de notaire ${YEAR} : quinze prix de 50 000 € à 1 million, départements à 5 %, 4,50 % et 3,80 %, et le neuf. Calculateur pour votre cas.`}
+  intro="Quinze prix, quatre régimes : la grille à garder sous la main pendant une recherche."
+  resume={`Ce tableau donne les frais de notaire complets pour quinze prix d’achat, de 50 000 € à un million d’euros, dans les quatre situations qui existent en France en ${YEAR}. Un département à 5 %, cas de la grande majorité du territoire depuis la hausse votée à partir d’avril 2025. Un département resté à 4,50 %, comme les Alpes-Maritimes, l’Oise ou la Drôme. L’Indre, seul département à 3,80 %. Et le neuf, où la taxe réduite est identique partout. Chaque case est calculée par le même moteur que le calculateur : droits de mutation, émoluments par tranches et formalités avec la TVA, contribution de sécurité immobilière et débours estimés. Pour 250 000 €, l’écart entre la colonne la plus chère et le neuf dépasse ${$(F(250000, '75').total - F(250000, '75', 'neuf').total)}.`}
+  faqs={faqs}
+  related={[{ href: route('home', lang), name: 'Calcul des frais de notaire', description: 'Votre prix exact, votre département.' }, { href: route('departements', lang), name: 'Frais par département', description: 'Quel taux chez vous ?' }, { href: route('amount-250000', lang), name: 'Achat à 250 000 €', description: 'Un prix, une analyse détaillée.' }]}
+  sources={src(lang, 'dgfip_dmto', 'sp_frais_notaire', 'notaires_frais')}>
+  <div slot="tool" data-outil><NotaireCalculator client:load lang={lang} defaultPrix={200000} methodHref={route('method', lang)} /></div>
+  <h2>Frais de notaire complets selon le prix</h2>
+  <ContentTable headers={['Prix', 'Ancien, taux 5 %', 'Ancien, taux 4,50 %', 'Ancien, Indre 3,80 %', 'Neuf (TVA)']} align={['r', 'r', 'r', 'r', 'r']} rows={rows} caption="Cas général, débours estimés à 500 €. Colonnes 4,50 % : Alpes-Maritimes ; 5 % : Paris." />
+  <h2>Ce que le tableau apprend</h2>
+  <p>D’une colonne à l’autre, l’écart grandit avec le prix, parce que les droits de mutation sont proportionnels. D’une ligne à l’autre, le pourcentage baisse lentement, parce que les émoluments sont dégressifs et que les postes fixes se diluent. La colonne du neuf varie peu en proportion : dans une vente soumise à la TVA, les droits pèsent moins que la rémunération du notaire, et c’est le barème dégressif qui fait la courbe.</p>
+  <p>Pour un primo-accédant qui achète sa résidence principale, la colonne à 5 % ne s’applique pas : il paie les frais de la colonne à 4,50 %, quel que soit son département, sauf dans l’Indre où le taux est plus bas encore. Le calculateur permet de le vérifier en choisissant votre situation.</p>
+</GuideLayout>

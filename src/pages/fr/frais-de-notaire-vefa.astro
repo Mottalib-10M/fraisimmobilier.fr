@@ -1,0 +1,47 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { F, $, pct, P, tauxGlobalNeuf } from '../../lib/tables';
+import { src } from '../../lib/sources';
+const lang = 'fr';
+const v = F(300000, '33', 'neuf'), a = F(300000, '33');
+const faqs = [
+  { q: 'Combien de frais de notaire pour une VEFA ?', a: `Environ 2 à 3 % du prix. Sur un appartement de 300 000 € acheté sur plan à Bordeaux, le calculateur donne ${$(v.total)} : ${$(v.droits)} de taxe de publicité foncière au taux réduit, ${$(v.emoluments.ttc)} d’émoluments TTC, le forfait de formalités, ${$(v.csi)} de contribution de sécurité immobilière et les débours. Le même prix dans l’ancien coûterait ${$(a.total)}.` },
+  { q: 'Les frais de notaire d’une VEFA sont-ils calculés sur le prix TTC ?', a: 'Le prix d’une VEFA est affiché TVA comprise, et c’est ce prix que vous saisissez dans le calculateur. La taxe de publicité foncière au taux réduit et les émoluments sont appliqués au prix stipulé dans l’acte. Pour un calcul au centime près, le notaire part de la ventilation du prix inscrite dans l’acte de vente.' },
+  { q: 'Quand paie-t-on les frais de notaire en VEFA ?', a: 'À la signature de l’acte authentique de vente en l’état futur d’achèvement, comme pour une vente classique, même si le logement n’existe encore que sur plan. Le prix, lui, est payé progressivement, par appels de fonds au fur et à mesure du chantier. Les frais ne sont pas étalés : prévoyez-les dans l’apport dès le départ.' },
+  { q: 'Le promoteur peut-il offrir les frais de notaire ?', a: 'Oui, c’est un argument commercial fréquent. Les frais ne disparaissent pas : le promoteur les paie à votre place et les intègre en général dans son prix. Vérifiez que l’offre couvre bien la taxe, les émoluments et les débours, et pas seulement une partie, et comparez le prix au mètre carré avec des programmes voisins qui n’affichent pas cette offre.' },
+  { q: 'Un dépôt de garantie est-il demandé à la réservation ?', a: 'Oui, au contrat de réservation. Il est plafonné par le code de la construction : 5 % du prix si la vente doit être signée dans l’année, 2 % si elle doit l’être dans les deux ans, rien au-delà. Il est versé sur un compte séquestre, s’impute sur le prix et vous est restitué si la vente ne se fait pas pour l’un des motifs prévus par la loi.' },
+  { q: 'Revendre une VEFA avant cinq ans change-t-il les frais de l’acheteur ?', a: 'Oui, selon le vendeur. Si vous la revendez en tant que particulier, la vente n’est pas soumise à la TVA et votre acheteur paie les droits de mutation de droit commun, environ 7 à 8 % de frais. Si le vendeur est un professionnel assujetti, la revente dans les cinq ans de l’achèvement reste soumise à la TVA et l’acheteur bénéficie du taux réduit.' },
+];
+---
+<GuideLayout lang={lang} id="vefa" breadcrumbLabel="VEFA"
+  title={`Frais de notaire VEFA ${YEAR} : 2 à 3 % du prix sur plan`}
+  h1={`Frais de notaire en VEFA en ${YEAR} : le taux réduit, les appels de fonds et les pièges`}
+  description={`Frais de notaire VEFA ${YEAR} : taxe réduite à ${pct(tauxGlobalNeuf(), 'fr', 3)}, émoluments, CSI. Exemple sur 300 000 €, calendrier des appels de fonds, frais offerts par le promoteur.`}
+  intro="Acheter sur plan divise les frais par trois. Le reste du budget, lui, s’étale sur la durée du chantier."
+  resume={`Une vente en l’état futur d’achèvement (VEFA) est soumise à la TVA immobilière. Elle ne supporte donc pas les droits de mutation de droit commun, mais une taxe de publicité foncière réduite de 0,70 %, portée à ${pct(tauxGlobalNeuf(), lang, 3)} avec les frais d’assiette, identique dans tous les départements. Les frais de notaire tombent ainsi entre 2 et 3 % du prix. Pour un appartement de 300 000 € acheté sur plan en Gironde, ils s’élèvent à ${$(v.total)}, contre ${$(a.total)} pour un logement ancien au même prix. Les émoluments du notaire ne changent pas : ${$(v.emoluments.ttc)} TTC. Les frais se paient en une fois, à la signature de l’acte, alors que le prix est versé par appels de fonds au rythme du chantier.`}
+  faqs={faqs}
+  related={[{ href: route('neuf', lang), name: 'Frais de notaire dans le neuf', description: 'Le calculateur du taux réduit.' }, { href: route('terrain', lang), name: 'Achat d’un terrain', description: 'Particulier ou promoteur : deux régimes.' }, { href: route('pret', lang), name: 'Financer les frais', description: 'Apport et prêt.' }]}
+  sources={src(lang, 'notaires_frais', 'sp_frais_notaire', 'dgfip_dmto')}>
+  <MiniSim client:visible kind="vefa" lang={lang} href={route('neuf', lang)} />
+  <h2>Pourquoi la VEFA paie si peu de droits</h2>
+  <p>Une VEFA est vendue par un promoteur, assujetti à la TVA : la vente supporte une TVA de 20 % en général, incluse dans le prix affiché. Pour éviter une double imposition, le code général des impôts remplace les droits d’enregistrement par une taxe de publicité foncière au taux réduit de {pct(P.dmto.taux_reduit_neuf)}, à laquelle s’ajoutent {pct(P.dmto.frais_assiette_taux_reduit)} de frais d’assiette. Le département ne peut pas moduler ce taux : il est le même à Paris, en Lozère et à La Réunion.</p>
+  <ContentTable headers={['Poste', 'VEFA, 300 000 €', 'Ancien, 300 000 €']} align={['l', 'r', 'r']} rows={[
+    ['Taxes sur la vente', $(v.droits), $(a.droits)],
+    ['Émoluments TTC', $(v.emoluments.ttc), $(a.emoluments.ttc)],
+    ['Formalités TTC', $(v.formalitesTTC), $(a.formalitesTTC)],
+    ['Contribution de sécurité immobilière', $(v.csi), $(a.csi)],
+    ['Débours estimés', $(v.debours), $(a.debours)],
+    ['Total', $(v.total), $(a.total)],
+  ]} caption="Gironde, département à 5 %." />
+  <h2>Le calendrier : réservation, acte, appels de fonds</h2>
+  <p>La VEFA se déroule en trois temps. Le contrat de réservation fixe le prix prévisionnel, la description du logement et la date prévue de signature ; il s’accompagne d’un dépôt de garantie plafonné à 5 % du prix. L’acte authentique est signé chez le notaire quelques mois plus tard : c’est à ce moment que vous payez les frais de notaire et le premier appel de fonds. Le prix est ensuite versé par étapes que le code de la construction encadre : au plus 35 % à l’achèvement des fondations, 70 % à la mise hors d’eau, 95 % à l’achèvement de l’immeuble, le solde à la remise des clés, sauf réserves.</p>
+  <p>Ce découpage a une conséquence pratique : votre prêt est débloqué au fil des appels de fonds, et vous payez des intérêts intercalaires sur les sommes déjà versées pendant la construction. Les frais de notaire, eux, sont dus intégralement au départ. Prévoyez-les dans l’apport ou faites-les intégrer au premier déblocage.</p>
+  <h2>Les frais qui s’ajoutent en VEFA</h2>
+  <p>Les frais de garantie du prêt restent dus, comme dans l’ancien. S’y ajoute souvent une part des frais d’établissement du règlement de copropriété et de l’état descriptif de division, que le promoteur répercute dans l’acte. Les frais de raccordement aux réseaux peuvent être facturés à part : lisez la notice descriptive. Enfin, si vous louez le logement dans le cadre d’un dispositif fiscal, les frais d’acquisition suivent les règles de ce dispositif.</p>
+  <h2>VEFA, neuf achevé, revente : qui a droit au taux réduit</h2>
+  <p>Le taux réduit est lié à la TVA, pas à l’âge du logement. Un appartement achevé il y a trois ans, revendu par son premier propriétaire particulier, n’est pas soumis à la TVA : son acheteur paie les droits de droit commun. Le même appartement revendu par une société de promotion qui ne l’avait pas encore vendu reste dans le champ de la TVA, et donc du taux réduit. Le notaire vérifie la qualité du vendeur et la date d’achèvement ; le calculateur vous laisse choisir entre « ancien » et « neuf / TVA » pour reproduire les deux cas.</p>
+</GuideLayout>

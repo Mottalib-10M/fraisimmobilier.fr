@@ -1,0 +1,41 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { F, $, pct, P, tauxGlobalAncien, exempleRows } from '../../lib/tables';
+import { src } from '../../lib/sources';
+const lang = 'en';
+const m = F(180000, '59'), r = F(180000, '59', 'neuf');
+const faqs = [
+  { q: 'What percentage are notary fees on a resale property in France?', a: `Between 7% and 8% of the price in a 5% département, a little less at 4.50%, around 6.7% in Indre. On €180,000 in Nord, the calculator gives ${$(m.total, lang)}, or ${pct(m.pourcentage, lang)}. The percentage rises on cheap properties, because of the fixed items, and falls slightly on expensive ones, without ever going below the transfer tax rate.` },
+  { q: 'What counts as an “old” property for French notary fees?', a: 'Any home whose sale is not subject to French property VAT. In practice: a property completed more than five years ago, or a recent property sold by a private individual who is not VAT-registered. A four-year-old house resold by its first owner is therefore “old” for transfer tax, even if everyone would call it new.' },
+  { q: 'Can notary fees on a resale be negotiated?', a: 'The tax cannot. The notary’s emoluments cannot either, with one exception: above €100,000 the notary may grant a discount of up to 20% on the part of the emoluments calculated on the fraction of the price above that threshold. What really can be negotiated is the price itself, who pays the agency and the furniture list.' },
+  { q: 'Should renovation work be included in the fee calculation?', a: 'No. Work you carry out after the purchase bears no transfer tax. Only the stated price and any charges you take on for the seller’s benefit count. Work financed by a loan does increase the loan guarantee costs, mortgage or lender’s lien, which are a separate line in the budget.' },
+  { q: 'Are notary fees higher for a house than for a flat?', a: 'No, at the same price. The emolument scale and the tax rate make no distinction between houses and flats. Disbursements can differ: a flat in a co-ownership needs documents from the managing agent (syndic), an isolated house may need boundary marking or a septic system report. The gap is tens or hundreds of euros, not percentage points.' },
+  { q: 'Why does my notary ask for more than the calculator shows?', a: 'Because the notary asks for a deposit, deliberately rounded up, that also covers the loan guarantee costs, the mortgage searches and disbursements only known at the end of the file. The final statement, sent after the sale is registered, settles the accounts, and any surplus is refunded to you.' },
+];
+---
+<GuideLayout lang={lang} id="ancien" breadcrumbLabel="Resale property"
+  title={`Notary fees on a resale property in France ${YEAR}: 7 to 8%`}
+  h1={`Notary fees on a resale property in France in ${YEAR}: where the 7 to 8% comes from`}
+  description={`Notary fees on a French resale property ${YEAR}: transfer tax of ${pct(tauxGlobalAncien(5), 'en', 2)}, emoluments, CSI, disbursements. Examples from €100,000 to €500,000 by département.`}
+  intro="An “old” property for the French tax office has no age: it is a sale without VAT."
+  resume={`On a resale property in France (ancien), notary fees are 7 to 8% of the price in most départements, because transfer tax is charged at the full rate: ${pct(tauxGlobalAncien(5), lang, 3)} of the price in areas that voted 5%, ${pct(tauxGlobalAncien(4.5), lang, 3)} at 4.50% and ${pct(tauxGlobalAncien(3.8), lang, 3)} in Indre. On a €180,000 flat in Lille, the total reaches ${$(m.total, lang)}, including ${$(m.droits, lang)} of tax and ${$(m.emoluments.ttc, lang)} of emoluments for the notary, VAT included. A property counts as “old” whenever its sale is not subject to VAT: a home over five years old, or a recent home resold by a private individual. The same flat bought new from a developer would cost only ${$(r.total, lang)} in fees. This is the figure to budget for in most French purchases.`}
+  faqs={faqs}
+  related={[{ href: route('home', lang), name: 'Notary fees calculator', description: 'The exact breakdown for your purchase.' }, { href: route('neuf', lang), name: 'New-build fees', description: 'The reduced rate and its conditions.' }, { href: route('mobilier', lang), name: 'Deducting furniture', description: 'A legal lever, to be used with care.' }]}
+  sources={src(lang, 'dgfip_dmto', 'sp_frais_notaire', 'notaires_frais')}>
+  <MiniSim client:visible kind="ancien" lang={lang} href={route('home', lang)} />
+  <h2>Examples in a 5% département</h2>
+  <ContentTable headers={['Price', 'Transfer tax', 'Emoluments and formalities incl. VAT', 'CSI and disbursements', 'Total', 'Share of price']} align={['r', 'r', 'r', 'r', 'r', 'r']} rows={exempleRows(lang, '59', [100000, 150000, 180000, 250000, 350000, 500000])} />
+  <h2>Why resale homes cost more in fees</h2>
+  <p>The difference with new builds does not come from the notary. The scale is the same for both: {pct(P.emoluments.zones.metro.taux[0], lang, 3)} on the first €6,500, then sliding brackets down to {pct(P.emoluments.zones.metro.taux[3], lang, 3)} above €60,000. It comes from tax: a resale bears standard registration duties, whereas a new-build sale, already taxed through VAT, only pays a reduced land publicity tax. French law thus avoids taxing the same transaction twice.</p>
+  <p>That is why the gap between new and resale is almost constant in percentage terms: about five and a half points of the price. At €180,000 it amounts to {$(m.total - r.total, lang)}. It does not make new builds cheaper overall, though: prices per square metre are often higher, and VAT is included in them.</p>
+  <h2>The timeline of a French resale purchase</h2>
+  <p>The fees are paid in one go, but they build up throughout the sale. On signing the preliminary contract (compromis de vente), the buyer usually pays a deposit of 5 to 10% of the price, later credited against the price; notary fees are not yet due. Over the following two to three months, the notary clears the municipality’s right of pre-emption, checks the land registry for mortgages, gathers planning documents and the co-ownership papers: these are the disbursements. A few days before the final deed (acte authentique), the notary sends a call for funds covering the balance of the price and the fee deposit. After signing, the deed is registered and the final statement follows.</p>
+  <h2>What varies from one file to another</h2>
+  <p>Three things change the fees on a resale for the same price. The département, first, which sets the tax rate: see the <a href={route('departements', lang)}>table of all 101 départements</a>. Your situation, second: a first-time buyer purchasing a main home escapes the 5% increase. How the price is presented, third: furniture listed separately, agency commission payable by the buyer. Everything else, emoluments, formalities, land registry contribution, depends only on the price.</p>
+  <h2>What the calculator does not include</h2>
+  <p>Loan guarantee costs, which are not acquisition costs: a mortgage (hypothèque), a lender’s lien (privilège de prêteur de deniers) or a guarantee from a specialist body. They add to the budget if you borrow. Nor the pro-rata service charges or the share of annual property tax (taxe foncière) refunded to the seller on completion, which are adjustments between the parties. Nor any fees the notary may charge for services outside the regulated tariff.</p>
+</GuideLayout>

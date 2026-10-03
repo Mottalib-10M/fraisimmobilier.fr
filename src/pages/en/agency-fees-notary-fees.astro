@@ -1,0 +1,47 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, F, tauxGlobalNeuf } from '../../lib/tables';
+import { src } from '../../lib/sources';
+const lang = 'en';
+const acq = F(280000, '69m'), vend = F(294000, '69m');
+const faqs = [
+  { q: 'Are estate agency fees included in French notary fees?', a: `Only if they are built into the price paid to the seller. When the mandate makes the commission payable by the buyer and the deed shows it separately, it comes out of the base for transfer tax and emoluments. For a property at €280,000 net to the seller with a €14,000 commission in Lyon, notary fees fall from ${$(vend.total, lang)} to ${$(acq.total, lang)}.` },
+  { q: 'Who decides whether the buyer pays the commission?', a: 'The mandate signed between the seller and the agency. It states who pays the commission and its amount or rate, and the listing must show that information. The split cannot be changed at the deed stage if the mandate says otherwise: negotiate it before the preliminary contract, with the agent and the seller.' },
+  { q: 'What does “FAI” mean in a French property listing?', a: 'FAI stands for “frais d’agence inclus”, agency fees included: the advertised price includes the commission. If the seller pays the commission, the whole FAI price bears transfer tax. If the buyer pays it, the listing must also show the price excluding fees and the commission amount, and it is the price excluding fees that serves as the tax base.' },
+  { q: 'Does the calculator take agency fees into account?', a: 'It calculates the fees on the price you enter. Enter the net seller price if the commission is payable by you and shown separately in the deed; enter the price including commission if it is part of the price paid to the seller. The mini-calculator on this page shows the gap between the two presentations directly.' },
+  { q: 'Can the agency commission be financed with the mortgage?', a: 'Yes, most banks finance the commission as part of the acquisition cost, like the price, provided it is identified in the financing plan. Like notary fees, it is sometimes excluded by the most cautious banks, which ask for it to be covered by the deposit.' },
+  { q: 'Does the commission count when calculating capital gains on resale?', a: 'A commission you paid as the buyer is part of your acquisition costs. On resale, these costs increase the purchase price used to calculate the capital gain, either at their actual documented amount or through the flat 7.5% of the purchase price. Keep the agency’s invoice with the notary’s statement: the actual amount may exceed the flat rate.' },
+];
+---
+<GuideLayout lang={lang} id="agence" breadcrumbLabel="Agency fees"
+  title={`Agency fees and French notary fees ${YEAR}: who pays, impact`}
+  h1="Agency fees and French notary fees: why one line in the mandate changes the bill"
+  description={`French estate agency fees ${YEAR}: payable by the buyer, the commission leaves the base for transfer tax. FAI price, net seller price, the gap on your purchase.`}
+  intro="Two ways of presenting the same price, two amounts of transfer tax."
+  resume={`An estate agency commission is never a notary fee in France, but how it is presented changes the notary fees. If the mandate makes the commission payable by the seller, it is part of the price paid and, like the rest, bears transfer tax, emoluments and the land registry contribution. If the mandate makes it payable by the buyer and the deed shows it separately, it comes out of the taxable base: tax is due only on the net seller price. For a €280,000 flat net to the seller with a €14,000 commission in the Lyon Metropolis, the difference reaches ${$(vend.total - acq.total, lang)} in notary fees. The choice is made in the mandate, before the preliminary contract: it cannot be made up for on the day of the deed. The mini-calculator below shows the gap on your own figures.`}
+  faqs={faqs}
+  related={[{ href: route('mobilier', lang), name: 'Deducting furniture', description: 'The other item that leaves the base.' }, { href: route('lyon', lang), name: 'Fees in Lyon', description: 'Metropolis and Rhône, two decisions.' }, { href: route('reduire', lang), name: 'Reducing your fees', description: 'All the levers compared.' }]}
+  sources={src(lang, 'notaires_frais', 'dgfip_dmto')}>
+  <MiniSim client:visible kind="agence" lang={lang} href={route('home', lang)} />
+  <h2>Two presentations, two bills</h2>
+  <ContentTable headers={['', 'Commission paid by the seller', 'Commission paid by the buyer']} align={['l', 'r', 'r']} rows={[
+    ['Price in the deed', $(294000, lang), $(280000, lang)],
+    ['Transfer tax', $(vend.droits, lang), $(acq.droits, lang)],
+    ['Emoluments incl. VAT', $(vend.emoluments.ttc, lang), $(acq.emoluments.ttc, lang)],
+    ['Land registry contribution', $(vend.csi, lang), $(acq.csi, lang)],
+    ['Total notary fees', $(vend.total, lang), $(acq.total, lang)],
+    ['Total cost to the buyer', $(294000 + vend.total, lang), $(280000 + 14000 + acq.total, lang)],
+  ]} caption="Lyon Metropolis, 5% rate, €14,000 commission." />
+  <p>In both cases the buyer pays €294,000 in total for the property and the agency. Only the split between price and commission changes, and with it the base for the proportional taxes. The gap is about 6.6% of the commission: transfer tax of {pct(acq.tauxDroits, lang, 3)}, the marginal emoluments and the land registry contribution.</p>
+  <h2>What the mandate says</h2>
+  <p>The Hoguet Act regulates estate agents in France: no commission can be charged without a written mandate, and the mandate states who pays it. The listing must repeat that information, with the price excluding fees and the commission percentage when the buyer pays it. At the preliminary contract stage, the contract reflects the split set by the mandate; the notary reproduces it in the final deed.</p>
+  <p>Changing the split requires an amendment to the mandate, signed by the seller and the agency, before the buyer’s offer is accepted.</p>
+  <h2>Why not everyone favours the same formula</h2>
+  <p>For the buyer, a commission payable by them reduces notary fees. For the seller, it does not change the net price received. For the agency, it can complicate negotiation, since the buyer sees the exact commission. For the bank, it may raise a financing question if the lender does not finance agency fees. The “buyer pays” formula remains the most tax-efficient for the buyer, at no cost to the seller.</p>
+  <h2>And on a new build?</h2>
+  <p>A developer usually sells with no visible commission: the pay of its sales agents is included in the price including VAT. The question therefore does not arise in the same way, and little is at stake since the reduced tax is only {pct(tauxGlobalNeuf(), lang, 3)} of the price.</p>
+</GuideLayout>

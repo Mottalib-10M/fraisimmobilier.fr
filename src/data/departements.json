@@ -1,0 +1,927 @@
+[
+{
+"id": "01",
+"code": "01",
+"fr": "Ain",
+"en": "Ain",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "02",
+"code": "02",
+"fr": "Aisne",
+"en": "Aisne",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "03",
+"code": "03",
+"fr": "Allier",
+"en": "Allier",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "04",
+"code": "04",
+"fr": "Alpes-de-Haute-Provence",
+"en": "Alpes-de-Haute-Provence",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "05",
+"code": "05",
+"fr": "Hautes-Alpes",
+"en": "Hautes-Alpes",
+"zone": "metro",
+"voted": null,
+"base": 4.5
+},
+{
+"id": "06",
+"code": "06",
+"fr": "Alpes-Maritimes",
+"en": "Alpes-Maritimes",
+"zone": "metro",
+"voted": null,
+"base": 4.5
+},
+{
+"id": "07",
+"code": "07",
+"fr": "Ardèche",
+"en": "Ardèche",
+"zone": "metro",
+"voted": null,
+"base": 4.5
+},
+{
+"id": "08",
+"code": "08",
+"fr": "Ardennes",
+"en": "Ardennes",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "09",
+"code": "09",
+"fr": "Ariège",
+"en": "Ariège",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "10",
+"code": "10",
+"fr": "Aube",
+"en": "Aube",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "11",
+"code": "11",
+"fr": "Aude",
+"en": "Aude",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "12",
+"code": "12",
+"fr": "Aveyron",
+"en": "Aveyron",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "13",
+"code": "13",
+"fr": "Bouches-du-Rhône",
+"en": "Bouches-du-Rhône",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "14",
+"code": "14",
+"fr": "Calvados",
+"en": "Calvados",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5,
+"abattement": 46000
+},
+{
+"id": "15",
+"code": "15",
+"fr": "Cantal",
+"en": "Cantal",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "16",
+"code": "16",
+"fr": "Charente",
+"en": "Charente",
+"zone": "metro",
+"voted": null,
+"base": 4.5
+},
+{
+"id": "17",
+"code": "17",
+"fr": "Charente-Maritime",
+"en": "Charente-Maritime",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "18",
+"code": "18",
+"fr": "Cher",
+"en": "Cher",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "19",
+"code": "19",
+"fr": "Corrèze",
+"en": "Corrèze",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "2a",
+"code": "2A",
+"fr": "Corse-du-Sud",
+"en": "Corse-du-Sud",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5,
+"shared": "Collectivité de Corse"
+},
+{
+"id": "2b",
+"code": "2B",
+"fr": "Haute-Corse",
+"en": "Haute-Corse",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5,
+"shared": "Collectivité de Corse"
+},
+{
+"id": "21",
+"code": "21",
+"fr": "Côte-d'Or",
+"en": "Côte-d'Or",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "22",
+"code": "22",
+"fr": "Côtes-d'Armor",
+"en": "Côtes-d'Armor",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "23",
+"code": "23",
+"fr": "Creuse",
+"en": "Creuse",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "24",
+"code": "24",
+"fr": "Dordogne",
+"en": "Dordogne",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "25",
+"code": "25",
+"fr": "Doubs",
+"en": "Doubs",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "26",
+"code": "26",
+"fr": "Drôme",
+"en": "Drôme",
+"zone": "metro",
+"voted": null,
+"base": 4.5
+},
+{
+"id": "27",
+"code": "27",
+"fr": "Eure",
+"en": "Eure",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "28",
+"code": "28",
+"fr": "Eure-et-Loir",
+"en": "Eure-et-Loir",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "29",
+"code": "29",
+"fr": "Finistère",
+"en": "Finistère",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "30",
+"code": "30",
+"fr": "Gard",
+"en": "Gard",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "31",
+"code": "31",
+"fr": "Haute-Garonne",
+"en": "Haute-Garonne",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "32",
+"code": "32",
+"fr": "Gers",
+"en": "Gers",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "33",
+"code": "33",
+"fr": "Gironde",
+"en": "Gironde",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "34",
+"code": "34",
+"fr": "Hérault",
+"en": "Hérault",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "35",
+"code": "35",
+"fr": "Ille-et-Vilaine",
+"en": "Ille-et-Vilaine",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "36",
+"code": "36",
+"fr": "Indre",
+"en": "Indre",
+"zone": "metro",
+"voted": null,
+"base": 3.8
+},
+{
+"id": "37",
+"code": "37",
+"fr": "Indre-et-Loire",
+"en": "Indre-et-Loire",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "38",
+"code": "38",
+"fr": "Isère",
+"en": "Isère",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "39",
+"code": "39",
+"fr": "Jura",
+"en": "Jura",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "40",
+"code": "40",
+"fr": "Landes",
+"en": "Landes",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "41",
+"code": "41",
+"fr": "Loir-et-Cher",
+"en": "Loir-et-Cher",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "42",
+"code": "42",
+"fr": "Loire",
+"en": "Loire",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "43",
+"code": "43",
+"fr": "Haute-Loire",
+"en": "Haute-Loire",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "44",
+"code": "44",
+"fr": "Loire-Atlantique",
+"en": "Loire-Atlantique",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "45",
+"code": "45",
+"fr": "Loiret",
+"en": "Loiret",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "46",
+"code": "46",
+"fr": "Lot",
+"en": "Lot",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "47",
+"code": "47",
+"fr": "Lot-et-Garonne",
+"en": "Lot-et-Garonne",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "48",
+"code": "48",
+"fr": "Lozère",
+"en": "Lozère",
+"zone": "metro",
+"voted": null,
+"base": 4.5
+},
+{
+"id": "49",
+"code": "49",
+"fr": "Maine-et-Loire",
+"en": "Maine-et-Loire",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "50",
+"code": "50",
+"fr": "Manche",
+"en": "Manche",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "51",
+"code": "51",
+"fr": "Marne",
+"en": "Marne",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "52",
+"code": "52",
+"fr": "Haute-Marne",
+"en": "Haute-Marne",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "53",
+"code": "53",
+"fr": "Mayenne",
+"en": "Mayenne",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "54",
+"code": "54",
+"fr": "Meurthe-et-Moselle",
+"en": "Meurthe-et-Moselle",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "55",
+"code": "55",
+"fr": "Meuse",
+"en": "Meuse",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "56",
+"code": "56",
+"fr": "Morbihan",
+"en": "Morbihan",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "57",
+"code": "57",
+"fr": "Moselle",
+"en": "Moselle",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "58",
+"code": "58",
+"fr": "Nièvre",
+"en": "Nièvre",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "59",
+"code": "59",
+"fr": "Nord",
+"en": "Nord",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "60",
+"code": "60",
+"fr": "Oise",
+"en": "Oise",
+"zone": "metro",
+"voted": null,
+"base": 4.5
+},
+{
+"id": "61",
+"code": "61",
+"fr": "Orne",
+"en": "Orne",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "62",
+"code": "62",
+"fr": "Pas-de-Calais",
+"en": "Pas-de-Calais",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "63",
+"code": "63",
+"fr": "Puy-de-Dôme",
+"en": "Puy-de-Dôme",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "64",
+"code": "64",
+"fr": "Pyrénées-Atlantiques",
+"en": "Pyrénées-Atlantiques",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "65",
+"code": "65",
+"fr": "Hautes-Pyrénées",
+"en": "Hautes-Pyrénées",
+"zone": "metro",
+"voted": null,
+"base": 4.5,
+"lots": 3.8
+},
+{
+"id": "66",
+"code": "66",
+"fr": "Pyrénées-Orientales",
+"en": "Pyrénées-Orientales",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "67",
+"code": "67",
+"fr": "Bas-Rhin",
+"en": "Bas-Rhin",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5,
+"shared": "Collectivité européenne d’Alsace"
+},
+{
+"id": "68",
+"code": "68",
+"fr": "Haut-Rhin",
+"en": "Haut-Rhin",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5,
+"shared": "Collectivité européenne d’Alsace"
+},
+{
+"id": "69m",
+"code": "69",
+"fr": "Métropole de Lyon",
+"en": "Lyon Metropolis",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "69r",
+"code": "69",
+"fr": "Rhône (hors métropole de Lyon)",
+"en": "Rhône (outside Lyon Metropolis)",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "70",
+"code": "70",
+"fr": "Haute-Saône",
+"en": "Haute-Saône",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "71",
+"code": "71",
+"fr": "Saône-et-Loire",
+"en": "Saône-et-Loire",
+"zone": "metro",
+"voted": null,
+"base": 4.5
+},
+{
+"id": "72",
+"code": "72",
+"fr": "Sarthe",
+"en": "Sarthe",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "73",
+"code": "73",
+"fr": "Savoie",
+"en": "Savoie",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5,
+"premiere": 4.0
+},
+{
+"id": "74",
+"code": "74",
+"fr": "Haute-Savoie",
+"en": "Haute-Savoie",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "75",
+"code": "75",
+"fr": "Paris",
+"en": "Paris",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "76",
+"code": "76",
+"fr": "Seine-Maritime",
+"en": "Seine-Maritime",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "77",
+"code": "77",
+"fr": "Seine-et-Marne",
+"en": "Seine-et-Marne",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "78",
+"code": "78",
+"fr": "Yvelines",
+"en": "Yvelines",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "79",
+"code": "79",
+"fr": "Deux-Sèvres",
+"en": "Deux-Sèvres",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "80",
+"code": "80",
+"fr": "Somme",
+"en": "Somme",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "81",
+"code": "81",
+"fr": "Tarn",
+"en": "Tarn",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "82",
+"code": "82",
+"fr": "Tarn-et-Garonne",
+"en": "Tarn-et-Garonne",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "83",
+"code": "83",
+"fr": "Var",
+"en": "Var",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "84",
+"code": "84",
+"fr": "Vaucluse",
+"en": "Vaucluse",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "85",
+"code": "85",
+"fr": "Vendée",
+"en": "Vendée",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "86",
+"code": "86",
+"fr": "Vienne",
+"en": "Vienne",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "87",
+"code": "87",
+"fr": "Haute-Vienne",
+"en": "Haute-Vienne",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "88",
+"code": "88",
+"fr": "Vosges",
+"en": "Vosges",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "89",
+"code": "89",
+"fr": "Yonne",
+"en": "Yonne",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "90",
+"code": "90",
+"fr": "Territoire de Belfort",
+"en": "Territoire de Belfort",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "91",
+"code": "91",
+"fr": "Essonne",
+"en": "Essonne",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "92",
+"code": "92",
+"fr": "Hauts-de-Seine",
+"en": "Hauts-de-Seine",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "93",
+"code": "93",
+"fr": "Seine-Saint-Denis",
+"en": "Seine-Saint-Denis",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "94",
+"code": "94",
+"fr": "Val-de-Marne",
+"en": "Val-de-Marne",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "95",
+"code": "95",
+"fr": "Val-d'Oise",
+"en": "Val-d'Oise",
+"zone": "metro",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "971",
+"code": "971",
+"fr": "Guadeloupe",
+"en": "Guadeloupe",
+"zone": "gp",
+"voted": null,
+"base": 4.5
+},
+{
+"id": "972",
+"code": "972",
+"fr": "Martinique",
+"en": "Martinique",
+"zone": "mq",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "973",
+"code": "973",
+"fr": "Guyane",
+"en": "French Guiana",
+"zone": "gf",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "974",
+"code": "974",
+"fr": "La Réunion",
+"en": "Réunion",
+"zone": "re",
+"voted": 5.0,
+"base": 4.5
+},
+{
+"id": "976",
+"code": "976",
+"fr": "Mayotte",
+"en": "Mayotte",
+"zone": "yt",
+"voted": null,
+"base": 4.5
+}
+]

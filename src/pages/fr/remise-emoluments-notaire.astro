@@ -1,0 +1,42 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, P, emolumentsVente, F } from '../../lib/tables';
+import { src } from '../../lib/sources';
+const lang = 'fr';
+const r450 = emolumentsVente(450000, 'metro', 20); const f450 = F(450000, '92');
+const faqs = [
+  { q: 'Peut-on négocier les frais de notaire ?', a: `Seulement la remise sur les émoluments, et seulement au-delà de 100 000 €. Le notaire peut accorder jusqu’à ${pct(P.emoluments.remise_max, lang, 0)} de remise sur la part de ses émoluments calculée sur la fraction du prix qui dépasse ce seuil. Les droits de mutation, la contribution de sécurité immobilière et les débours ne se négocient pas : ce sont des impôts et des sommes avancées pour vous.` },
+  { q: 'Combien rapporte une remise de 20 % sur un achat de 450 000 € ?', a: `${$(r450.remise * 1.2)} TTC. La remise porte sur les émoluments calculés sur les 350 000 € situés au-delà de 100 000 €, au taux de ${pct(P.emoluments.zones.metro.taux[3], lang, 3)}, soit ${$(r450.remise / 0.2)} HT ; 20 % de cette somme font ${$(r450.remise)} HT. Rapporté aux ${$(f450.total)} de frais totaux dans les Hauts-de-Seine, c’est moins de 1 %.` },
+  { q: 'Un notaire est-il obligé d’accorder une remise ?', a: 'Non. La remise est une faculté. Si l’étude la pratique, elle doit afficher ses taux de remise par catégorie d’actes et par tranche, et les appliquer de la même façon à tous ses clients : elle ne peut pas l’accorder à l’un et la refuser à l’autre dans la même situation. Demandez simplement, avant la signature, si l’office applique un barème de remises.' },
+  { q: 'La remise s’applique-t-elle aussi aux donations et successions ?', a: 'Oui, la faculté de remise vaut pour les prestations au tarif proportionnel : ventes, donations, déclarations de succession, dès lors que l’assiette dépasse le seuil. Pour les actes portant sur plus de 10 millions d’euros, comme certains apports d’immeubles, une remise plus forte, jusqu’à 40 %, est possible sur certaines prestations énumérées par le code de commerce.' },
+  { q: 'Pourquoi service-public.fr parle-t-il de 150 000 € ?', a: 'La fiche de service-public.fr consacrée aux frais de notaire évoque encore une remise possible « si la prestation est supérieure à 150 000 € ». Notaires de France, qui cite l’article R444-10 du code de commerce dans sa version actuelle, retient 100 000 € et un taux de 20 % au plus. Ce site applique cette seconde règle, la plus récente, et l’indique dans sa méthodologie.' },
+  { q: 'Changer de notaire permet-il de payer moins ?', a: 'Pas sur les émoluments d’une vente, identiques partout en métropole, sauf remise. Un acheteur peut choisir son notaire sans surcoût, même si le vendeur a le sien : les deux études partagent les émoluments. L’intérêt de choisir est ailleurs, dans la disponibilité, le conseil et la connaissance du marché local.' },
+];
+---
+<GuideLayout lang={lang} id="remise" breadcrumbLabel="Remise sur les émoluments"
+  title={`Remise du notaire ${YEAR} : jusqu’à 20 % au-delà de 100 000 €`}
+  h1="Remise sur les émoluments du notaire : la seule partie négociable des frais"
+  description={`Remise du notaire ${YEAR} : au plus 20 % sur la part des émoluments au-delà de 100 000 €, affichée et égale pour tous. Ce qu’elle rapporte, calcul sur votre prix.`}
+  intro="Une faculté encadrée par le code de commerce, qui rapporte moins qu’on ne le croit."
+  resume={`Depuis la réforme du tarif des notaires, l’article R444-10 du code de commerce permet au notaire d’accorder une remise sur ses émoluments proportionnels lorsque le prix dépasse 100 000 €, dans la limite de ${pct(P.emoluments.remise_max, lang, 0)}. La remise ne porte que sur la partie des émoluments calculée sur la fraction du prix au-delà de 100 000 €, au taux marginal de ${pct(P.emoluments.zones.metro.taux[3], lang, 3)}. Sur un achat de 450 000 €, une remise maximale fait économiser ${$(r450.remise * 1.2)} TTC, sur ${$(f450.total)} de frais dans les Hauts-de-Seine. Elle est facultative, doit être affichée dans l’étude et accordée à tous les clients dans les mêmes conditions. Les droits de mutation, eux, ne se négocient jamais, pas plus que la contribution de sécurité immobilière ou les débours.`}
+  faqs={faqs}
+  related={[{ href: route('emoluments', lang), name: 'Émoluments du notaire', description: 'Le barème sur lequel porte la remise.' }, { href: route('reduire', lang), name: 'Réduire ses frais', description: 'Les leviers qui rapportent plus.' }, { href: route('amount-500000', lang), name: 'Achat à 500 000 €', description: 'Là où la remise commence à compter.' }]}
+  sources={src(lang, 'notaires_frais', 'sp_frais_notaire')}>
+  <MiniSim client:visible kind="remise" lang={lang} href={route('home', lang)} />
+  <h2>Ce que vaut une remise de 20 %</h2>
+  <ContentTable headers={['Prix', 'Émoluments TTC sans remise', 'Remise maximale TTC', 'Part des frais totaux']} align={['r', 'r', 'r', 'r']} rows={[100000, 200000, 300000, 450000, 600000, 1000000].map((x) => { const a = emolumentsVente(x), b = emolumentsVente(x, 'metro', 20), f = F(x, '75'); return [$(x), $(a.ttc), $(b.remise * 1.2), pct((b.remise * 1.2 / f.total) * 100, lang, 2)]; })} caption="Département à 5 %, débours estimés à 500 €." />
+  <p>À 100 000 €, la remise est nulle : il n’y a pas de fraction au-delà du seuil. À 200 000 €, elle reste modeste, un peu plus de 190 € TTC. Elle n’approche les mille euros qu’au voisinage de 600 000 €. Le tableau montre surtout que la remise ne pèse jamais plus de 2 % des frais totaux, parce qu’elle ne touche que la rémunération du notaire et non l’impôt, qui représente l’essentiel.</p>
+  <h2>Les règles du jeu</h2>
+  <p>La remise n’est pas une négociation de gré à gré. Le notaire qui la pratique fixe, pour chaque catégorie d’actes, un taux unique par tranche de prix, l’affiche dans son office et l’applique à tous les clients placés dans la même situation. Il ne peut pas réserver la remise à un client fidèle ou à un promoteur qui lui apporte des dossiers. Ces règles visent à préserver l’égalité devant un tarif réglementé tout en laissant jouer un peu de concurrence sur les gros dossiers.</p>
+  <p>Pour les opérations portant sur plus de 10 millions d’euros, une remise plus forte est admise, jusqu’à 40 %, sur certaines prestations limitativement énumérées, comme les apports d’immeubles en société. Elle concerne des opérations professionnelles, rarement un achat de particulier.</p>
+  <h2>Comment la demander</h2>
+  <p>Avant la signature du compromis ou au premier rendez-vous, demandez à l’étude si elle applique un barème de remises sur les ventes, et lequel. Le calculateur vous permet de saisir le taux obtenu dans les options avancées : il l’applique sur la seule part des émoluments calculée au-delà de 100 000 €, et non sur leur totalité.</p>
+  <h2>Pourquoi la remise reste rare</h2>
+  <p>Le tarif des notaires a été construit pour que chaque acte couvre son coût moyen : les grosses ventes compensent les petites, souvent déficitaires pour l’étude. La remise permet un peu de concurrence sur les dossiers importants, sans casser cette péréquation, puisqu’elle ne porte que sur la fraction au-delà de 100 000 €. Chaque étude décide librement de la pratiquer ou non ; rien ne l’y oblige, et le refus n’a pas à être motivé. C’est pourquoi le calculateur n’applique aucune remise par défaut.</p>
+  <h2>Des leviers plus efficaces</h2>
+  <p>Si l’objectif est de réduire la facture, trois leviers rapportent davantage : le statut de primo-accédant, qui économise environ 0,51 % du prix dans un département à 5 %, la liste des meubles vendus avec le logement, qui sort leur valeur de l’assiette, et la prise en charge de la commission d’agence par l’acquéreur. Le guide <a href={route('reduire', lang)}>réduire ses frais de notaire</a> les compare sur votre propre achat.</p>
+</GuideLayout>

@@ -1,0 +1,43 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, P, COUNT, tauxGlobalAncien, nom } from '../../lib/tables';
+import { src } from '../../lib/sources';
+const lang = 'fr';
+const d = (x: number) => (x * (tauxGlobalAncien(5) - tauxGlobalAncien(4.5))) / 100;
+const a450 = COUNT.a450.map((x) => nom(x, lang)).join(', ');
+const faqs = [
+  { q: 'Depuis quand les droits de mutation sont-ils à 5 % ?', a: `La faculté existe pour les actes signés à partir du 1er avril 2025, mais chaque département a choisi sa date d’entrée en vigueur par délibération. Certains ont appliqué 5 % dès avril 2025, d’autres quelques mois plus tard. Au 1er juin ${YEAR}, ${COUNT.zones5} zones l’appliquent. C’est la date de signature de l’acte authentique chez le notaire qui détermine le taux, pas celle du compromis.` },
+  { q: 'La hausse à 5 % est-elle définitive ?', a: 'Non, elle est temporaire. L’article 116 de la loi de finances pour 2025 la limite aux actes passés entre le 1er avril 2025 et le 31 mars 2028. Sauf nouvelle loi, le plafond redeviendra 4,50 % à partir du 1er avril 2028. Un département peut aussi revenir en arrière avant cette date par une nouvelle délibération, que la DGFiP publierait dans son tableau mensuel.' },
+  { q: 'Combien coûte la hausse sur un achat de 300 000 € ?', a: `Le taux global passe de ${pct(tauxGlobalAncien(4.5), lang, 3)} à ${pct(tauxGlobalAncien(5), lang, 3)}, soit environ 0,51 point. Sur 300 000 €, cela représente ${$(d(300000))} de droits supplémentaires ; sur 200 000 €, ${$(d(200000))} ; sur 500 000 €, ${$(d(500000))}. Les émoluments du notaire ne changent pas : seule la taxe départementale et les frais d’assiette qui en dépendent augmentent.` },
+  { q: 'Mon compromis est signé avant la hausse, quel taux s’applique ?', a: 'Celui en vigueur le jour de la signature de l’acte authentique. Les droits de mutation sont exigibles à la date de l’acte qui opère le transfert de propriété ; le compromis n’est qu’un avant-contrat. Si votre département a relevé son taux entre les deux, la vente supporte 5 %. Seul le primo-accédant achetant sa résidence principale y échappe, quelle que soit la date.' },
+  { q: 'Quels départements n’ont pas augmenté leurs droits ?', a: `Au 1er juin ${YEAR}, onze départements appliquent encore 4,50 % : ${a450}. L’Indre, elle, est restée à 3,80 %, le taux de référence de l’article 1594 D, qu’elle n’a jamais relevé. Le tableau de la DGFiP est mis à jour chaque mois, et ce site reprend la dernière version disponible.` },
+  { q: 'La hausse s’applique-t-elle aux terrains et aux locaux professionnels ?', a: 'Oui, si le département l’a votée sans distinction : le taux de 5 % porte sur toutes les mutations à titre onéreux d’immeubles relevant du droit commun, terrains, locaux commerciaux et bureaux compris. Seules les ventes soumises à la TVA, au taux réduit, et les acquisitions de résidence principale par un primo-accédant sont hors de son champ.' },
+];
+---
+<GuideLayout lang={lang} id="hausse" breadcrumbLabel="Hausse à 5 %"
+  title={`Hausse des droits de mutation à 5 % : départements ${YEAR}`}
+  h1="Hausse des droits de mutation à 5 % : qui l’applique, combien elle coûte, jusqu’à quand"
+  description={`Droits de mutation à 5 % : 88 zones l’appliquent au 1er juin ${YEAR}, onze sont restées à 4,50 %. Surcoût sur votre prix, exception primo-accédant, fin en 2028.`}
+  intro="Une faculté temporaire, votée par presque tous les départements, qui épargne les primo-accédants."
+  resume={`La loi de finances pour 2025 a permis aux départements de porter leur taxe sur les ventes immobilières de 4,50 % à 5 % pour les actes signés entre le 1er avril 2025 et le 31 mars 2028. Au 1er juin ${YEAR}, selon le tableau de la DGFiP, ${COUNT.zones5} zones fiscales l’appliquent, onze départements sont restés à 4,50 % et l’Indre à 3,80 %. Avec la taxe communale et les frais d’assiette, le taux global passe de ${pct(tauxGlobalAncien(4.5), lang, 3)} à ${pct(tauxGlobalAncien(5), lang, 3)} du prix. Concrètement, la hausse ajoute ${$(d(250000))} de droits sur un achat ancien de 250 000 €. Le primo-accédant qui achète sa résidence principale en est exempté : il continue de payer 4,50 %, sans condition de revenus.`}
+  faqs={faqs}
+  related={[{ href: route('primo', lang), name: 'Primo-accédant', description: 'L’exemption et ses conditions.' }, { href: route('taux450', lang), name: 'Départements à 4,50 %', description: 'Les onze qui n’ont pas augmenté.' }, { href: route('dmto', lang), name: 'Droits de mutation', description: 'Les trois taxes, l’assiette.' }]}
+  sources={src(lang, 'dgfip_dmto', 'notaires_frais', 'impots_droits')}>
+  <MiniSim client:visible kind="hausse" lang={lang} href={route('home', lang)} />
+  <h2>Ce que dit la loi</h2>
+  <p>L’article 116 de la loi n° 2025-127 du 14 février 2025 de finances pour 2025 a ajouté une faculté au code général des impôts : pour les actes passés entre le 1er avril 2025 et le 31 mars 2028, le conseil départemental peut relever le taux de la taxe de publicité foncière ou du droit d’enregistrement jusqu’à 5 %. La mesure visait à compenser la baisse des recettes des départements après le recul des ventes immobilières de 2023 et 2024. Elle ne touche pas la taxe communale, restée à {pct(P.dmto.taxe_communale)}, mais les frais d’assiette de l’État, calculés en pourcentage de la taxe départementale, augmentent mécaniquement avec elle.</p>
+  <p>Le texte prévoit une exception : le nouveau taux ne s’applique pas lorsque l’acheteur est primo-accédant et acquiert sa résidence principale. La loi de finances pour 2026 en a précisé les contours sans la modifier, et l’administration fiscale l’a commentée dans sa doctrine publiée en juin {YEAR}. La définition reprend celle du prêt à taux zéro : ne pas avoir été propriétaire de sa résidence principale au cours des deux années précédant l’achat.</p>
+  <h2>Le surcoût selon le prix</h2>
+  <ContentTable headers={['Prix ancien', 'Droits à 4,50 %', 'Droits à 5 %', 'Surcoût de la hausse']} align={['r', 'r', 'r', 'r']} rows={[150000, 200000, 250000, 300000, 400000, 500000, 750000].map((x) => [$(x), $(x * tauxGlobalAncien(4.5) / 100), $(x * tauxGlobalAncien(5) / 100), $(d(x))])} />
+  <p>Le surcoût est strictement proportionnel au prix : un peu plus de 51 euros par tranche de 10 000 €. Il pèse davantage, en valeur, là où les prix sont élevés, ce qui explique que les grandes métropoles aient voté la hausse sans hésiter. Il pèse davantage, en proportion de l’épargne des ménages, sur les primo-accédants qui achètent peu cher, ce qui explique l’exemption.</p>
+  <h2>Ceux qui ne l’ont pas votée</h2>
+  <p>Onze départements appliquent toujours 4,50 % : {a450}. Leurs raisons varient : attractivité résidentielle revendiquée, refus d’alourdir la fiscalité locale, marché déjà tendu dans des zones touristiques. Pour un acheteur qui hésite entre deux zones limitrophes, l’écart n’est pas négligeable. Entre les Alpes-Maritimes et le Var, par exemple, un appartement de 400 000 € coûte {$(d(400000))} de droits en moins côté Alpes-Maritimes. Le <a href={route('comparer', lang)}>comparateur de départements</a> chiffre ce type d’écart.</p>
+  <h2>Avant et après le 31 mars 2028</h2>
+  <p>La fenêtre se ferme le 31 mars 2028. À partir du 1er avril 2028, sauf prolongation votée au Parlement, le plafond redeviendra 4,50 %. Un acheteur qui pourrait signer avant ou après cette date gagnerait alors l’écart du tableau ci-dessus, à condition que le marché et les taux d’intérêt ne bougent pas entre-temps, ce qui reste une hypothèse fragile. La date retenue est toujours celle de l’acte authentique.</p>
+  <h2>L’exception du primo-accédant en pratique</h2>
+  <p>L’acheteur déclare sa situation dans l’acte : le notaire y insère une mention par laquelle il atteste ne pas avoir été propriétaire de sa résidence principale dans les deux ans et s’engage à affecter le bien à cet usage. Aucun plafond de revenus ni de prix ne s’applique. Quand deux personnes achètent ensemble et qu’une seule remplit la condition, demandez au notaire comment l’acte répartit le taux entre les acquéreurs. Le guide <a href={route('primo', lang)}>primo-accédant</a> détaille ces situations et la réduction supplémentaire votée par la Savoie.</p>
+</GuideLayout>

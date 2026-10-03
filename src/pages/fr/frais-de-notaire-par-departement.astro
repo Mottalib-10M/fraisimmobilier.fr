@@ -1,0 +1,35 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import NotaireCalculator from '../../components/calc/NotaireCalculator';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { F, $, pct, COUNT, depRows, tauxGlobalAncien } from '../../lib/tables';
+import { src } from '../../lib/sources';
+const lang = 'fr';
+const hi = F(250000, '75'), mid = F(250000, '06'), lo = F(250000, '36');
+const faqs = [
+  { q: 'Quel département a les frais de notaire les plus bas ?', a: `L’Indre, seul département à appliquer encore le taux de référence de 3,80 %. Sur un achat ancien de 250 000 €, les frais y atteignent ${$(lo.total)}, contre ${$(hi.total)} dans un département à 5 % comme Paris. Viennent ensuite les onze départements restés à 4,50 %, où les mêmes frais sont de ${$(mid.total)}.` },
+  { q: 'Où trouver le taux officiel de mon département ?', a: 'Dans le tableau que la DGFiP publie chaque mois sur impots.gouv.fr, à la rubrique des droits d’enregistrement, sous le titre « taux, abattements de base et réductions de taux applicables ». Ce site reprend la version du 1er juin 2026, la dernière disponible au moment de la vérification, et indique la date sur chaque page.' },
+  { q: 'Pourquoi le tableau compte-t-il 102 lignes pour 101 départements ?', a: 'Parce que le Rhône est coupé en deux pour la fiscalité : la métropole de Lyon et le reste du département votent chacun leur taux. À l’inverse, la Corse-du-Sud et la Haute-Corse partagent le taux de la collectivité de Corse, et le Bas-Rhin et le Haut-Rhin celui de la collectivité européenne d’Alsace.' },
+  { q: 'Le taux change-t-il en cours d’année ?', a: 'Il peut changer à chaque délibération d’un conseil départemental, en général pour une entrée en vigueur au 1er du mois. Le taux applicable est celui du jour de la signature de l’acte authentique. Si votre signature est éloignée de plusieurs mois, vérifiez le dernier tableau publié avant le rendez-vous chez le notaire.' },
+];
+---
+<GuideLayout lang={lang} id="departements" breadcrumbLabel="Frais par département"
+  title={`Frais de notaire par département ${YEAR} : les 101 taux`}
+  h1={`Frais de notaire par département en ${YEAR} : le taux et le coût, pour les 101`}
+  description={`Frais de notaire par département ${YEAR} : taux des droits de mutation au 1er juin (5 %, 4,50 %, 3,80 %), frais sur 250 000 €, primo-accédant. Tableau complet.`}
+  intro="Le tableau DGFiP au 1er juin 2026, transformé en frais réels pour chaque département."
+  resume={`Le taux des droits de mutation est voté par chaque département, et c’est lui qui fait varier les frais de notaire d’un lieu à l’autre pour un même prix. Au 1er juin ${YEAR}, selon le tableau publié par la DGFiP, ${COUNT.zones5} zones fiscales appliquent un taux départemental de 5 %, soit ${pct(tauxGlobalAncien(5), lang, 3)} avec la taxe communale et les frais d’assiette ; ${COUNT.a450.length} départements sont restés à 4,50 % et l’Indre à 3,80 %. Pour un logement ancien de 250 000 €, les frais vont ainsi de ${$(lo.total)} dans l’Indre à ${$(hi.total)} dans un département à 5 %. Le tableau ci-dessous donne, pour chacun des 101 départements, le taux voté, le taux global et les frais calculés, dans le cas général et pour un primo-accédant qui achète sa résidence principale.`}
+  faqs={faqs}
+  related={[{ href: route('comparer', lang), name: 'Comparer deux départements', description: 'L’écart en euros pour votre prix.' }, { href: route('taux450', lang), name: 'Départements à 4,50 %', description: 'Les onze qui n’ont pas augmenté.' }, { href: route('hausse', lang), name: 'Hausse à 5 %', description: 'Origine, durée, exception.' }]}
+  sources={src(lang, 'dgfip_dmto', 'impots_droits', 'sp_frais_notaire')}>
+  <div slot="tool" data-outil><NotaireCalculator client:load lang={lang} methodHref={route('method', lang)} /></div>
+  <h2>Les 101 départements au 1er juin {YEAR}</h2>
+  <ContentTable headers={['Code', 'Département', 'Taux voté', 'Taux global', 'Frais sur 250 000 €', 'Primo-accédant']} align={['l', 'l', 'r', 'r', 'r', 'r']} rows={depRows(lang)} caption="Ancien, débours estimés à 500 €. Savoie : colonne primo-accédant calculée avec la réduction « première propriété » à 4,00 %." />
+  <h2>Comment lire le tableau</h2>
+  <p>La colonne « taux voté » reprend le taux départemental du tableau de la DGFiP. Le « taux global » y ajoute la taxe communale de 1,20 % et les frais d’assiette de l’État, égaux à 2,37 % de la taxe départementale : c’est le pourcentage réellement prélevé sur le prix. Les frais sur 250 000 € additionnent ces droits, les émoluments du notaire, le forfait de formalités, la contribution de sécurité immobilière et 500 € de débours estimés. La dernière colonne montre l’effet de l’exemption accordée au primo-accédant dans les départements à 5 %.</p>
+  <p>Les cinq départements d’outre-mer ont un barème d’émoluments propre et une TVA différente, ce qui explique que leurs frais diffèrent de ceux de la métropole à taux égal. Le guide <a href={route('outremer', lang)}>outre-mer</a> les détaille. Trois départements ont voté des dispositifs particuliers, signalés dans le calculateur : la Savoie, le Calvados et les Hautes-Pyrénées.</p>
+  <h2>Ce que le tableau ne montre pas</h2>
+  <p>Il ne tient pas compte des exonérations réservées à certains acquéreurs, comme les organismes HLM ou les sociétés d’économie mixte, que chaque département choisit d’appliquer ou non. Il ne distingue pas les deux communes d’outre-mer qui ont réduit leur taxe additionnelle, Lamentin et Tsingoni. Et il suppose une vente dans l’ancien : dans le neuf, la taxe réduite est identique partout, et le département ne change rien.</p>
+</GuideLayout>

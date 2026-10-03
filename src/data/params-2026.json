@@ -1,0 +1,84 @@
+{
+  "_lisezmoi": "Tous les paramètres légaux du site vivent ici et dans departements.json — jamais en dur dans le code ni dans les pages (RECETTE-SITE.md §4, §17.4). Chaque valeur a été relue sur la source citée le jour de retrieved_at.",
+  "year": 2026,
+  "retrieved_at": "2026-10-03",
+  "valid_from": "2026-06-01",
+  "valid_to": "2028-03-31",
+  "dmto": {
+    "_source": "DGFiP, « Droits d'enregistrement et taxe de publicité foncière : taux, abattements de base et réductions de taux applicables au 1er juin 2026 » (impots.gouv.fr, dmto_2026-06.pdf) ; notaires.fr, les frais d'acquisition (taxe communale, frais d'assiette).",
+    "taxe_communale": 1.2,
+    "frais_assiette_droit_commun": 2.37,
+    "taux_reduit_neuf": 0.7,
+    "frais_assiette_taux_reduit": 2.14,
+    "hausse_debut": "2025-04-01",
+    "hausse_fin": "2028-03-31",
+    "primo_definition_annees": 2,
+    "communes_taxe_reduite": [
+      { "commune": "Lamentin", "departement": "971", "taux": 0.7, "exoneration_possible": true },
+      { "commune": "Tsingoni", "departement": "976", "taux": 0.5 }
+    ]
+  },
+  "emoluments": {
+    "_source": "Code de commerce, art. A444-91 (vente) ; barèmes d'outre-mer applicables depuis le 1er mars 2024, tarifs valables jusqu'au 29 février 2028 (service-public.gouv.fr, fiche F17701, vérifiée le 5 août 2026).",
+    "tranches": [6500, 17000, 60000],
+    "zones": {
+      "metro": { "taux": [3.870, 1.596, 1.064, 0.799], "tva": 20 },
+      "gp": { "taux": [4.760, 1.963, 1.309, 0.983], "tva": 8.5 },
+      "mq": { "taux": [4.799, 1.979, 1.319, 0.991], "tva": 8.5 },
+      "gf": { "taux": [4.644, 1.915, 1.277, 0.959], "tva": 0 },
+      "re": { "taux": [5.263, 2.171, 1.447, 1.087], "tva": 8.5 },
+      "yt": { "taux": [5.263, 2.171, 1.447, 1.087], "tva": 0 }
+    },
+    "minimum_ht": 90,
+    "plafond_pourcentage_valeur": 10,
+    "remise_seuil": 100000,
+    "remise_max": 20,
+    "formalites_forfait_ht": 339.58,
+    "exemple_officiel": { "prix": 200000, "emoluments_ht": 1995.25 }
+  },
+  "csi": { "_source": "notaires.fr, les frais d'acquisition", "taux": 0.1, "minimum": 15 },
+  "debours_defaut": 500,
+  "donation": {
+    "_source": "service-public.gouv.fr F14203 (vérifiée le 13 mai 2026) et F1404 (émoluments de donation).",
+    "abattements": { "enfant": 100000, "petit_enfant": 31865, "arriere_petit_enfant": 5310, "epoux": 80724, "frere_soeur": 15932, "neveu_niece": 7967, "autre": 0, "handicap": 159325 },
+    "bareme_ligne_directe": [[8072, 5], [12109, 10], [15932, 15], [552324, 20], [902838, 30], [1805677, 40], [null, 45]],
+    "bareme_epoux": [[8072, 5], [15932, 10], [31865, 15], [552324, 20], [902838, 30], [1805677, 40], [null, 45]],
+    "bareme_frere_soeur": [[24430, 35], [null, 45]],
+    "taux_neveu_niece": 55,
+    "taux_parent_4e_degre": 55,
+    "taux_autre": 60,
+    "emoluments_autres_donations": [4.837, 1.995, 1.330, 0.998],
+    "exemple_officiel": { "taxable": 100000, "droits": 18194 }
+  },
+  "plus_value": { "_source": "service-public.gouv.fr F10864 (vérifiée le 15 avril 2026)", "forfait_frais_acquisition": 7.5, "forfait_travaux": 15, "forfait_travaux_detention_min_ans": 5 },
+  "sources": {
+    "dgfip_dmto": {
+      "url": "https://www.impots.gouv.fr/sites/default/files/media/1_metier/3_partenaire/notaires/dmto/dmto_2026-06.pdf",
+      "label": {
+        "fr": "DGFiP — taux des droits d'enregistrement et de la taxe de publicité foncière applicables au 1er juin 2026, par département",
+        "en": "DGFiP — registration duty and land publicity tax rates applicable from 1 June 2026, by département"
+      }
+    },
+    "sp_frais_notaire": {
+      "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F17701",
+      "label": {
+        "fr": "Service-Public.fr — Frais de notaire : de quoi s'agit-il ? (barème des émoluments, métropole et outre-mer)",
+        "en": "Service-Public.fr — notary fees explained (emolument scale, mainland France and overseas)"
+      }
+    },
+    "notaires_frais": {
+      "url": "https://www.notaires.fr/fr/immobilier-fiscalite/financement/les-frais-dacquisition",
+      "label": {
+        "fr": "Notaires de France — les frais d'acquisition (taxe communale, frais d'assiette, CSI, remises, formalités)",
+        "en": "Notaires de France — acquisition costs (municipal tax, collection fee, CSI, discounts, formalities)"
+      }
+    },
+    "impots_droits": {
+      "url": "https://www.impots.gouv.fr/droits-denregistrement",
+      "label": {
+        "fr": "impots.gouv.fr — droits d'enregistrement : tableaux mensuels des taux départementaux",
+        "en": "impots.gouv.fr — registration duties: monthly tables of départemental rates"
+      }
+    }
+  }
+}

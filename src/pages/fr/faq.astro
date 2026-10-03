@@ -1,0 +1,32 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { faqSchema, breadcrumbSchema, webPageSchema } from '../../lib/seo';
+import { $, pct, F, P, tauxGlobalAncien } from '../../lib/tables';
+const lang = 'fr';
+const title = `Frais de notaire ${YEAR} : les questions qu’on nous pose`;
+const description = `Frais de notaire ${YEAR} en questions : provision, remboursement, compromis, prêt refusé, SCI, viager, maison ou appartement. Des réponses chiffrées et sourcées.`;
+const path = route('faq', lang);
+const f = F(230000, '33');
+const faqs = [
+  { q: 'Les frais de notaire sont-ils remboursés si la banque refuse le prêt ?', a: 'Si la vente ne se fait pas parce que le prêt est refusé dans le délai de la condition suspensive du compromis, l’acte authentique n’est pas signé et les droits de mutation ne sont jamais dus. Le dépôt de garantie vous est restitué. Seuls d’éventuels débours déjà engagés par le notaire pour préparer le dossier peuvent vous être facturés.' },
+  { q: 'Combien de temps faut-il pour récupérer le trop-perçu de la provision ?', a: 'Le notaire établit le compte définitif une fois la vente publiée au service de la publicité foncière et toutes les factures de débours reçues. Le délai dépend de ce service et du dossier : en général plusieurs semaines, parfois quelques mois. Le solde vous est alors reversé par virement, avec le décompte détaillé, à conserver.' },
+  { q: 'Les frais de notaire sont-ils dus au compromis ou à l’acte ?', a: 'À l’acte authentique. Au compromis, vous versez un dépôt de garantie, souvent 5 à 10 % du prix, imputé ensuite sur le prix. Si le compromis est enregistré auprès de l’administration, une taxe fixe de 125 € peut être due. Les droits de mutation, les émoluments et la contribution de sécurité immobilière ne sont payés qu’à la signature définitive.' },
+  { q: 'Un étranger paie-t-il les mêmes frais de notaire en France ?', a: `Oui. Les droits de mutation, le barème des émoluments et la contribution de sécurité immobilière ne dépendent ni de la nationalité ni de la résidence fiscale de l’acheteur. Seul le lieu du bien compte, à travers le taux de son département. Un acheteur non résident qui achète une résidence secondaire paie le taux voté, ${pct(tauxGlobalAncien(5), lang, 2)} dans la plupart des départements.` },
+  { q: 'Les frais de notaire sont-ils les mêmes pour un achat en viager ?', a: 'Non, le calcul diffère : les droits portent sur la valeur du bouquet augmentée de la rente capitalisée, et l’acte comporte des clauses propres. Le calculateur de ce site ne traite pas le viager. Demandez au notaire un décompte prévisionnel, qui part de la valeur de la rente retenue dans l’acte.' },
+  { q: 'Quels frais pour l’achat de parts de SCI ?', a: 'La cession de parts d’une société civile immobilière n’est pas une vente d’immeuble : elle supporte un droit d’enregistrement propre aux cessions de parts sociales, calculé sur la valeur des parts, et non les droits de mutation immobiliers ni les émoluments de vente. Ce régime n’est pas modélisé ici ; le notaire ou l’avocat qui rédige la cession le calcule.' },
+  { q: 'Les frais de notaire varient-ils selon que le bien est une maison ou un appartement ?', a: `Non, à prix égal. Pour 230 000 € en Gironde, les frais calculés sont de ${$(f.total)} dans les deux cas. Seuls les débours peuvent différer : documents de copropriété pour un appartement, bornage ou assainissement pour une maison. Ces écarts se comptent en dizaines ou en centaines d’euros.` },
+  { q: 'Le calculateur est-il à jour ?', a: `Oui, à la date affichée en haut de chaque page. Les taux départementaux viennent du tableau publié par la DGFiP au 1er juin ${YEAR}, le barème des émoluments de service-public.fr et les autres paramètres de Notaires de France, relus le ${P.retrieved_at}. Les mises à jour suivent les publications mensuelles de la DGFiP et chaque révision du tarif.` },
+];
+const jsonLd = [webPageSchema({ name: title, description, path, lang }), faqSchema(faqs, lang), breadcrumbSchema([{ name: 'Accueil', path: route('home', lang) }, { name: 'FAQ', path }])];
+---
+<PageLayout title={title} description={description} lang={lang} jsonLd={jsonLd} faqs={faqs} breadcrumbs={[{ label: 'FAQ' }]}
+  related={[{ href: route('home', lang), name: 'Calcul des frais de notaire', description: 'Votre cas, en détail.' }, { href: route('method', lang), name: 'Méthodologie', description: 'Formule, sources, limites.' }, { href: route('glossary', lang), name: 'Glossaire', description: 'Les mots du décompte.' }]}>
+  <div class="prose prose-slate max-w-none">
+    <h1>Questions fréquentes sur les frais de notaire</h1>
+    <p>Les questions qui reviennent le plus, et qui ne trouvent pas leur place dans un guide thématique. Chaque guide du site a ses propres questions : primo-accédant, neuf, donation, émoluments, département. Pour un chiffre, le mini-calculateur ci-dessous donne vos frais dans l’ancien en deux saisies.</p>
+  </div>
+  <MiniSim client:visible kind="ancien" lang={lang} href={route('home', lang)} />
+</PageLayout>

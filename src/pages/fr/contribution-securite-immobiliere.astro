@@ -1,0 +1,43 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, P, F } from '../../lib/tables';
+import { src } from '../../lib/sources';
+const lang = 'fr';
+const seuil = (P.csi.minimum * 100) / P.csi.taux;
+const f = F(250000, '75');
+const faqs = [
+  { q: 'Qu’est-ce que la contribution de sécurité immobilière ?', a: `Une taxe perçue par l’État lors de la publication d’un acte au service de la publicité foncière, le registre qui rend une vente opposable à tous. Pour une vente, elle est égale à ${pct(P.csi.taux)} du prix, avec un minimum de ${$(P.csi.minimum)}. Sur un achat de 250 000 €, elle coûte ${$(f.csi)}. C’est l’une des plus petites lignes du décompte du notaire.` },
+  { q: 'Pourquoi paie-t-on la CSI en plus des droits de mutation ?', a: 'Parce qu’elle ne rémunère pas la même chose. Les droits de mutation taxent le transfert de propriété ; la contribution de sécurité immobilière finance le service public qui tient le fichier immobilier, vérifie les actes et délivre les états hypothécaires. Elle a remplacé l’ancien salaire du conservateur des hypothèques quand ce métier a été intégré à la DGFiP.' },
+  { q: 'La CSI est-elle la même dans le neuf ?', a: `Oui. Elle est due sur toute vente publiée, que le bien soit ancien ou neuf, au même taux de ${pct(P.csi.taux)}. C’est l’un des rares postes, avec les émoluments et les débours, qui ne baisse pas quand on achète dans le neuf. Sur un appartement neuf de 300 000 €, elle reste de ${$(300000 * P.csi.taux / 100)}.` },
+  { q: 'À partir de quel prix le minimum de 15 € s’applique-t-il ?', a: `En dessous de ${$(seuil)}. À ce prix, ${pct(P.csi.taux)} donnent exactement ${$(P.csi.minimum)} ; au-dessous, c’est le minimum qui est perçu. Il concerne donc les très petites ventes : une place de parking bon marché, une parcelle agricole, un droit sur des parties communes. Pour un logement, la CSI est toujours proportionnelle.` },
+  { q: 'La CSI est-elle due en Alsace et en Moselle ?', a: 'Ces trois départements tiennent un livre foncier, héritage du droit local, au lieu du fichier immobilier du reste de la France. La publicité des ventes y obéit à des règles propres, tenues par les tribunaux et non par les services de la publicité foncière. Le calculateur applique la contribution partout par prudence ; pour un bien situé dans le Bas-Rhin, le Haut-Rhin ou la Moselle, demandez au notaire le détail des frais de publicité.' },
+  { q: 'Un prêt immobilier génère-t-il aussi une CSI ?', a: 'Oui. L’inscription d’une hypothèque ou d’un privilège de prêteur de deniers est elle aussi publiée et supporte sa propre contribution de sécurité immobilière, calculée sur le montant garanti à un taux distinct de celui de la vente. Elle fait partie des frais de garantie du prêt, que le calculateur de frais d’acquisition ne compte pas.' },
+];
+---
+<GuideLayout lang={lang} id="csi" breadcrumbLabel="Contribution de sécurité immobilière"
+  title={`Contribution de sécurité immobilière ${YEAR} : 0,10 % du prix`}
+  h1="Contribution de sécurité immobilière : la petite ligne qui finance le fichier immobilier"
+  description={`Contribution de sécurité immobilière ${YEAR} : 0,10 % du prix, minimum 15 €, due dans l’ancien comme dans le neuf. À quoi elle sert, calcul sur votre achat.`}
+  intro="Elle ne pèse qu’un millième du prix, mais elle explique pourquoi une vente est opposable à tous."
+  resume={`La contribution de sécurité immobilière (CSI) est perçue par l’État à chaque publication d’un acte de vente au service de la publicité foncière. Son taux est de ${pct(P.csi.taux)} du prix, avec un minimum de ${$(P.csi.minimum)}, selon les chiffres publiés par Notaires de France. Elle est due dans l’ancien comme dans le neuf, dans tous les départements, et ne dépend ni de votre situation ni du taux voté localement. Sur un achat de 250 000 €, elle coûte ${$(f.csi)} sur ${$(f.total)} de frais au total, soit à peine plus de 1 % de la facture. Elle finance la tenue du fichier immobilier, la vérification des actes et la délivrance des états hypothécaires qui garantissent qu’un bien n’est pas grevé à votre insu.`}
+  faqs={faqs}
+  related={[{ href: route('home', lang), name: 'Calcul des frais de notaire', description: 'La CSI avec tous les autres postes.' }, { href: route('debours', lang), name: 'Débours et formalités', description: 'Les autres petites lignes.' }, { href: route('garage', lang), name: 'Garage et parking', description: 'Quand le minimum entre en jeu.' }]}
+  sources={src(lang, 'notaires_frais', 'sp_frais_notaire')}>
+  <MiniSim client:visible kind="csi" lang={lang} href={route('home', lang)} />
+  <h2>Le montant selon le prix</h2>
+  <ContentTable headers={['Prix', 'CSI', 'Part des frais totaux (ancien, 5 %)']} align={['r', 'r', 'r']} rows={[5000, 15000, 100000, 250000, 500000, 1000000].map((x) => { const g = F(x, '75'); return [$(x), $(g.csi), pct((g.csi / g.total) * 100, lang, 2)]; })} />
+  <h2>À quoi sert la publicité foncière</h2>
+  <p>En France, une vente immobilière n’est opposable aux tiers qu’après sa publication au fichier immobilier, tenu par les services de la publicité foncière de la DGFiP. C’est ce registre qui permet à une banque de vérifier qu’un bien n’est pas déjà hypothéqué, à un acheteur de s’assurer que le vendeur est bien propriétaire, et au notaire de purger les inscriptions avant la vente. La contribution de sécurité immobilière finance ce service.</p>
+  <p>Avant 2013, cette rémunération prenait la forme du « salaire du conservateur des hypothèques », un officier public payé à l’acte. Quand les conservations ont été intégrées aux services fiscaux de l’État, la contribution l’a remplacée. Elle se calcule sur le prix porté dans l’acte, comme les droits de mutation, mais à un taux beaucoup plus faible et identique partout.</p>
+  <h2>Le service rendu en échange</h2>
+  <p>Concrètement, la contribution finance trois opérations que le notaire déclenche pour vous. Avant la vente, il demande un état hypothécaire, qui recense les hypothèques, privilèges, saisies et servitudes publiés sur le bien ; c’est ce document qui permet de garantir que le vendeur peut vendre libre de toute charge, ou de prévoir le remboursement de son prêt sur le prix. Après la signature, il dépose une copie de l’acte au service de la publicité foncière, qui la vérifie et l’inscrit au fichier immobilier. Enfin, le service conserve cette inscription, consultable par les futurs acheteurs, prêteurs et notaires. Sans cette chaîne, rien ne protégerait un acquéreur contre une seconde vente du même bien ou une hypothèque cachée.</p>
+  <p>C’est aussi pourquoi la contribution est due dans le neuf comme dans l’ancien : quel que soit l’impôt qui frappe la vente, la publication au fichier immobilier est la même.</p>
+  <h2>CSI et minimum : les très petites ventes</h2>
+  <p>Le minimum de {$(P.csi.minimum)} ne joue que pour les ventes inférieures à {$(seuil)}. Il compte peu, mais il illustre un phénomène général : sur une très petite vente, les postes fixes ou minimaux pèsent lourd. Une parcelle de 3 000 € supporte le minimum de CSI, le minimum ou le plafond des émoluments, le forfait de formalités et des débours qui ne baissent pas avec le prix. C’est pourquoi les frais d’une petite vente peuvent dépasser le quart du prix.</p>
+  <h2>Ce que la CSI n’est pas</h2>
+  <p>Elle n’est pas un impôt local : ni le département ni la commune ne la perçoivent ou n’en fixent le taux. Elle n’est pas soumise à la TVA. Et elle ne dépend pas de votre situation personnelle : primo-accédant, première propriété ou investisseur paient le même millième du prix.</p>
+</GuideLayout>

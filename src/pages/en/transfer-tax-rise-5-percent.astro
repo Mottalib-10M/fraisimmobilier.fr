@@ -1,0 +1,43 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, P, COUNT, tauxGlobalAncien, nom } from '../../lib/tables';
+import { src } from '../../lib/sources';
+const lang = 'en';
+const d = (x: number) => (x * (tauxGlobalAncien(5) - tauxGlobalAncien(4.5))) / 100;
+const a450 = COUNT.a450.map((x) => nom(x, lang)).join(', ');
+const faqs = [
+  { q: 'Since when has French transfer tax been 5%?', a: `The option exists for deeds signed from 1 April 2025, but each département chose its own start date by vote. Some applied 5% from April 2025, others a few months later. As of 1 June ${YEAR}, ${COUNT.zones5} tax areas apply it. The date that counts is the signing of the final deed before the notary, not the date of the preliminary contract.` },
+  { q: 'Is the 5% rate permanent?', a: 'No, it is temporary. Article 116 of the 2025 Finance Act limits it to deeds signed between 1 April 2025 and 31 March 2028. Unless a new law extends it, the ceiling goes back to 4.50% from 1 April 2028. A département may also reverse its decision earlier by a new vote, which the DGFiP would publish in its monthly table.' },
+  { q: 'How much does the increase cost on a €300,000 purchase?', a: `The overall rate goes from ${pct(tauxGlobalAncien(4.5), lang, 3)} to ${pct(tauxGlobalAncien(5), lang, 3)}, about 0.51 points. On €300,000 that is ${$(d(300000), lang)} of extra tax; on €200,000, ${$(d(200000), lang)}; on €500,000, ${$(d(500000), lang)}. The notary’s emoluments do not change: only the départemental tax and the collection fee that depends on it go up.` },
+  { q: 'My preliminary contract was signed before the increase: which rate applies?', a: 'The rate in force on the day the final deed is signed. Transfer tax becomes due on the deed that transfers ownership; the compromis is only a preliminary contract. If your département raised its rate in between, the sale bears 5%. Only a first-time buyer purchasing a main home escapes it, whatever the date.' },
+  { q: 'Which départements did not raise transfer tax?', a: `As of 1 June ${YEAR}, eleven départements still apply 4.50%: ${a450}. Indre stayed at 3.80%, the reference rate in article 1594 D, which it never raised. The DGFiP table is updated every month and this site uses the latest version available.` },
+  { q: 'Does the increase apply to land and commercial premises?', a: 'Yes, if the département voted it without distinction: the 5% rate covers all standard-rate purchases of real estate, including land, shops and offices. Only VAT-able sales, at the reduced rate, and purchases of a main home by a first-time buyer fall outside it.' },
+];
+---
+<GuideLayout lang={lang} id="hausse" breadcrumbLabel="The rise to 5%"
+  title={`Transfer tax rise to 5% in France: départements ${YEAR}`}
+  h1="The rise in French transfer tax to 5%: who applies it, what it costs, until when"
+  description={`French transfer tax at 5%: ${COUNT.zones5} tax areas apply it as of 1 June ${YEAR}, eleven stay at 4.50%. Extra cost on your price, first-time buyer exemption, end in 2028.`}
+  intro="A temporary option, voted by almost every département, that spares first-time buyers."
+  resume={`The 2025 Finance Act allowed French départements to raise their tax on property sales from 4.50% to 5% for deeds signed between 1 April 2025 and 31 March 2028. As of 1 June ${YEAR}, according to the DGFiP table, ${COUNT.zones5} tax areas apply it, eleven départements have stayed at 4.50% and Indre at 3.80%. With the municipal surcharge and the collection fee, the overall rate goes from ${pct(tauxGlobalAncien(4.5), lang, 3)} to ${pct(tauxGlobalAncien(5), lang, 3)} of the price. In practice the increase adds ${$(d(250000), lang)} of tax on a €250,000 resale purchase. A first-time buyer purchasing a main home is exempt and keeps paying 4.50%, with no income condition. Anyone buying a second home in France, including from abroad, pays the full 5% where it applies.`}
+  faqs={faqs}
+  related={[{ href: route('primo', lang), name: 'First-time buyers', description: 'The exemption and its conditions.' }, { href: route('taux450', lang), name: 'Départements at 4.50%', description: 'The eleven that did not raise it.' }, { href: route('dmto', lang), name: 'Transfer tax', description: 'The three taxes, the base.' }]}
+  sources={src(lang, 'dgfip_dmto', 'notaires_frais', 'impots_droits')}>
+  <MiniSim client:visible kind="hausse" lang={lang} href={route('home', lang)} />
+  <h2>What the law says</h2>
+  <p>Article 116 of Law no. 2025-127 of 14 February 2025, the 2025 Finance Act, added an option to the General Tax Code: for deeds signed between 1 April 2025 and 31 March 2028, a départemental council may raise its land publicity tax or registration duty to as much as 5%. The measure was designed to shore up départements’ finances after property sales slumped in 2023 and 2024. It leaves the municipal surcharge at {pct(P.dmto.taxe_communale, lang)}, but the State’s collection fee, a percentage of the départemental tax, rises with it automatically.</p>
+  <p>The text includes one exception: the new rate does not apply when the buyer is a first-time buyer purchasing a main home. The 2026 Finance Act clarified its scope without changing it, and the tax administration published its guidance in June {YEAR}. The definition is the one used for the zero-interest loan: not having owned your main home in the two years before the purchase.</p>
+  <h2>The extra cost by price</h2>
+  <ContentTable headers={['Resale price', 'Tax at 4.50%', 'Tax at 5%', 'Extra cost of the rise']} align={['r', 'r', 'r', 'r']} rows={[150000, 200000, 250000, 300000, 400000, 500000, 750000].map((x) => [$(x, lang), $(x * tauxGlobalAncien(4.5) / 100, lang), $(x * tauxGlobalAncien(5) / 100, lang), $(d(x), lang)])} />
+  <p>The extra cost is strictly proportional to the price: just over 51 euros per €10,000. In absolute terms it weighs more where prices are high, which explains why the big cities voted for it without hesitation. Relative to household savings, it weighs more on first-time buyers purchasing cheaper homes, which explains the exemption.</p>
+  <h2>Those who did not vote for it</h2>
+  <p>Eleven départements still apply 4.50%: {a450}. Their reasons vary: a stated wish to attract residents, refusal to raise local taxes, markets already under pressure in tourist areas. For a buyer hesitating between two neighbouring areas, the gap is not trivial. Between Alpes-Maritimes and Var, for instance, a €400,000 flat costs {$(d(400000), lang)} less tax on the Alpes-Maritimes side. The <a href={route('comparer', lang)}>comparison tool</a> works out this kind of gap.</p>
+  <h2>Before and after 31 March 2028</h2>
+  <p>The window closes on 31 March 2028. From 1 April 2028, unless Parliament extends it, the ceiling goes back to 4.50%. A buyer who could sign either side of that date would save the amount in the table above, provided the market and interest rates stay the same in the meantime, which is a fragile assumption. The date that counts is always that of the final deed.</p>
+  <h2>The first-time buyer exception in practice</h2>
+  <p>The buyer states their situation in the deed: the notary inserts a clause in which you declare that you have not owned your main home in the past two years and undertake to live in the property as your main home. No income or price ceiling applies. Where two people buy together and only one meets the condition, ask the notary how the deed allocates the rate between the buyers. The <a href={route('primo', lang)}>first-time buyer guide</a> covers these situations and the extra reduction voted by Savoie.</p>
+</GuideLayout>

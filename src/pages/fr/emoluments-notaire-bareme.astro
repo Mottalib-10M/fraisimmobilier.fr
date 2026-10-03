@@ -1,0 +1,42 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, P, emolumentsVente, tranchesRows } from '../../lib/tables';
+import { src } from '../../lib/sources';
+const lang = 'fr';
+const e200 = emolumentsVente(200000);
+const faqs = [
+  { q: 'Combien gagne le notaire sur une vente de 200 000 € ?', a: `${$(e200.ht, lang, 2)} hors taxes d’émoluments proportionnels, soit ${$(e200.ttc, lang, 2)} TTC, plus le forfait de formalités de ${$(P.emoluments.formalites_forfait_ht, lang, 2)} HT. C’est l’exemple officiel publié par service-public.fr. Sur ces sommes, le notaire paie ses salariés, ses locaux et ses assurances : ce n’est pas un bénéfice net. Les droits de mutation qu’il encaisse ne lui appartiennent pas.` },
+  { q: 'Les émoluments sont-ils les mêmes chez tous les notaires ?', a: 'Oui. Le tarif est réglementé par le code de commerce et s’impose à tous les offices de métropole. Choisir un notaire plutôt qu’un autre ne change pas les émoluments d’une vente. Seule la remise, facultative, peut créer un écart, à condition d’être affichée et accordée à tous les clients de l’étude de la même manière.' },
+  { q: 'Qui paie les émoluments, l’acheteur ou le vendeur ?', a: 'L’acheteur, sauf convention contraire dans l’acte, comme l’ensemble des frais d’acquisition. Quand chaque partie a son propre notaire, les deux se partagent les émoluments de l’acte sans que l’acheteur paie davantage : le tarif ne double pas. Le vendeur ne règle que les actes qui le concernent, comme la mainlevée d’une hypothèque.' },
+  { q: 'Y a-t-il un minimum d’émoluments pour une petite vente ?', a: `Oui : ${$(P.emoluments.minimum_ht)} HT. Mais les émoluments ne peuvent pas dépasser ${pct(P.emoluments.plafond_pourcentage_valeur, lang, 0)} de la valeur du bien, ce qui protège les ventes de très faible montant, comme une cave, une parcelle agricole ou des parties communes. Le forfait de formalités et les débours, eux, ne sont pas plafonnés, ce qui rend les petites ventes chères en proportion.` },
+  { q: 'Jusqu’à quand ce barème s’applique-t-il ?', a: 'Les taux actuels s’appliquent depuis le 1er janvier 2021 en métropole et depuis le 1er mars 2024 outre-mer. Service-public.fr indique des tarifs valables jusqu’au 29 février 2028 ; le tarif est révisé par arrêté des ministres de la Justice et de l’Économie après avis de l’Autorité de la concurrence. Ce site met ses paramètres à jour à chaque révision.' },
+  { q: 'Les émoluments sont-ils soumis à la TVA ?', a: `Oui, au taux de ${pct(P.emoluments.zones.metro.tva, lang, 0)} en métropole. Outre-mer, la TVA est de ${pct(P.emoluments.zones.gp.tva, lang, 1)} en Guadeloupe, en Martinique et à La Réunion, et ne s’applique pas en Guyane ni à Mayotte. C’est la même TVA que sur le forfait de formalités. Les droits de mutation, la contribution de sécurité immobilière et les débours n’en supportent pas.` },
+];
+---
+<GuideLayout lang={lang} id="emoluments" breadcrumbLabel="Émoluments du notaire"
+  title={`Émoluments du notaire ${YEAR} : barème par tranches et calcul`}
+  h1={`Émoluments du notaire en ${YEAR} : le barème réglementé, tranche par tranche`}
+  description={`Émoluments du notaire ${YEAR} : 3,870 % puis 0,799 % au-delà de 60 000 €, minimum de 90 €, plafond, TVA, formalités. Le calcul détaillé d’une vente de 200 000 €.`}
+  intro="La seule partie des frais qui rémunère vraiment le notaire, et elle ne se choisit pas."
+  resume={`Les émoluments sont la rémunération du notaire pour l’acte de vente. Leur montant est fixé par l’article A444-91 du code de commerce, identique dans toutes les études de métropole : ${pct(P.emoluments.zones.metro.taux[0], lang, 3)} sur la tranche du prix jusqu’à 6 500 €, ${pct(P.emoluments.zones.metro.taux[1], lang, 3)} de 6 500 à 17 000 €, ${pct(P.emoluments.zones.metro.taux[2], lang, 3)} de 17 000 à 60 000 € et ${pct(P.emoluments.zones.metro.taux[3], lang, 3)} au-delà, le tout hors taxes. Pour une vente de 200 000 €, cela fait ${$(e200.ht, lang, 2)} HT, soit ${$(e200.ttc, lang, 2)} avec la TVA de 20 %. S’y ajoute un forfait de formalités de ${$(P.emoluments.formalites_forfait_ht, lang, 2)} HT. Au total, la rémunération du notaire ne représente qu’environ 15 % des frais d’un achat dans l’ancien ; le reste est de l’impôt.`}
+  faqs={faqs}
+  related={[{ href: route('remise', lang), name: 'Remise sur les émoluments', description: 'Au plus 20 %, au-delà de 100 000 €.' }, { href: route('debours', lang), name: 'Débours et formalités', description: 'Les autres sommes du décompte.' }, { href: route('outremer', lang), name: 'Outre-mer', description: 'Un barème plus élevé, une autre TVA.' }]}
+  sources={src(lang, 'sp_frais_notaire', 'notaires_frais')}>
+  <MiniSim client:visible kind="emol" lang={lang} href={route('home', lang)} />
+  <h2>Le barème de la vente</h2>
+  <ContentTable headers={['Tranche du prix', 'Taux HT']} align={['l', 'r']} rows={tranchesRows(lang)} caption="Code de commerce, art. A444-91. Les taux s’appliquent tranche par tranche, comme un barème d’impôt sur le revenu." />
+  <p>Le calcul ne consiste pas à appliquer un taux unique au prix entier. Chaque tranche est taxée à son propre taux, puis les quatre montants s’additionnent. Pour 200 000 € : {$(6500 * 0.0387, lang, 2)} sur la première tranche, {$(10500 * 0.01596, lang, 2)} sur la deuxième, {$(43000 * 0.01064, lang, 2)} sur la troisième et {$(140000 * 0.00799, lang, 2)} sur les 140 000 € restants. L’essentiel des émoluments d’un achat courant provient donc de la dernière tranche, à {pct(P.emoluments.zones.metro.taux[3], lang, 3)}.</p>
+  <h2>Ce que coûte le notaire selon le prix</h2>
+  <ContentTable headers={['Prix', 'Émoluments HT', 'Émoluments TTC', 'Taux effectif TTC']} align={['r', 'r', 'r', 'r']} rows={[50000, 100000, 200000, 300000, 500000, 1000000].map((x) => { const e = emolumentsVente(x); return [$(x), $(e.ht, lang, 2), $(e.ttc, lang, 2), pct((e.ttc / x) * 100, lang, 2)]; })} />
+  <p>Le taux effectif décroît avec le prix et tend vers {pct(P.emoluments.zones.metro.taux[3] * 1.2, lang, 3)} TTC, celui de la dernière tranche. C’est l’inverse des droits de mutation, strictement proportionnels : plus le bien est cher, plus l’impôt pèse lourd dans les frais par rapport au notaire.</p>
+  <h2>Minimum, plafond et petites ventes</h2>
+  <p>Deux garde-fous encadrent le calcul. Les émoluments d’une vente ne peuvent pas être inférieurs à {$(P.emoluments.minimum_ht)} HT, ni supérieurs à {pct(P.emoluments.plafond_pourcentage_valeur, lang, 0)} de la valeur du bien. Le plafond protège les ventes symboliques : pour une parcelle vendue 500 €, le barème donnerait plus que le minimum, mais les émoluments sont ramenés à 50 € HT. Le calculateur applique les deux règles et l’indique sur la ligne des émoluments. Le guide <a href={route('garage', lang)}>garage et parking</a> montre leur effet sur un petit achat.</p>
+  <h2>Les émoluments de formalités</h2>
+  <p>À côté de l’émolument d’acte, le notaire perçoit des émoluments de formalités pour les démarches liées à la vente : demandes de pièces, publication au service de la publicité foncière, notifications. Une partie est forfaitisée pour les actes publiés, à {$(P.emoluments.formalites_forfait_ht, lang, 2)} HT selon l’article A444-171 du code de commerce ; d’autres formalités sont facturées à l’unité selon le dossier. Le calculateur retient le forfait ; le reste est compris dans les débours que vous pouvez ajuster.</p>
+  <h2>Émoluments et honoraires, deux choses distinctes</h2>
+  <p>Les émoluments rémunèrent les actes tarifés, dont la vente immobilière. Les honoraires rémunèrent les prestations dont le tarif n’est pas réglementé : une consultation juridique, un bail commercial, la vente d’un fonds de commerce, ou une promesse de vente signée devant le notaire. Leur montant se fixe par convention écrite avec le client. Un décompte de vente classique ne comporte pas d’honoraires ; s’il en contient, demandez à quelle prestation ils correspondent.</p>
+</GuideLayout>

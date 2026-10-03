@@ -1,0 +1,34 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import NotaireCalculator from '../../components/calc/NotaireCalculator';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, F, tauxGlobalAncien, tauxGlobalNeuf } from '../../lib/tables';
+import { src } from '../../lib/sources';
+const lang = 'fr';
+const part = F(90000, '44'), pro = F(90000, '44', 'neuf');
+const faqs = [
+  { q: 'Quels frais de notaire pour un terrain à bâtir ?', a: `Cela dépend du vendeur. Acheté à un particulier, un terrain supporte les droits de mutation de droit commun : sur 90 000 € en Loire-Atlantique, ${$(part.total)} de frais. Acheté à un lotisseur ou à un promoteur assujetti à la TVA, il relève du taux réduit et les frais tombent à ${$(pro.total)}. Le prix affiché dans ce second cas comprend la TVA.` },
+  { q: 'Pourquoi les frais d’un petit terrain dépassent-ils 8 % ?', a: 'Parce que les postes fixes, le forfait de formalités et les débours, ne baissent pas avec le prix, et qu’un terrain demande souvent des pièces supplémentaires : bornage, certificat d’urbanisme, servitudes. Sur une parcelle de 30 000 €, ces postes peuvent ajouter plusieurs points au taux des droits de mutation.' },
+  { q: 'Un terrain agricole ou de loisirs paie-t-il les mêmes droits ?', a: 'En principe oui, les droits de droit commun du département, puisqu’il n’est pas vendu par un assujetti à la TVA. Certains régimes spécifiques existent pour les biens ruraux, notamment au profit des jeunes agriculteurs ou en cas d’intervention de la SAFER, mais ils relèvent de conditions que le calculateur ne traite pas.' },
+  { q: 'La maison construite ensuite paie-t-elle des frais de notaire ?', a: 'Non. Un contrat de construction de maison individuelle n’est pas une vente immobilière : il ne supporte ni droits de mutation ni émoluments de vente. La TVA est comprise dans le prix de la construction. Les frais de notaire ne portent donc que sur le terrain, ce qui rend l’achat en deux temps moins coûteux en frais qu’une maison ancienne au même prix total.' },
+];
+---
+<GuideLayout lang={lang} id="terrain" breadcrumbLabel="Achat d’un terrain"
+  title={`Frais de notaire terrain ${YEAR} : particulier ou lotisseur`}
+  h1={`Frais de notaire pour un terrain en ${YEAR} : tout dépend de qui vend`}
+  description={`Frais de notaire d’un terrain ${YEAR} : droits de ${pct(tauxGlobalAncien(5), 'fr', 2)} acheté à un particulier, taxe de ${pct(tauxGlobalNeuf(), 'fr', 3)} acheté à un lotisseur assujetti. Calcul par département.`}
+  intro="Deux régimes pour un même terrain : la TVA décide."
+  resume={`Les frais de notaire d’un terrain à bâtir dépendent d’abord de la qualité du vendeur. Un terrain vendu par un particulier n’est pas soumis à la TVA : il supporte les droits de mutation de droit commun, ${pct(tauxGlobalAncien(5), lang, 3)} du prix dans les départements à 5 %, ${pct(tauxGlobalAncien(4.5), lang, 3)} à 4,50 % et ${pct(tauxGlobalAncien(3.8), lang, 3)} dans l’Indre. Un terrain vendu par un lotisseur ou un aménageur assujetti relève de la TVA immobilière et de la taxe réduite de ${pct(tauxGlobalNeuf(), lang, 3)}. Pour une parcelle de 90 000 € en Loire-Atlantique, les frais vont ainsi de ${$(pro.total)} à ${$(part.total)}. Les émoluments du notaire, eux, suivent le même barème dans les deux cas, et les petits prix rendent les postes fixes lourds en proportion. Choisissez « Ancien » ou « Neuf / TVA » dans le calculateur selon votre vendeur.`}
+  faqs={faqs}
+  related={[{ href: route('neuf', lang), name: 'Frais dans le neuf', description: 'Le taux réduit expliqué.' }, { href: route('garage', lang), name: 'Garage et parking', description: 'Quand les minimums jouent.' }, { href: route('departements', lang), name: 'Taux par département', description: 'Le taux de votre terrain.' }]}
+  sources={src(lang, 'dgfip_dmto', 'notaires_frais', 'sp_simulateur')}>
+  <div slot="tool" data-outil><NotaireCalculator client:load lang={lang} defaultPrix={90000} defaultDep="44" methodHref={route('method', lang)} /></div>
+  <h2>Particulier ou professionnel : les frais selon le prix</h2>
+  <ContentTable headers={['Prix du terrain', 'Vendu par un particulier', 'Vendu par un lotisseur (TVA)', 'Part du prix (particulier)']} align={['r', 'r', 'r', 'r']} rows={[30000, 50000, 75000, 90000, 120000, 180000].map((x) => { const a = F(x, '44'), b = F(x, '44', 'neuf'); return [$(x), $(a.total), $(b.total), pct(a.pourcentage)]; })} caption="Loire-Atlantique, département à 5 %, débours estimés à 500 €." />
+  <h2>Les pièces qui font varier les débours</h2>
+  <p>Un terrain demande souvent plus de vérifications qu’un appartement : certificat d’urbanisme pour connaître la constructibilité, plan de bornage pour fixer les limites, étude de sol dans les zones exposées au retrait-gonflement des argiles, servitudes de passage ou de réseaux. Une partie de ces documents est fournie par le vendeur, une autre commandée par le notaire et refacturée en débours. Saisissez dans les options avancées le montant annoncé par le notaire pour affiner le résultat.</p>
+  <h2>Terrain et maison : le calcul global</h2>
+  <p>Acheter un terrain puis faire construire coûte moins de frais de notaire que d’acheter une maison ancienne au même prix total, parce que la construction ne supporte aucun droit de mutation. Pour un projet de 300 000 € dont 90 000 € de terrain acheté à un particulier, les frais ne portent que sur ces 90 000 €. En revanche, la construction supporte la TVA, comprise dans le prix du constructeur, et des taxes d’urbanisme propres, comme la taxe d’aménagement.</p>
+</GuideLayout>

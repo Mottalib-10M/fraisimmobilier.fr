@@ -1,0 +1,49 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, P, F } from '../../lib/tables';
+import { src } from '../../lib/sources';
+const lang = 'fr';
+const f = F(180000, '75');
+const formTTC = P.emoluments.formalites_forfait_ht * 1.2;
+const faqs = [
+  { q: 'Que sont les débours du notaire ?', a: 'Les sommes que le notaire paie à des tiers pour votre compte et vous refacture à l’euro près, sans marge : frais d’obtention des documents d’urbanisme, état hypothécaire, extraits cadastraux, pièces demandées au syndic de copropriété, frais de géomètre ou d’envoi recommandé. Ils figurent sur une ligne distincte du décompte et doivent pouvoir être justifiés.' },
+  { q: 'Combien prévoir de débours pour un achat ?', a: `Aucun barème ne les fixe, puisqu’ils dépendent des pièces nécessaires au dossier. Le calculateur retient ${$(P.debours_defaut)} par défaut, une hypothèse de travail à remplacer par le chiffre de votre notaire. Une copropriété ancienne, une maison avec assainissement individuel ou un terrain à borner peuvent coûter davantage ; un appartement récent bien documenté, moins.` },
+  { q: 'Les débours sont-ils soumis à la TVA ?', a: 'Non, lorsque ce sont de vrais débours : des sommes avancées au nom et pour le compte du client, refacturées pour leur montant exact. Si le fournisseur a lui-même facturé la TVA, elle est incluse dans le montant remboursé. Les émoluments de formalités, eux, rémunèrent le notaire et supportent la TVA de 20 % en métropole.' },
+  { q: 'Qu’est-ce que le forfait de formalités ?', a: `Une partie des émoluments de formalités, forfaitisée par le code de commerce pour les actes publiés au service de la publicité foncière, comme une vente. Il s’élève à ${$(P.emoluments.formalites_forfait_ht, lang, 2)} HT, soit ${$(formTTC, lang, 2)} TTC en métropole. Il couvre une série de démarches standard ; les formalités supplémentaires propres au dossier sont facturées à part, selon le tarif.` },
+  { q: 'Pourquoi le notaire me rembourse-t-il de l’argent après la vente ?', a: 'Parce que la provision demandée avant la signature est arrondie au-dessus, pour couvrir des débours qui ne sont connus qu’en fin de dossier. Une fois l’acte publié et toutes les factures reçues, le notaire établit un compte définitif et vous reverse le solde. Le délai dépend du service de la publicité foncière, souvent plusieurs semaines à quelques mois.' },
+  { q: 'Puis-je contester des débours ?', a: 'Vous pouvez demander le détail et les justificatifs de chaque débours, que le notaire est tenu de fournir. En cas de désaccord persistant sur les frais, la chambre départementale des notaires peut être saisie, puis, le cas échéant, le médiateur du notariat. La plupart des écarts tiennent à une pièce imprévue : un certificat d’urbanisme, une servitude à vérifier, un document de copropriété manquant.' },
+];
+---
+<GuideLayout lang={lang} id="debours" breadcrumbLabel="Débours et formalités"
+  title={`Débours et formalités du notaire ${YEAR} : ce qu’ils couvrent`}
+  h1="Débours et formalités du notaire : les petites lignes du décompte, expliquées"
+  description={`Débours du notaire ${YEAR} : sommes avancées pour vous, sans TVA ni marge. Forfait de formalités de ${P.emoluments.formalites_forfait_ht.toLocaleString('fr-FR')} € HT. Exemples, provision, remboursement du trop-perçu.`}
+  intro="Les seules lignes des frais qui varient d’un dossier à l’autre pour un même prix."
+  resume={`Le décompte d’un achat immobilier comporte deux lignes que les simulateurs traitent souvent comme une seule. Les émoluments de formalités rémunèrent le notaire pour les démarches liées à la vente ; une partie est forfaitisée par le code de commerce à ${$(P.emoluments.formalites_forfait_ht, lang, 2)} HT, soit ${$(formTTC, lang, 2)} TTC en métropole. Les débours, eux, sont des sommes avancées pour votre compte à des tiers, refacturées sans marge : documents d’urbanisme, état hypothécaire, pièces du syndic, cadastre, géomètre. Aucun barème ne les fixe, ce qui explique les écarts entre deux devis pour le même prix. Le calculateur retient ${$(P.debours_defaut)} par défaut, une hypothèse à remplacer par le chiffre de votre notaire. Sur un achat de 180 000 € à Paris, formalités et débours représentent ${pct(((f.formalitesTTC + f.debours) / f.total) * 100, lang, 1)} des frais.`}
+  faqs={faqs}
+  related={[{ href: route('emoluments', lang), name: 'Émoluments du notaire', description: 'Le barème de l’acte de vente.' }, { href: route('csi', lang), name: 'Contribution de sécurité immobilière', description: '0,10 % pour la publicité foncière.' }, { href: route('home', lang), name: 'Calcul des frais de notaire', description: 'Saisissez vos débours dans les options.' }]}
+  sources={src(lang, 'notaires_frais', 'sp_frais_notaire')}>
+  <MiniSim client:visible kind="debours" lang={lang} href={route('home', lang)} />
+  <h2>Les débours les plus courants</h2>
+  <ContentTable headers={['Pièce ou démarche', 'Pourquoi le notaire en a besoin', 'Toujours nécessaire ?']} align={['l', 'l', 'l']} rows={[
+    ['État hypothécaire', 'Vérifier qu’aucune hypothèque ni saisie ne grève le bien', 'Oui'],
+    ['Documents d’urbanisme', 'Connaître les servitudes, le droit de préemption, les règles de construction', 'Oui'],
+    ['Extraits cadastraux', 'Identifier précisément les parcelles vendues', 'Oui'],
+    ['Pré-état daté et pièces du syndic', 'Charges, travaux votés, impayés de la copropriété', 'En copropriété'],
+    ['Plan de bornage, géomètre', 'Fixer les limites d’un terrain ou d’une division', 'Terrain, division'],
+    ['Courriers recommandés, notifications', 'Purger le droit de préemption, notifier le locataire', 'Selon le dossier'],
+  ]} />
+  <p>Cette liste n’a rien d’exhaustif : un bien en zone de protection patrimoniale, une servitude de passage ancienne ou un lot de copropriété non mis à jour peuvent demander des recherches supplémentaires. Le notaire refacture ce qu’il a réellement payé ; la règle est la même dans toutes les études.</p>
+  <h2>Le forfait de formalités, ce qu’il couvre</h2>
+  <p>Depuis la réforme du tarif, une partie des formalités accomplies à l’occasion d’un acte publié est rémunérée par un forfait unique, fixé par l’article A444-171 du code de commerce. Il évite de facturer à l’unité des dizaines de petites démarches standard : réquisitions, copies, transmissions. D’autres formalités restent tarifées une par une selon le tableau du code de commerce, lorsqu’elles sont propres au dossier. En outre-mer, ce site applique le forfait métropolitain et le signale, faute de barème de formalités publié à part par service-public.fr.</p>
+  <h2>Provision, compte définitif, remboursement</h2>
+  <p>Quelques jours avant la signature, le notaire vous envoie un appel de fonds : le solde du prix, la provision sur frais et, si vous empruntez, les frais de garantie. La provision dépasse volontairement les frais attendus. Après la signature, le notaire paie les droits au service de l’enregistrement, fait publier la vente, règle les débours au fur et à mesure des factures. Quand le dossier est clos, il établit un compte définitif poste par poste et vous rembourse le solde. Conservez ce document : il justifie les frais d’acquisition réels, utiles plus tard pour le calcul d’une plus-value.</p>
+  <h2>Les débours propres aux copropriétés</h2>
+  <p>Dans un immeuble en copropriété, une partie des débours tient aux documents du syndic. Avant le compromis, le vendeur remet un pré-état daté et les procès-verbaux des dernières assemblées générales ; avant l’acte, le notaire demande au syndic un état daté, qui fixe les sommes restant dues par le vendeur et celles qui seront à votre charge. Le coût de l’état daté est plafonné par la réglementation et payé par le vendeur, mais d’autres pièces peuvent être refacturées au dossier. Une copropriété dont les archives sont tenues avec soin coûte moins cher à documenter qu’un petit immeuble sans syndic professionnel.</p>
+  <h2>Comment lire les écarts entre deux devis</h2>
+  <p>Si deux estimations pour le même achat diffèrent, la différence vient presque toujours des débours ou des frais de garantie du prêt, rarement des droits ou des émoluments, qui sont fixés par la loi. Demandez le détail ligne par ligne : un devis qui omet les débours paraît moins cher mais réserve une surprise à la signature. Le calculateur vous permet de saisir les débours annoncés pour comparer à périmètre égal.</p>
+</GuideLayout>

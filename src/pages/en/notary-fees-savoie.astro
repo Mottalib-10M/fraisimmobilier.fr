@@ -1,0 +1,32 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import NotaireCalculator from '../../components/calc/NotaireCalculator';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, F, tauxGlobalAncien } from '../../lib/tables';
+import { src } from '../../lib/sources';
+const lang = 'en';
+const s = F(260000, '73'), p = F(260000, '73', 'ancien', 'primo'), f = F(260000, '73', 'ancien', 'premiere'), hs = F(260000, '74', 'ancien', 'premiere');
+const faqs = [
+  { q: 'What is the 4.00% rate in Savoie?', a: `A reduction voted by the départemental council for properties that are the buyer’s first property, under article 1594 F septies of the General Tax Code. It requires living in the home as a main residence for at least five years. The overall transfer tax rate then falls to ${pct(tauxGlobalAncien(4), lang, 3)}, the lowest in France after Indre.` },
+  { q: 'How much does a first buyer save in Savoie?', a: `On a €260,000 resale flat in Chambéry, fees fall from ${$(s.total, lang)} in the standard case to ${$(p.total, lang)} for a first-time buyer, and to ${$(f.total, lang)} with the “first property” reduction. The same situation in Haute-Savoie, where no reduction was voted, gives ${$(hs.total, lang)}.` },
+  { q: 'Does a flat in a ski resort qualify for the reduction?', a: 'Only if it becomes the buyer’s main home for five years and is their first property. A second home or a rental investment in a resort bears the 5% rate voted by the département, as in the rest of Savoie. The undertaking is written into the deed and can be checked.' },
+];
+---
+<GuideLayout lang={lang} id="savoie" breadcrumbLabel="Savoie"
+  title={`Notary fees in Savoie ${YEAR}: 4.00% for a first property`}
+  h1={`Notary fees in Savoie in ${YEAR}: 5% in general, 4.00% for a first property`}
+  description={`Notary fees in Savoie ${YEAR}: 5% rate, 4.50% for first-time buyers, 4.00% for a first property lived in for five years. Chambéry, Aix-les-Bains, resorts.`}
+  intro="The only département to have voted the “first property” reduction."
+  resume={`Savoie applies three transfer tax rates depending on the buyer’s situation, making it the most nuanced département in the DGFiP table of 1 June ${YEAR}. The standard case bears the 5% rate voted since the 2025 Finance Act. A first-time buyer purchasing a main home stays at 4.50%, as everywhere. And a buyer of a property that is their first property, who undertakes to live in it as a main home for five years, gets a 4.00% rate, voted by the départemental council under article 1594 F septies of the General Tax Code. For a €260,000 flat in Chambéry, fees thus fall from ${$(s.total, lang)} to ${$(f.total, lang)}. Choose “first property” in the calculator to apply it. Second homes in ski resorts do not qualify.`}
+  faqs={faqs}
+  related={[{ href: route('primo', lang), name: 'First-time buyers', description: 'The national rule.' }, { href: route('departements', lang), name: 'All départements', description: 'The full table.' }, { href: route('hausse', lang), name: 'The rise to 5%', description: 'The standard case in Savoie.' }]}
+  sources={src(lang, 'dgfip_dmto', 'impots_droits')}>
+  <div slot="tool" data-outil><NotaireCalculator client:load lang={lang} defaultDep="73" defaultPrix={260000} defaultSituation="premiere" methodHref={route('method', lang)} /></div>
+  <h2>Savoie’s three rates</h2>
+  <ContentTable headers={['Price', 'Standard case (5%)', 'First-time buyer (4.50%)', 'First property (4.00%)']} align={['r', 'r', 'r', 'r']} rows={[180000, 260000, 350000, 500000].map((x) => [$(x, lang), $(F(x, '73').total, lang), $(F(x, '73', 'ancien', 'primo').total, lang), $(F(x, '73', 'ancien', 'premiere').total, lang)])} caption="Resale, disbursements estimated at €500." />
+  <h2>The conditions</h2>
+  <p>The reduction targets the property that is the buyer’s first property, a notion distinct from that of first-time buyer, which is defined by not owning one’s main home for two years. It comes with an undertaking to live in the property as a main home, exclusively and continuously, for at least five years from the purchase. Breaking that undertaking without an accepted reason exposes the buyer to recovery of the tax difference. The notary checks the situation and writes the undertaking into the deed; have them confirm your eligibility before counting on the 4.00% rate.</p>
+  <p>Neighbouring Haute-Savoie had not voted a comparable reduction as of 1 June {YEAR}: a first buyer there pays 4.50% as a first-time buyer, 5% otherwise. For a household hesitating between Annecy and Aix-les-Bains, the fee difference is one more argument for the Savoie side.</p>
+</GuideLayout>

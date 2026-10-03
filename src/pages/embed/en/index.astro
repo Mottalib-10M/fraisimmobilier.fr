@@ -1,0 +1,20 @@
+---
+/** Page embarquable (iframe) : calculateur nu, sans navigation, lien de crédit visible. */
+import '../../../styles/global.css';
+import NotaireCalculator from '../../../components/calc/NotaireCalculator';
+import { SITE_URL } from '../../../data/site-config';
+const lang = 'en';
+---
+<!doctype html>
+<html lang={lang === 'fr' ? 'fr-FR' : 'en-FR'}>
+  <head>
+    <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{lang === 'fr' ? 'Calcul des frais de notaire – widget' : 'French notary fees calculator – widget'}</title>
+    <meta name="robots" content="noindex" />
+    <link rel="canonical" href={`${SITE_URL}/embed/${lang}/`} />
+  </head>
+  <body class="bg-white p-2 text-navy-900">
+    <NotaireCalculator client:load lang={lang} />
+    <p class="mt-2 text-center text-xs text-navy-500"><a href={`${SITE_URL}/${lang}/`} target="_blank" rel="noopener" class="hover:underline">fraisdenotaire-calcul.fr</a> · {lang === 'fr' ? 'calcul 100 % dans le navigateur' : '100% in your browser'}</p>
+  </body>
+</html>

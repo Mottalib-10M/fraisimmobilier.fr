@@ -1,0 +1,35 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import DonationCalculator from '../../components/calc/DonationCalculator';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, P } from '../../lib/tables';
+import { droitsDonation, emolumentsDonation } from '../../lib/engine/notaire';
+import { src } from '../../lib/sources';
+const lang = 'en';
+const D = P.donation;
+const e = droitsDonation(200000, 'enfant'), em = emolumentsDonation(200000);
+const faqs = [
+  { q: 'How much does a €200,000 gift to a child cost in France?', a: `After the ${$(D.abattements.enfant, lang)} allowance, the taxable part is €100,000 and gift tax comes to ${$(e.droits, lang)}, the exact example published by service-public.fr. On top come the notary’s emoluments, ${$(em.ttc, lang)} including VAT under the gift scale, and for real estate the land publicity tax, the land registry contribution and disbursements.` },
+  { q: 'How often is the French gift allowance renewed?', a: 'Every fifteen years. A gift made more than fifteen years after the previous one benefits from the full allowance again; in between, successive gifts between the same people add up and use the same allowance. That is why the calculator assumes the allowance has not been used in the last fifteen years.' },
+  { q: 'Does a gift between spouses pay tax in France?', a: `Yes, above the ${$(D.abattements.epoux, lang)} allowance, under a progressive scale specific to spouses and civil partners. This is not the case on death, where a surviving spouse is fully exempt. A €200,000 gift between spouses bears ${$(droitsDonation(200000, 'epoux').droits, lang)} of tax, against nothing if the same sum passes on death.` },
+  { q: 'Are gift emoluments the same as sale emoluments?', a: `No. The gift scale is higher: ${pct(D.emoluments_autres_donations[0], lang, 3)} on the first €6,500, then ${pct(D.emoluments_autres_donations[1], lang, 3)}, ${pct(D.emoluments_autres_donations[2], lang, 3)} and ${pct(D.emoluments_autres_donations[3], lang, 3)} above €60,000, excluding VAT. A gift of money made by notarial deed follows a reduced scale, lower still, which the calculator does not use.` },
+];
+---
+<GuideLayout lang={lang} id="donation" breadcrumbLabel="Gift (donation)"
+  title={`Notary fees on a gift in France ${YEAR}: tax and emoluments`}
+  h1={`French notary fees on a gift (donation) in ${YEAR}: gift tax and emoluments`}
+  description={`French notary fees on a gift ${YEAR}: €100,000 allowance per child, scales by relationship, notary emoluments. Instant calculator, official examples reproduced.`}
+  intro="A gift has neither sale transfer tax nor a purchase scale: it has its own."
+  resume={`The cost of a gift (donation) before a French notary has two main parts. Gift tax, first, calculated after an allowance that depends on the relationship with the donor: ${$(D.abattements.enfant, lang)} for a child, ${$(D.abattements.epoux, lang)} between spouses or civil partners (Pacs), ${$(D.abattements.petit_enfant, lang)} for a grandchild, ${$(D.abattements.frere_soeur, lang)} between siblings, ${$(D.abattements.neveu_niece, lang)} for a nephew or niece, renewable every fifteen years. A progressive scale then applies, from 5 to 45% in the direct line, or a flat 55 to 60% for distant relatives and non-relatives. The notary’s emoluments, second, follow a scale specific to gifts, higher than for sales. For €200,000 given to a child, gift tax comes to ${$(e.droits, lang)} and the emoluments to ${$(em.ttc, lang)} including VAT. The calculator below applies these rules to any amount and relationship, and the table compares the main cases side by side.`}
+  faqs={faqs}
+  related={[{ href: route('plusvalue', lang), name: 'Fees and capital gains', description: 'The price of a property received as a gift.' }, { href: route('emoluments', lang), name: 'Notary emoluments', description: 'The sale scale, for comparison.' }, { href: route('home', lang), name: 'Purchase fees calculator', description: 'For a purchase.' }]}
+  sources={src(lang, 'sp_donation', 'sp_faire_donation')}>
+  <div slot="tool" data-outil><DonationCalculator client:load lang={lang} /></div>
+  <h2>Gift tax by relationship and amount</h2>
+  <ContentTable headers={['Amount given', 'Child', 'Grandchild', 'Spouse or Pacs', 'Sibling', 'Nephew or niece']} align={['r', 'r', 'r', 'r', 'r', 'r']} rows={[50000, 100000, 150000, 200000, 300000, 500000].map((x) => [$(x, lang), $(droitsDonation(x, 'enfant').droits, lang), $(droitsDonation(x, 'petit_enfant').droits, lang), $(droitsDonation(x, 'epoux').droits, lang), $(droitsDonation(x, 'frere_soeur').droits, lang), $(droitsDonation(x, 'neveu_niece').droits, lang)])} caption="Allowance unused in the past fifteen years, no disability allowance. Scales from service-public.fr, page F14203." />
+  <h2>What the calculator applies</h2>
+  <p>The allowance for the relationship chosen, plus the specific {$(D.abattements.handicap, lang)} allowance if the recipient is disabled, which adds to the first. Then the scale: progressive in the direct line and between spouses, progressive in two brackets between siblings, a flat {pct(D.taux_neveu_niece, lang, 0)} for nephews, nieces and relatives up to the fourth degree, {pct(D.taux_autre, lang, 0)} beyond that or between unrelated people. The tax is rounded down to the euro, as in the service-public.fr examples our tests reproduce. Emoluments follow the “other gifts” scale on the official page about gifts.</p>
+  <p>It does not calculate the land publicity tax and the land registry contribution due on a gift of real estate, nor a gift of bare ownership, whose taxable value depends on the age of the usufructuary under the tax scale for usufruct. For these cases, the notary draws up a detailed statement. French gift tax may also interact with the rules of your home country if you live abroad.</p>
+</GuideLayout>

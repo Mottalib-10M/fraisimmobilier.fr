@@ -1,0 +1,45 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, P, F } from '../../lib/tables';
+import { src } from '../../lib/sources';
+const lang = 'en';
+const seuil = (P.csi.minimum * 100) / P.csi.taux;
+const f = F(250000, '75');
+const faqs = [
+  { q: 'What is the French land registry contribution (CSI)?', a: `A charge collected by the State when a deed is registered at the land registry (service de la publicité foncière), the record that makes a sale binding on everyone. For a sale it equals ${pct(P.csi.taux, lang)} of the price, with a minimum of ${$(P.csi.minimum, lang)}. On a €250,000 purchase it costs ${$(f.csi, lang)}, one of the smallest lines on the notary’s statement.` },
+  { q: 'Why is the CSI charged on top of transfer tax?', a: 'Because it pays for something different. Transfer tax taxes the change of ownership; the land registry contribution funds the public service that keeps the property register, checks deeds and issues mortgage searches. It replaced the former fee paid to the registrar of mortgages when that function was folded into the tax administration.' },
+  { q: 'Is the CSI the same on a new build?', a: `Yes. It is due on every registered sale, old or new, at the same ${pct(P.csi.taux, lang)} rate. Together with the emoluments and disbursements, it is one of the few items that does not fall when you buy new. On a €300,000 new flat it is still ${$(300000 * P.csi.taux / 100, lang)}.` },
+  { q: 'From what price does the €15 minimum apply?', a: `Below ${$(seuil, lang)}. At that price, ${pct(P.csi.taux, lang)} gives exactly ${$(P.csi.minimum, lang)}; below it, the minimum applies. It therefore concerns very small sales: a cheap parking space, a farm plot, a right over shared parts of a building. For a home, the CSI is always proportional to the price.` },
+  { q: 'Is the CSI due in Alsace and Moselle?', a: 'These three départements keep a land book (livre foncier), inherited from local law, instead of the property register used in the rest of France. Registration of sales there follows its own rules, managed by the courts rather than the land registry services. The calculator applies the contribution everywhere to be safe; for a property in Bas-Rhin, Haut-Rhin or Moselle, ask the notary for the detail of registration costs.' },
+  { q: 'Does a mortgage also trigger a CSI?', a: 'Yes. Registering a mortgage or a lender’s lien is also recorded and bears its own land registry contribution, calculated on the amount secured at a rate different from that of the sale. It forms part of the loan guarantee costs, which the acquisition cost calculator does not include.' },
+];
+---
+<GuideLayout lang={lang} id="csi" breadcrumbLabel="Land registry contribution"
+  title={`Land registry contribution France (CSI) ${YEAR}: 0.10%`}
+  h1="The land registry contribution (CSI): the small line that funds France’s property register"
+  description={`French land registry contribution (CSI) ${YEAR}: 0.10% of the price, at least €15, due on resale and new builds alike. What it pays for, worked out on your price.`}
+  intro="It is only a thousandth of the price, but it is why a French sale is binding on everyone."
+  resume={`The contribution de sécurité immobilière (CSI) is collected by the French State each time a deed of sale is registered at the land registry. Its rate is ${pct(P.csi.taux, lang)} of the price, with a minimum of ${$(P.csi.minimum, lang)}, according to the figures published by Notaires de France. It is due on resale and new builds alike, in every département, and does not depend on your situation or the local tax rate. On a €250,000 purchase it costs ${$(f.csi, lang)} out of ${$(f.total, lang)} in total fees, barely more than 1% of the bill. It funds the keeping of the property register, the checking of deeds and the mortgage searches that guarantee a property is not burdened without your knowledge. It plays the role that title registration and searches play in many English-speaking countries.`}
+  faqs={faqs}
+  related={[{ href: route('home', lang), name: 'Notary fees calculator', description: 'The CSI with every other item.' }, { href: route('debours', lang), name: 'Disbursements and formalities', description: 'The other small lines.' }, { href: route('garage', lang), name: 'Garage and parking', description: 'When the minimum comes into play.' }]}
+  sources={src(lang, 'notaires_frais', 'sp_frais_notaire')}>
+  <MiniSim client:visible kind="csi" lang={lang} href={route('home', lang)} />
+  <h2>The amount by price</h2>
+  <ContentTable headers={['Price', 'CSI', 'Share of total fees (resale, 5%)']} align={['r', 'r', 'r']} rows={[5000, 15000, 100000, 250000, 500000, 1000000].map((x) => { const g = F(x, '75'); return [$(x, lang), $(g.csi, lang), pct((g.csi / g.total) * 100, lang, 2)]; })} />
+  <h2>What the land registry is for</h2>
+  <p>In France, a property sale is binding on third parties only once it is registered in the property register (fichier immobilier), kept by the land registry services of the tax administration. This register lets a bank check that a property is not already mortgaged, lets a buyer make sure the seller really is the owner, and lets the notary clear any charges before the sale. The land registry contribution funds this service.</p>
+  <p>Before 2013, this payment took the form of a fee paid to the registrar of mortgages (conservateur des hypothèques), a public officer paid per deed. When the registries were folded into the State tax services, the contribution replaced that fee. It is calculated on the price in the deed, like transfer tax, but at a far lower rate that is the same everywhere.</p>
+  <h2>The service you get in return</h2>
+  <p>In practice the contribution funds three operations the notary triggers for you. Before the sale, a mortgage search lists the mortgages, liens, seizures and easements recorded against the property; that document guarantees the seller can sell free of charges, or allows the seller’s loan to be repaid from the price. After signing, the notary files a copy of the deed with the land registry, which checks it and enters it in the register. Finally, the registry keeps that entry, available to future buyers, lenders and notaries. Without this chain nothing would protect a buyer against a second sale of the same property or a hidden mortgage.</p>
+  <p>That is also why the contribution is due on new builds as on resale homes: whatever tax falls on the sale, registration in the property register is the same.</p>
+  <h2>CSI and the minimum: very small sales</h2>
+  <p>The {$(P.csi.minimum, lang)} minimum only applies to sales below {$(seuil, lang)}. It matters little, but it illustrates a general point: on a very small sale, fixed or minimum items weigh heavily. A €3,000 plot bears the minimum CSI, the minimum or capped emoluments, the flat formalities fee and disbursements that do not fall with the price. That is why fees on a small sale can exceed a quarter of the price.</p>
+  <h2>The CSI on your notary’s statement</h2>
+  <p>On the statement the notary sends after the sale, the land registry contribution usually appears among the taxes, next to the transfer tax, under its French name “contribution de sécurité immobilière”. It is paid by the notary to the land registry when the deed is filed, out of the deposit you transferred before signing. If you also took out a mortgage, a second contribution appears on the loan guarantee part of the statement, calculated on the amount secured. Neither is negotiable and neither depends on the notary you choose. Checking it is simple: multiply the price in the deed by one thousandth, and compare with the line on the statement.</p>
+  <h2>What the CSI is not</h2>
+  <p>It is not a local tax: neither the département nor the municipality receives it or sets its rate. It bears no VAT. And it does not depend on your personal situation: first-time buyer, first property or investor, everyone pays the same thousandth of the price.</p>
+</GuideLayout>

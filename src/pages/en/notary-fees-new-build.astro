@@ -1,0 +1,34 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import NotaireCalculator from '../../components/calc/NotaireCalculator';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, F, P, tauxGlobalNeuf } from '../../lib/tables';
+import { src } from '../../lib/sources';
+const lang = 'en';
+const n = F(280000, '75', 'neuf'), a = F(280000, '75');
+const faqs = [
+  { q: 'What are notary fees on a new-build home in France?', a: `Between 2 and 3% of the price, against 7 to 8% on a resale. On a €280,000 new flat, the calculator gives ${$(n.total, lang)}: ${$(n.droits, lang)} of land publicity tax at the reduced rate of ${pct(tauxGlobalNeuf(), lang, 3)}, ${$(n.emoluments.ttc, lang)} of emoluments including VAT, the flat formalities fee, the land registry contribution and the disbursements.` },
+  { q: 'Is a home under five years old always “new” for French fees?', a: 'No. The reduced rate depends on VAT, and so on the seller. A home completed less than five years ago and resold by a VAT-registered professional remains subject to VAT and the reduced rate. The same home resold by a private individual who lived in it is not subject to VAT: its buyer pays standard transfer tax, as on a resale.' },
+  { q: 'Does the département change the fees on a new build?', a: `Not the tax: the reduced ${pct(P.dmto.taux_reduit_neuf, lang)} rate and its collection fee are identical in all 101 départements, since départements cannot change it. Only overseas France differs, through its emolument scale and VAT. That is why the calculator on this page ignores first-time buyer status, which has no effect on new builds.` },
+  { q: 'Do notary fees on a new build include the property VAT?', a: 'No. French property VAT, usually 20%, is included in the sale price advertised by the developer. Notary fees come on top of this price including VAT. Only the notary’s emoluments and formalities bear their own VAT, the same as on a resale.' },
+];
+---
+<GuideLayout lang={lang} id="neuf" breadcrumbLabel="New-build fees"
+  title={`Notary fees on a new build in France ${YEAR}: reduced rate`}
+  h1={`French notary fees on a new build in ${YEAR}: the reduced-rate calculator`}
+  description={`French notary fees on a new build ${YEAR}: reduced tax of ${pct(tauxGlobalNeuf(), 'en', 3)} instead of transfer tax, 2 to 3% of the price. Calculator, VAT conditions, gap with resale homes.`}
+  intro="The same notary, the same scale, but a tax nearly nine times lower."
+  resume={`On a new build in France, notary fees fall to 2 or 3% of the price because the sale is subject to French property VAT: it does not pay standard transfer tax but a land publicity tax of ${pct(P.dmto.taux_reduit_neuf, lang)}, plus a ${pct(P.dmto.frais_assiette_taux_reduit, lang)} collection fee, ${pct(tauxGlobalNeuf(), lang, 3)} of the price in every département. The notary’s emoluments, the flat formalities fee, the land registry contribution and the disbursements remain those of an ordinary sale. On a €280,000 new flat, the fees come to ${$(n.total, lang)}, against ${$(a.total, lang)} for a resale property at the same price in a 5% département. The calculator below is set to this regime; it covers homes sold by a developer, off-plan purchases and resales by a professional within five years of completion. Note that “new” is a tax status here, not an age.`}
+  faqs={faqs}
+  related={[{ href: route('vefa', lang), name: 'Off-plan (VEFA)', description: 'Stage payments and timeline.' }, { href: route('terrain', lang), name: 'Building land', description: 'Developer or private seller.' }, { href: route('ancien', lang), name: 'Resale fees', description: 'The full rate and how it varies.' }]}
+  sources={src(lang, 'notaires_frais', 'sp_frais_notaire')}>
+  <div slot="tool" data-outil><NotaireCalculator client:load lang={lang} defaultType="neuf" lockType defaultPrix={280000} methodHref={route('method', lang)} /></div>
+  <h2>New build and resale at the same price</h2>
+  <ContentTable headers={['Price', 'New build', 'Resale (5%)', 'Gap']} align={['r', 'r', 'r', 'r']} rows={[150000, 200000, 280000, 350000, 500000].map((x) => { const a1 = F(x, '75', 'neuf'), b1 = F(x, '75'); return [$(x, lang), $(a1.total, lang), $(b1.total, lang), $(b1.total - a1.total, lang)]; })} />
+  <h2>What makes a purchase “new” for French tax</h2>
+  <p>Three cases fall under the reduced rate: buying a new home from a developer once the building is completed; buying off-plan (VEFA); and a resale by a VAT-registered professional of a building completed less than five years earlier. Building land bought from a VAT-registered seller, such as a land developer, is added to these. A private individual reselling their three-year-old house is not VAT-registered: the sale is taxed as a resale. The seller determines the regime, not the age of the property.</p>
+  <h2>What a new build does not change</h2>
+  <p>The notary applies the same emolument scale: on €280,000, {$(n.emoluments.ttc, lang)} including VAT on a new build as on a resale. The land registry contribution stays at {pct(P.csi.taux, lang)} of the price. Loan guarantee costs apply on the same terms. On a VAT-able sale, the notary’s pay thus becomes the largest item in the fees, ahead of the tax: the exact opposite of a resale.</p>
+</GuideLayout>

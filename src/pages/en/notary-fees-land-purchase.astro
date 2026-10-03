@@ -1,0 +1,34 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import NotaireCalculator from '../../components/calc/NotaireCalculator';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, F, tauxGlobalAncien, tauxGlobalNeuf } from '../../lib/tables';
+import { src } from '../../lib/sources';
+const lang = 'en';
+const part = F(90000, '44'), pro = F(90000, '44', 'neuf');
+const faqs = [
+  { q: 'What are notary fees on building land in France?', a: `It depends on the seller. Bought from a private individual, a plot bears standard transfer tax: on €90,000 in Loire-Atlantique, ${$(part.total, lang)} of fees. Bought from a VAT-registered land developer, it falls under the reduced rate and fees drop to ${$(pro.total, lang)}. In that second case the advertised price includes VAT.` },
+  { q: 'Why do fees on a small plot exceed 8%?', a: 'Because the fixed items, the formalities fee and the disbursements, do not fall with the price, and a plot often needs extra documents: boundary marking, a planning certificate, easements. On a €30,000 plot, these items can add several percentage points to the transfer tax rate.' },
+  { q: 'Does farmland or leisure land pay the same tax?', a: 'In principle yes, the département’s standard transfer tax, since it is not sold by a VAT-registered seller. Specific schemes exist for rural property, notably for young farmers or when the SAFER rural land agency intervenes, but they depend on conditions the calculator does not cover.' },
+  { q: 'Does the house built afterwards pay notary fees?', a: 'No. A contract to build a detached house (CCMI) is not a property sale: it bears neither transfer tax nor sale emoluments. VAT is included in the construction price. Notary fees therefore only apply to the land, which makes a two-step purchase cheaper in fees than an old house at the same overall price.' },
+];
+---
+<GuideLayout lang={lang} id="terrain" breadcrumbLabel="Buying land"
+  title={`Notary fees on land in France ${YEAR}: seller or developer`}
+  h1={`French notary fees on a plot of land in ${YEAR}: it all depends on who sells`}
+  description={`French notary fees on building land ${YEAR}: ${pct(tauxGlobalAncien(5), 'en', 2)} transfer tax from a private seller, ${pct(tauxGlobalNeuf(), 'en', 3)} from a VAT-registered developer. Calculator by département.`}
+  intro="Two regimes for the same plot: VAT decides."
+  resume={`Notary fees on a plot of building land in France depend first on who is selling. A plot sold by a private individual is not subject to VAT: it bears standard transfer tax, ${pct(tauxGlobalAncien(5), lang, 3)} of the price in 5% départements, ${pct(tauxGlobalAncien(4.5), lang, 3)} at 4.50% and ${pct(tauxGlobalAncien(3.8), lang, 3)} in Indre. A plot sold by a VAT-registered land developer (lotisseur) falls under French property VAT and the reduced tax of ${pct(tauxGlobalNeuf(), lang, 3)}. For a €90,000 plot in Loire-Atlantique, fees therefore range from ${$(pro.total, lang)} to ${$(part.total, lang)}. The notary’s emoluments follow the same scale in both cases, and low prices make the fixed items heavy in proportion. Choose “Resale” or “New / VAT” in the calculator depending on your seller. Ask the seller whether they are VAT-registered before you sign the preliminary contract.`}
+  faqs={faqs}
+  related={[{ href: route('neuf', lang), name: 'New-build fees', description: 'The reduced rate explained.' }, { href: route('garage', lang), name: 'Garage and parking', description: 'When minimums apply.' }, { href: route('departements', lang), name: 'Rates by département', description: 'The rate for your plot.' }]}
+  sources={src(lang, 'dgfip_dmto', 'notaires_frais', 'sp_simulateur')}>
+  <div slot="tool" data-outil><NotaireCalculator client:load lang={lang} defaultPrix={90000} defaultDep="44" methodHref={route('method', lang)} /></div>
+  <h2>Private seller or developer: fees by price</h2>
+  <ContentTable headers={['Plot price', 'Sold by a private individual', 'Sold by a developer (VAT)', 'Share of price (private)']} align={['r', 'r', 'r', 'r']} rows={[30000, 50000, 75000, 90000, 120000, 180000].map((x) => { const a = F(x, '44'), b = F(x, '44', 'neuf'); return [$(x, lang), $(a.total, lang), $(b.total, lang), pct(a.pourcentage, lang)]; })} caption="Loire-Atlantique, 5% département, disbursements estimated at €500." />
+  <h2>Documents that drive the disbursements</h2>
+  <p>A plot often needs more checks than a flat: a planning certificate (certificat d’urbanisme) to confirm it can be built on, a boundary plan to fix its limits, a soil survey in areas exposed to clay shrinkage, rights of way or utility easements. Some documents are supplied by the seller, others ordered by the notary and charged as disbursements. Enter the amount quoted by the notary in the advanced options to refine the result.</p>
+  <h2>Land and house: the overall calculation</h2>
+  <p>Buying a plot and building costs less in notary fees than buying an old house at the same total price, because construction bears no transfer tax. For a €300,000 project including €90,000 of land bought from a private seller, the fees apply only to that €90,000. Construction does bear VAT, included in the builder’s price, and specific planning taxes such as the development tax (taxe d’aménagement).</p>
+</GuideLayout>

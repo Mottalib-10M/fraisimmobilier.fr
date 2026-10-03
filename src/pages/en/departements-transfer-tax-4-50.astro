@@ -1,0 +1,32 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import NotaireCalculator from '../../components/calc/NotaireCalculator';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, F, COUNT, tauxGlobalAncien } from '../../lib/tables';
+import { src } from '../../lib/sources';
+const lang = 'en';
+const ref = F(250000, '75');
+const faqs = [
+  { q: 'Which French départements stayed at 4.50% in 2026?', a: `As of 1 June 2026, according to the DGFiP table: ${COUNT.a450.map((d) => d.en).join(', ')}. They did not use the option to raise their rate to 5% created by the 2025 Finance Act. Indre, at 3.80%, is lower still.` },
+  { q: 'Does a first-time buyer gain anything in these départements?', a: 'No. The first-time buyer advantage consists in escaping the 5% increase; where it was not voted, everyone already pays 4.50%. A first-time buyer there pays exactly the same tax as any other buyer, and as much as in a 5% département where they would benefit from the exemption.' },
+  { q: 'Could these départements move to 5%?', a: 'Yes, until 31 March 2028, by a vote of the départemental council. The increase would then apply to deeds signed from the date of entry into force it sets. This site follows every update of the DGFiP table; check the date shown at the top of the page if your signing is far off.' },
+];
+---
+<GuideLayout lang={lang} id="taux450" breadcrumbLabel="Départements at 4.50%"
+  title={`Transfer tax at 4.50% in France ${YEAR}: the 11 départements`}
+  h1={`The French départements still at 4.50% transfer tax in ${YEAR}`}
+  description={`French transfer tax at 4.50% in ${YEAR}: the eleven départements that did not vote the 5% rise. Notary fees in each, saving compared with the others, calculator.`}
+  intro="Eleven départements out of 101 did not vote the increase."
+  resume={`Since April 2025, French départements may raise their transfer tax from 4.50% to 5%. As of 1 June ${YEAR}, the DGFiP table shows that eleven have not: Hautes-Alpes, Alpes-Maritimes, Ardèche, Charente, Drôme, Lozère, Oise, Hautes-Pyrénées, Saône-et-Loire, Guadeloupe and Mayotte. Their overall transfer tax stays at ${pct(tauxGlobalAncien(4.5), lang, 3)}, against ${pct(tauxGlobalAncien(5), lang, 3)} elsewhere, a saving of about 0.51% of the price for a buyer who is not a first-time buyer. On a €250,000 resale property, fees there are ${$(ref.total - F(250000, '06').total, lang)} lower than in a 5% département. The table below gives the fees in each; the overseas départements appear with their own emolument scale. The calculator below lets you test any of them. The calculator below is set to Drôme, one of the eleven, and accepts any other département.`}
+  faqs={faqs}
+  related={[{ href: route('nice', lang), name: 'Nice and Alpes-Maritimes', description: 'The biggest market at 4.50%.' }, { href: route('indre', lang), name: 'Indre, 3.80%', description: 'Lower still.' }, { href: route('hausse', lang), name: 'The rise to 5%', description: 'What the others voted.' }]}
+  sources={src(lang, 'dgfip_dmto', 'impots_droits')}>
+  <div slot="tool" data-outil><NotaireCalculator client:load lang={lang} defaultDep="26" defaultPrix={250000} methodHref={route('method', lang)} /></div>
+  <h2>The eleven départements and their fees</h2>
+  <ContentTable headers={['No.', 'Département', 'Fees on €250,000', 'Saving against a 5% département']} align={['l', 'l', 'r', 'r']} rows={COUNT.a450.map((d) => { const f = F(250000, d.id); return [d.code, d.en, $(f.total, lang), $(ref.total - f.total, lang)]; })} caption="Resale, standard case, disbursements estimated at €500. Overseas: own emolument scale and reduced or no VAT." />
+  <h2>Very different profiles</h2>
+  <p>The list mixes Alpine and tourist départements, rural areas and commuter markets. Alpes-Maritimes, the most populous of the group, shows the largest gap in absolute terms because prices there are high. Oise, bordering Val-d’Oise, offers a lower rate a few kilometres from the Île-de-France region, entirely at 5%. In Guadeloupe and Mayotte, the transfer tax advantage combines with an emolument scale higher than in mainland France, so total fees remain above those of a mainland département at the same rate.</p>
+  <p>Hautes-Pyrénées has also voted a 3.80% rate for block sales with a tenant’s right of first refusal, a case specific to buildings converted into co-ownership by a landlord. The calculator applies the standard 4.50% rate, which covers almost all sales.</p>
+</GuideLayout>

@@ -1,0 +1,41 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { F, $, pct, P, tauxGlobalAncien, exempleRows } from '../../lib/tables';
+import { src } from '../../lib/sources';
+const lang = 'fr';
+const m = F(180000, '59'), r = F(180000, '59', 'neuf');
+const faqs = [
+  { q: 'Quel pourcentage de frais de notaire dans l’ancien ?', a: `Entre 7 % et 8 % du prix dans un département à 5 %, un peu moins à 4,50 %, autour de 6,7 % dans l’Indre. Sur 180 000 € dans le Nord, le calculateur donne ${$(m.total)}, soit ${pct(m.pourcentage)}. Le pourcentage monte sur les petits prix, à cause des postes fixes, et descend légèrement sur les gros, sans jamais passer sous le taux des droits de mutation.` },
+  { q: 'Qu’appelle-t-on un logement ancien pour les frais de notaire ?', a: 'Tout logement dont la vente n’est pas soumise à la TVA immobilière. En pratique : un bien achevé depuis plus de cinq ans, ou un bien récent vendu par un particulier qui n’est pas assujetti à la TVA. Une maison de quatre ans revendue par son premier propriétaire est donc « ancienne » pour les droits de mutation, même si elle est neuve aux yeux de tous.' },
+  { q: 'Les frais dans l’ancien sont-ils négociables ?', a: 'La part fiscale ne l’est pas. Les émoluments du notaire non plus, à une exception près : au-delà de 100 000 €, le notaire peut accorder une remise d’au plus 20 % sur la part des émoluments calculée sur la fraction du prix qui dépasse ce seuil. Ce qui se négocie vraiment, c’est le prix lui-même, la prise en charge de l’agence et la liste des meubles.' },
+  { q: 'Faut-il prévoir des travaux dans le calcul des frais ?', a: 'Non. Les travaux que vous ferez après l’achat ne supportent pas les droits de mutation. Seuls comptent le prix stipulé et les charges que vous prenez en plus au profit du vendeur. Les travaux financés par un prêt augmentent en revanche les frais de garantie de ce prêt, hypothèque ou privilège de prêteur de deniers, qui sont une autre ligne du budget.' },
+  { q: 'Les frais de notaire sont-ils plus élevés pour une maison que pour un appartement ?', a: 'Non, à prix égal. Le barème des émoluments et le taux des droits ne distinguent pas maison et appartement. Les débours, en revanche, varient : une copropriété demande les documents du syndic, une maison isolée un bornage ou des diagnostics d’assainissement non collectif. L’écart se compte en dizaines ou centaines d’euros, pas en points de pourcentage.' },
+  { q: 'Pourquoi mon notaire me demande-t-il plus que le calculateur ?', a: 'Parce qu’il demande une provision, volontairement arrondie au-dessus, qui couvre aussi les frais de garantie du prêt, les états hypothécaires et des débours qui ne sont connus qu’en fin de dossier. Le décompte définitif, envoyé après la publication de la vente, solde les comptes ; le trop-perçu vous est remboursé.' },
+];
+---
+<GuideLayout lang={lang} id="ancien" breadcrumbLabel="Logement ancien"
+  title={`Frais de notaire ancien ${YEAR} : 7 à 8 % du prix, détail`}
+  h1={`Frais de notaire dans l’ancien en ${YEAR} : d’où viennent les 7 à 8 %`}
+  description={`Frais de notaire dans l’ancien ${YEAR} : droits de mutation de ${pct(tauxGlobalAncien(5), 'fr', 2)}, émoluments, CSI, débours. Exemples de 100 000 à 500 000 €, calcul par département.`}
+  intro="Un logement « ancien » pour le fisc n’a pas d’âge : c’est une vente sans TVA."
+  resume={`Dans l’ancien, les frais de notaire représentent 7 à 8 % du prix dans la plupart des départements, parce que les droits de mutation y sont au taux plein : ${pct(tauxGlobalAncien(5), lang, 3)} du prix dans les zones qui ont voté 5 %, ${pct(tauxGlobalAncien(4.5), lang, 3)} à 4,50 % et ${pct(tauxGlobalAncien(3.8), lang, 3)} dans l’Indre. Sur un appartement de 180 000 € à Lille, le total atteint ${$(m.total)}, dont ${$(m.droits)} d’impôt et ${$(m.emoluments.ttc)} d’émoluments TTC pour le notaire. Est « ancien » tout bien dont la vente n’est pas soumise à la TVA : un logement de plus de cinq ans, ou un logement récent revendu par un particulier. Le même appartement acheté neuf à un promoteur ne coûterait que ${$(r.total)} de frais.`}
+  faqs={faqs}
+  related={[{ href: route('home', lang), name: 'Calcul des frais de notaire', description: 'Le détail exact pour votre achat.' }, { href: route('neuf', lang), name: 'Frais dans le neuf', description: 'Le taux réduit et ses conditions.' }, { href: route('mobilier', lang), name: 'Déduire les meubles', description: 'Un levier légal, à manier avec prudence.' }]}
+  sources={src(lang, 'dgfip_dmto', 'sp_frais_notaire', 'notaires_frais')}>
+  <MiniSim client:visible kind="ancien" lang={lang} href={route('home', lang)} />
+  <h2>Exemples dans un département à 5 %</h2>
+  <ContentTable headers={['Prix', 'Droits de mutation', 'Émoluments et formalités TTC', 'CSI et débours', 'Total', 'Part du prix']} align={['r', 'r', 'r', 'r', 'r', 'r']} rows={exempleRows(lang, '59', [100000, 150000, 180000, 250000, 350000, 500000])} />
+  <h2>Pourquoi l’ancien coûte plus cher en frais</h2>
+  <p>La différence avec le neuf ne vient pas du notaire. Son barème est le même pour les deux : {pct(P.emoluments.zones.metro.taux[0], lang, 3)} sur les premiers 6 500 €, puis des tranches dégressives jusqu’à {pct(P.emoluments.zones.metro.taux[3], lang, 3)} au-delà de 60 000 €. Elle vient de l’impôt : une vente d’ancien supporte les droits d’enregistrement de droit commun, alors qu’une vente de neuf, déjà taxée par la TVA immobilière, n’acquitte qu’une taxe de publicité foncière réduite. Le législateur évite ainsi de faire payer deux fois un impôt sur la même transaction.</p>
+  <p>C’est pourquoi l’écart entre neuf et ancien est presque constant en points : environ cinq points et demi du prix. À 180 000 €, il représente {$(m.total - r.total)}. Il ne suffit pourtant pas à rendre le neuf moins cher : le prix au mètre carré y est souvent supérieur, et la TVA est incluse dans ce prix.</p>
+  <h2>Le calendrier d’une vente dans l’ancien</h2>
+  <p>Les frais se paient en une fois, mais ils se préparent tout au long de la vente. À la signature du compromis, l’acheteur verse en général un dépôt de garantie de 5 à 10 % du prix, qui s’imputera sur le prix ; les frais de notaire ne sont pas encore dus. Pendant les deux à trois mois qui suivent, le notaire purge le droit de préemption de la commune, interroge le service de la publicité foncière sur les hypothèques, réunit les documents d’urbanisme et ceux du syndic : ce sont les débours. Quelques jours avant la signature de l’acte authentique, il adresse un appel de fonds qui couvre le solde du prix et la provision sur frais. Après la signature, l’acte est publié ; le décompte définitif suit.</p>
+  <h2>Les postes qui varient d’un dossier à l’autre</h2>
+  <p>Trois éléments font varier les frais dans l’ancien pour un même prix. Le département, d’abord, qui fixe le taux des droits : c’est l’objet du <a href={route('departements', lang)}>tableau des 101 départements</a>. Votre situation, ensuite : un primo-accédant qui achète sa résidence principale échappe à la hausse à 5 %. La présentation du prix, enfin : meubles listés à part, commission d’agence à la charge de l’acquéreur. Le reste, émoluments, formalités, contribution de sécurité immobilière, ne dépend que du prix.</p>
+  <h2>Ce que le calculateur ne compte pas</h2>
+  <p>Les frais de garantie du prêt immobilier, qui ne sont pas des frais d’acquisition : hypothèque, privilège de prêteur de deniers ou caution d’un organisme spécialisé. Ils s’ajoutent au budget si vous empruntez. Les frais de copropriété réglés au prorata le jour de la vente, ni la taxe foncière remboursée au vendeur pour la fin de l’année, qui sont des régularisations entre les parties. Et les honoraires libres que le notaire peut facturer pour une prestation non tarifée, comme la négociation immobilière lorsqu’il trouve lui-même l’acheteur.</p>
+</GuideLayout>

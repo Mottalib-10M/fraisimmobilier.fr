@@ -1,0 +1,51 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, P, F } from '../../lib/tables';
+import { src } from '../../lib/sources';
+const lang = 'en';
+const f = F(180000, '75');
+const formTTC = P.emoluments.formalites_forfait_ht * 1.2;
+const faqs = [
+  { q: 'What are French notary disbursements (débours)?', a: 'Sums the notary pays to third parties on your behalf and passes on to you to the euro, with no mark-up: fees for planning documents, the mortgage search, cadastral extracts, documents requested from the co-ownership managing agent, surveyor fees or recorded-delivery letters. They appear on a separate line of the statement and must be justifiable.' },
+  { q: 'How much should I budget for disbursements?', a: `No scale fixes them, since they depend on the documents your file needs. The calculator uses ${$(P.debours_defaut, lang)} by default, a working assumption to replace with your notary’s figure. An old co-ownership, a house with a septic tank or a plot that needs boundary marking may cost more; a recent, well-documented flat, less.` },
+  { q: 'Is VAT charged on disbursements?', a: 'Not on genuine disbursements: sums advanced in the client’s name and on their behalf, passed on at their exact amount. If the supplier charged VAT, it is included in the amount reimbursed. Formalities emoluments, on the other hand, pay the notary and bear VAT at 20% in mainland France.' },
+  { q: 'What is the flat formalities fee?', a: `Part of the formalities emoluments, set as a flat amount by the Commercial Code for deeds registered at the land registry, such as a sale. It is ${$(P.emoluments.formalites_forfait_ht, lang, 2)} excluding VAT, or ${$(formTTC, lang, 2)} with VAT in mainland France. It covers a series of standard steps; extra formalities specific to the file are charged separately under the tariff.` },
+  { q: 'Why does the notary refund money after the sale?', a: 'Because the deposit requested before signing is rounded up to cover disbursements only known at the end of the file. Once the deed is registered and all invoices are in, the notary draws up a final account and pays you the balance. The timing depends on the land registry, often several weeks to a few months.' },
+  { q: 'Can I challenge disbursements?', a: 'You can ask for the detail and supporting documents for each disbursement, which the notary must provide. If a disagreement over fees persists, the départemental chamber of notaries can be contacted, then the notarial mediator if needed. Most differences come from an unexpected document: a planning certificate, an easement to check, a missing co-ownership paper.' },
+];
+---
+<GuideLayout lang={lang} id="debours" breadcrumbLabel="Disbursements and formalities"
+  title={`Notary disbursements in France ${YEAR}: formalities explained`}
+  h1="French notary disbursements and formalities: the small lines of the statement, explained"
+  description={`French notary disbursements ${YEAR}: money advanced for you, with no VAT or mark-up. Flat formalities fee of €339.58 excl. VAT. Deposit, refund of the surplus.`}
+  intro="The only lines of the fees that vary from one file to another at the same price."
+  resume={`The statement for a French property purchase contains two lines that simulators often lump together. Formalities emoluments pay the notary for the steps linked to the sale; part of them is a flat fee set by the Commercial Code at ${$(P.emoluments.formalites_forfait_ht, lang, 2)} excluding VAT, or ${$(formTTC, lang, 2)} with VAT in mainland France. Disbursements (débours) are sums advanced on your behalf to third parties and passed on without mark-up: planning documents, the mortgage search, co-ownership papers, the land register, a surveyor. No scale fixes them, which explains why two quotes for the same price can differ. The calculator uses ${$(P.debours_defaut, lang)} by default, an assumption to replace with your notary’s figure. On a €180,000 purchase in Paris, formalities and disbursements make up ${pct(((f.formalitesTTC + f.debours) / f.total) * 100, lang, 1)} of the fees.`}
+  faqs={faqs}
+  related={[{ href: route('emoluments', lang), name: 'Notary emoluments', description: 'The scale for the deed of sale.' }, { href: route('csi', lang), name: 'Land registry contribution', description: '0.10% for registration.' }, { href: route('home', lang), name: 'Notary fees calculator', description: 'Enter your disbursements in the options.' }]}
+  sources={src(lang, 'notaires_frais', 'sp_frais_notaire')}>
+  <MiniSim client:visible kind="debours" lang={lang} href={route('home', lang)} />
+  <h2>The most common disbursements</h2>
+  <ContentTable headers={['Document or step', 'Why the notary needs it', 'Always needed?']} align={['l', 'l', 'l']} rows={[
+    ['Mortgage search (état hypothécaire)', 'Check that no mortgage or seizure burdens the property', 'Yes'],
+    ['Planning documents', 'Know the easements, the pre-emption right, building rules', 'Yes'],
+    ['Cadastral extracts', 'Identify exactly which plots are sold', 'Yes'],
+    ['Co-ownership documents', 'Service charges, approved works, arrears of the building', 'In a co-ownership'],
+    ['Boundary plan, surveyor', 'Fix the boundaries of a plot or a subdivision', 'Land, subdivision'],
+    ['Recorded letters, notifications', 'Clear the pre-emption right, notify a tenant', 'Depends on the file'],
+  ]} />
+  <p>This list is not exhaustive: a property in a heritage protection area, an old right of way or a co-ownership lot that has not been updated may require extra searches. The notary passes on what was actually paid; the rule is the same at every office.</p>
+  <h2>What the flat formalities fee covers</h2>
+  <p>Since the tariff reform, part of the formalities carried out for a registered deed is paid by a single flat fee, set by article A444-171 of the Commercial Code. It avoids charging dozens of small standard steps one by one: requisitions, copies, transmissions. Other formalities remain charged individually under the Commercial Code table when they are specific to the file. Overseas, this site applies the mainland flat fee and flags it, as service-public.fr publishes no separate overseas scale for it.</p>
+  <h2>The co-ownership disbursements</h2>
+  <p>In a building held in co-ownership (copropriété), part of the disbursements relates to the managing agent’s documents. Before the preliminary contract, the seller provides a pre-statement and the minutes of the last general meetings; before the deed, the notary asks the managing agent for a statement of sums owed (état daté), which fixes what the seller still owes and what will fall to you. The cost of the état daté is capped by regulation and paid by the seller, but other documents may be charged to the file. A co-ownership with well-kept records costs less to document than a small building without a professional managing agent.</p>
+  <h2>Disbursements when you buy from abroad</h2>
+  <p>Buying from abroad does not change the nature of disbursements, but it can add a few items. A power of attorney drawn up outside France may need to be certified or apostilled, and documents in a foreign language may have to be translated by a sworn translator. These costs are not regulated by the notary tariff: ask for an estimate at the start. International bank transfers also take longer, so send the funds well before the signing date, as the notary cannot sign until the money has reached the office account.</p>
+  <h2>Deposit, final account, refund</h2>
+  <p>A few days before signing, the notary sends a call for funds: the balance of the price, the fee deposit and, if you borrow, the guarantee costs. The deposit deliberately exceeds the expected fees. After signing, the notary pays the tax to the registration office, has the sale registered, and settles disbursements as invoices arrive. When the file is closed, a final account is drawn up item by item and the balance refunded. Keep this document: it proves your actual acquisition costs, which will be useful later for a capital gains calculation.</p>
+  <h2>How to read differences between two quotes</h2>
+  <p>If two estimates for the same purchase differ, the gap almost always comes from disbursements or loan guarantee costs, rarely from the tax or emoluments, which are fixed by law. Ask for a line-by-line breakdown: a quote that leaves out disbursements looks cheaper but holds a surprise on signing day. The calculator lets you enter the disbursements quoted so you can compare like with like.</p>
+</GuideLayout>

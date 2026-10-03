@@ -1,0 +1,50 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { F, $, pct, P, COUNT, tauxGlobalAncien, tauxGlobalNeuf } from '../../lib/tables';
+import { src } from '../../lib/sources';
+const lang = 'fr';
+const t5 = tauxGlobalAncien(5), t45 = tauxGlobalAncien(4.5), t38 = tauxGlobalAncien(3.8);
+const f = F(300000, '13');
+const faqs = [
+  { q: 'Droits de mutation et frais de notaire, est-ce la même chose ?', a: `Non. Les droits de mutation sont un impôt, la plus grosse partie des frais de notaire. Sur un achat ancien de 300 000 € dans les Bouches-du-Rhône, ils pèsent ${$(f.droits)} sur ${$(f.total)} de frais au total. Le reste rémunère le notaire (émoluments et formalités), finance la publicité foncière (contribution de sécurité immobilière) et rembourse les débours.` },
+  { q: 'Qui fixe le taux des droits de mutation ?', a: `Le conseil départemental, dans les limites fixées par le code général des impôts : le taux de référence de l’article 1594 D est de 3,80 %, les départements peuvent le porter à 4,50 % et, pour les actes signés du 1er avril 2025 au 31 mars 2028, jusqu’à 5 %. La taxe communale de ${pct(P.dmto.taxe_communale)} et les frais d’assiette de l’État s’y ajoutent sans que le département puisse les modifier.` },
+  { q: 'Les droits de mutation se paient-ils sur le prix avec ou sans agence ?', a: 'Sur le prix stipulé dans l’acte et les charges qui l’augmentent. Si la commission d’agence est à la charge de l’acquéreur et figure à part dans le mandat et l’acte, elle n’entre pas dans l’assiette. Si elle est incluse dans un prix « frais d’agence inclus » payé au vendeur, elle supporte les droits. La différence se chiffre en centaines d’euros sur un achat moyen.' },
+  { q: 'Pourquoi le taux global n’est-il pas un chiffre rond ?', a: `Parce que les frais d’assiette sont calculés sur la seule taxe départementale : ${pct(P.dmto.frais_assiette_droit_commun)} de 5 % font 0,1185 point. Ajoutés aux 5 % et aux ${pct(P.dmto.taxe_communale)} de la commune, ils donnent ${pct(t5, lang, 4)}. À 4,50 %, le total est de ${pct(t45, lang, 5)} ; à 3,80 %, de ${pct(t38, lang, 5)}.` },
+  { q: 'Un logement neuf paie-t-il des droits de mutation ?', a: `Pas au taux de droit commun. Une vente soumise à la TVA immobilière supporte une taxe de publicité foncière de 0,70 %, augmentée de ${pct(P.dmto.frais_assiette_taux_reduit)} de frais d’assiette, soit ${pct(tauxGlobalNeuf(), lang, 3)} du prix. C’est ce qui explique l’écart de frais entre neuf et ancien : les émoluments du notaire, eux, sont les mêmes.` },
+  { q: 'Peut-on payer les droits de mutation en plusieurs fois ?', a: 'Non. Le notaire les encaisse le jour de la signature dans le cadre de la provision sur frais, puis les verse au service de l’enregistrement. Le paiement fractionné ou différé que prévoit le code général des impôts concerne d’autres droits, notamment les successions, et non les ventes immobilières. Ils doivent donc être financés par l’apport ou par le prêt.' },
+];
+---
+<GuideLayout lang={lang} id="dmto" breadcrumbLabel="Droits de mutation"
+  title={`Droits de mutation ${YEAR} : taux par département et calcul`}
+  h1={`Droits de mutation ${YEAR} : taux, calcul et part dans les frais de notaire`}
+  description={`Droits de mutation ${YEAR} : taxe départementale à 5 %, 4,50 % ou 3,80 %, taxe communale, frais d’assiette. Calcul instantané sur votre prix et votre département.`}
+  intro="L’impôt qui fait l’essentiel des frais de notaire, et le seul poste qui change d’un département à l’autre."
+  resume={`Les droits de mutation à titre onéreux (DMTO) représentent environ 80 % des frais de notaire dans l’ancien. Ils additionnent trois prélèvements : la taxe départementale, dont le taux est voté par chaque département (5 % dans ${COUNT.zones5} zones au 1er juin ${YEAR}, 4,50 % dans ${COUNT.a450.length} départements, 3,80 % dans l’Indre) ; la taxe communale additionnelle, fixée à ${pct(P.dmto.taxe_communale)} ; et les frais d’assiette et de recouvrement perçus par l’État, égaux à ${pct(P.dmto.frais_assiette_droit_commun)} de la taxe départementale. Le taux global atteint ainsi ${pct(t5, lang, 3)} dans un département à 5 %. Sur un appartement ancien de 300 000 € à Marseille, cela fait ${$(f.droits)} d’impôt. Les ventes soumises à la TVA, dans le neuf, paient à la place une taxe réduite de ${pct(tauxGlobalNeuf(), lang, 3)}.`}
+  faqs={faqs}
+  related={[{ href: route('home', lang), name: 'Calcul des frais de notaire', description: 'Tous les postes, votre département.' }, { href: route('hausse', lang), name: 'Hausse à 5 %', description: 'Qui l’a votée, jusqu’à quand.' }, { href: route('departements', lang), name: 'Taux par département', description: 'Le tableau des 101 départements.' }]}
+  sources={src(lang, 'dgfip_dmto', 'notaires_frais', 'impots_droits')}>
+  <MiniSim client:visible kind="droits" lang={lang} href={route('home', lang)} />
+  <h2>Trois taxes dans un seul chiffre</h2>
+  <p>Sur le décompte du notaire, les droits de mutation apparaissent souvent en une ligne. Ils réunissent pourtant trois bénéficiaires. Le département encaisse la part principale : c’est l’une de ses ressources majeures, et c’est pourquoi son produit suit de près le nombre de ventes immobilières sur son territoire. La commune reçoit la taxe additionnelle de {pct(P.dmto.taxe_communale)}, sauf exceptions locales rarissimes : au 1er juin {YEAR}, seules Lamentin en Guadeloupe et Tsingoni à Mayotte ont réduit leur taux. L’État, enfin, prélève des frais d’assiette et de recouvrement pour le travail de ses services.</p>
+  <ContentTable headers={['Composante', 'Bénéficiaire', 'Taux', 'Sur 300 000 € (Bouches-du-Rhône)']} align={['l', 'l', 'r', 'r']} rows={[
+    ['Taxe départementale', 'Département', pct(f.tauxDep), $(f.droitsDepartement)],
+    ['Taxe communale additionnelle', 'Commune', pct(P.dmto.taxe_communale), $(f.droitsCommune)],
+    ['Frais d’assiette et de recouvrement', 'État', `${pct(P.dmto.frais_assiette_droit_commun)} de la taxe départementale`, $(f.droitsAssiette)],
+    ['Total des droits de mutation', '', pct(f.tauxDroits, lang, 4), $(f.droits)],
+  ]} />
+  <h2>Ce qui entre dans l’assiette, et ce qui en sort</h2>
+  <p>Les droits se calculent sur le prix exprimé dans l’acte, augmenté des charges que l’acheteur prend en plus et qui profitent au vendeur. Plusieurs éléments en sortent, à condition d’être correctement présentés. Le mobilier vendu avec le logement, d’abord : une cuisine équipée, de l’électroménager, des meubles, listés et estimés à leur valeur réelle, ne sont pas des immeubles et ne supportent pas l’impôt immobilier. La commission de l’agence, ensuite, lorsque le mandat la met à la charge de l’acquéreur : elle rémunère un service rendu à l’acheteur et non le prix du bien. Le guide sur les <a href={route('agence', lang)}>frais d’agence</a> chiffre cet écart, celui sur les <a href={route('mobilier', lang)}>meubles</a> ses limites.</p>
+  <p>À l’inverse, certaines sommes s’ajoutent au prix : une rente viagère capitalisée, une dette du vendeur reprise par l’acheteur, des travaux que l’acheteur s’engage à payer pour le compte du vendeur. Le notaire les identifie lors de la rédaction de l’acte ; elles sont rares dans une vente ordinaire entre particuliers.</p>
+  <h2>Le taux départemental, une décision politique</h2>
+  <p>Chaque année, les conseils départementaux délibèrent sur leur taux. La DGFiP publie ensuite le tableau des taux applicables, mis à jour chaque mois sur impots.gouv.fr, que les notaires appliquent à la date de signature de l’acte authentique. C’est cette date qui compte, pas celle du compromis : une vente promise en mars et signée en juin supporte le taux de juin. Le calculateur de ce site utilise le tableau du 1er juin {YEAR}.</p>
+  <p>Le taux de référence de 3,80 %, que les départements pouvaient déjà porter à 4,50 %, peut être relevé jusqu’à 5 % pour les actes signés entre le 1er avril 2025 et le 31 mars 2028. Cette faculté, ouverte par l’article 116 de la loi de finances pour 2025, a été utilisée par presque tous les départements. Elle comporte une exception de taille : elle ne s’applique pas au primo-accédant qui achète sa résidence principale, qui reste donc à 4,50 %. Voir le guide <a href={route('hausse', lang)}>hausse à 5 %</a> et celui consacré au <a href={route('primo', lang)}>primo-accédant</a>.</p>
+  <h2>Taux globaux selon le département</h2>
+  <ContentTable headers={['Taux départemental', 'Taux global', 'Droits sur 200 000 €', 'Droits sur 400 000 €']} align={['r', 'r', 'r', 'r']} rows={[5, 4.5, 3.8].map((x) => [pct(x), pct(tauxGlobalAncien(x), lang, 3), $(200000 * tauxGlobalAncien(x) / 100), $(400000 * tauxGlobalAncien(x) / 100)])} />
+  <h2>Quand les droits sont-ils réduits ?</h2>
+  <p>Hors du neuf, plusieurs régimes allègent les droits. Les acquisitions de logements par des organismes HLM, les rachats de logements de copropriétés en difficulté ou certaines opérations en outre-mer bénéficient d’exonérations que chaque département choisit d’appliquer ou non ; le tableau de la DGFiP en donne la liste pour chacun. Pour un particulier, les cas utiles sont plus simples : primo-accédant, première propriété en Savoie, ventes par lots avec droit de préemption du locataire dans les Hautes-Pyrénées, abattement voté par le Calvados sur certaines acquisitions. Le calculateur applique les trois premiers ; pour l’abattement du Calvados, dont le champ est limité, il vous invite à interroger le notaire.</p>
+  <p>Un rachat de soulte après divorce, une cession de parts de société civile immobilière ou une vente en viager obéissent à des règles distinctes, que le calculateur ne traite pas : le notaire calcule alors un droit de partage ou un droit de cession de parts.</p>
+</GuideLayout>

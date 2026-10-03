@@ -1,0 +1,47 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, F } from '../../lib/tables';
+import { src } from '../../lib/sources';
+const lang = 'en';
+const f = F(240000, '59');
+const faqs = [
+  { q: 'Does the seller pay any notary fees in France?', a: 'Not the acquisition costs, which fall on the buyer under article 1593 of the Civil Code unless the contract says otherwise. The seller does pay what concerns them: releasing a mortgage still registered against the property, the compulsory surveys, the statement of sums owed requested from the co-ownership managing agent, and any capital gains tax, which the notary deducts from the price.' },
+  { q: 'Can the seller agree to pay the notary fees?', a: 'Yes, the Civil Code rule can be set aside by contract: this is called a sale “acte en main”. The price is usually increased accordingly. The split must be written into the deed; ask the notary to set out the overall price and the base on which the tax will be calculated.' },
+  { q: 'Who pays when buyer and seller each have their own notary?', a: 'The buyer pays the same fees as with a single notary. The two offices share the emoluments for the deed under the profession’s rules, at no extra cost to anyone. Each party can therefore choose their notary freely, which is often recommended when the seller is a professional or close to the other party’s notary.' },
+  { q: 'Are French notary fees tax-deductible?', a: 'Not for the purchase of your main home. For a rental investment, the treatment depends on the tax regime: in some cases they can be counted as expenses or depreciated, in others not. On resale, they increase the purchase price used to calculate the taxable capital gain, at their actual amount or through a flat 7.5% of the purchase price.' },
+  { q: 'What happens to the fees if the sale falls through?', a: 'Transfer tax is only due if the final deed is signed. If the sale fails before that, for example because a loan is refused within the period of the condition in the preliminary contract, you pay no acquisition costs. The notary may charge some disbursements already incurred to prepare the file, and any registration of a promise of sale.' },
+  { q: 'Why call them “notary fees” if the State keeps most of the money?', a: `Out of habit: the notary collects everything in a single transfer and passes it on afterwards. On a €240,000 purchase in Nord, ${$(f.partEtat, lang)} goes to the State and local authorities as transfer tax, land registry contribution and VAT, and ${$(f.partNotaire, lang)} pays the notary before VAT. The rest, ${$(f.debours, lang)}, reimburses disbursements.` },
+];
+---
+<GuideLayout lang={lang} id="quipaie" breadcrumbLabel="Who pays the fees?"
+  title={`Who pays notary fees in France? Buyer, seller, State ${YEAR}`}
+  h1="Who pays French notary fees, and where every euro goes"
+  description={`Who pays notary fees in France in ${YEAR}: the buyer, unless agreed otherwise. What the seller pays, acte en main sales, two notaries, the State’s share in euros.`}
+  intro="The buyer pays, the State collects, the notary receives a minority share."
+  resume={`French acquisition costs are paid by the buyer: that is the rule in article 1593 of the Civil Code, which the contract may set aside with a clause to the contrary, known as an “acte en main” sale. The seller pays what concerns them: releasing their mortgage, the compulsory surveys (diagnostics), the co-ownership statement of sums owed and any capital gains tax. Using two notaries, one for each party, costs the buyer nothing more: the offices share the emoluments. As for where the money goes, it often surprises newcomers: on a €240,000 purchase in Lille, ${$(f.partEtat, lang)} out of ${$(f.total, lang)} goes to the State, the département and the municipality, ${pct((f.partEtat / f.total) * 100, lang, 0)} of the fees. The notary keeps ${$(f.partNotaire, lang)} before VAT for the work.`}
+  faqs={faqs}
+  related={[{ href: route('home', lang), name: 'Notary fees calculator', description: 'The exact split for your purchase.' }, { href: route('emoluments', lang), name: 'Notary emoluments', description: 'What really goes to the notary.' }, { href: route('plusvalue', lang), name: 'Fees and capital gains', description: 'What happens to the fees on resale.' }]}
+  sources={src(lang, 'sp_frais_notaire', 'notaires_frais', 'dgfip_dmto')}>
+  <MiniSim client:visible kind="quipaie" lang={lang} href={route('home', lang)} />
+  <h2>Where every euro goes</h2>
+  <ContentTable headers={['Recipient', 'What it receives', 'Amount (€240,000, Nord)']} align={['l', 'l', 'r']} rows={[
+    ['Département', 'Départemental tax', $(f.droitsDepartement, lang)],
+    ['Municipality', 'Surcharge', $(f.droitsCommune, lang)],
+    ['State', 'Collection fee, CSI, VAT on emoluments and formalities', $(f.droitsAssiette + f.csi + f.emoluments.tva + f.formalitesTTC - f.formalitesHT, lang)],
+    ['Notary', 'Emoluments and formalities before VAT', $(f.partNotaire, lang)],
+    ['Third parties (disbursements)', 'Documents, surveyor, managing agent…', $(f.debours, lang)],
+  ]} />
+  <h2>What the buyer pays, what the seller pays</h2>
+  <p>The buyer pays the acquisition costs: transfer tax, the emoluments for the deed of sale, formalities, the land registry contribution and the disbursements linked to the sale. If they borrow, they also pay the costs of the loan guarantee. The seller, for their part, pays for releasing the mortgage or lender’s lien still registered against the property, the technical surveys required by law, the co-ownership statement drawn up by the managing agent, and capital gains tax where it is due. The notary calculates that tax and deducts it from the sale price before paying the balance to the seller.</p>
+  <p>The agency commission follows its own logic, set by the mandate. It may be payable by either party; payable by the buyer, it reduces transfer tax, as the guide to <a href={route('agence', lang)}>agency fees</a> explains.</p>
+  <h2>The “acte en main” sale</h2>
+  <p>In an acte en main sale, the seller takes on the acquisition costs and the buyer pays an overall price. The formula is mostly seen with new builds, where developers offer to pay the notary fees as a sales argument. Between private individuals it is rare. If you negotiate one, ask the notary to state in the deed the price of the property, the amount of costs taken on and the base used for the tax, so that everyone knows exactly what they are paying.</p>
+  <h2>One notary or two</h2>
+  <p>Both buyer and seller may choose their notary. If each appoints one, the deed is signed in the presence of both, or remotely by power of attorney, and the emoluments are shared between the offices. The cost to the buyer does not change. This option is useful when a party wants independent advice, for example when facing a professional seller, or when buying from abroad and wanting a notary used to working with foreign clients.</p>
+  <h2>When the money changes hands</h2>
+  <p>The buyer transfers the funds to the notary’s account, held at the Caisse des dépôts, before signing. The notary then pays the tax to the registration office, settles the disbursements, pays the price to the seller after deducting what they owe, and keeps the emoluments. The final statement lets you check every movement.</p>
+</GuideLayout>

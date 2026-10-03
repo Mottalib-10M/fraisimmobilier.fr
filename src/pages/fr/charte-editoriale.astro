@@ -1,0 +1,21 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import { CONTACT_EMAIL, REVIEW_CYCLE_MONTHS, LAST_UPDATED } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { displayDate } from '../../lib/format';
+const lang = 'fr';
+---
+<PageLayout title="Charte éditoriale – frais de notaire calcul" description="Comment les taux et barèmes de ce site sont vérifiés, à quelle fréquence, comment une erreur est corrigée et ce que nous nous interdisons. Éditeur indépendant du notariat." lang={lang} noindex={true} breadcrumbs={[{ label: 'Charte éditoriale' }]} showAuthor={false}>
+  <div class="prose prose-slate max-w-none">
+    <h1>Charte éditoriale</h1>
+    <h2>Sources</h2>
+    <p>Nous n’utilisons que des sources officielles : textes et tableaux de l’administration fiscale (impots.gouv.fr, BOFiP), fiches de service-public.fr, publications de Notaires de France pour le tarif. Un article de presse ou de blog n’est jamais une source de chiffre. Chaque page cite les sources qu’elle utilise.</p>
+    <h2>Vérification et mise à jour</h2>
+    <p>Les taux départementaux sont contrôlés à chaque publication mensuelle du tableau de la DGFiP ; le tarif des notaires à chaque révision par arrêté. Une revue complète des paramètres a lieu au moins tous les {REVIEW_CYCLE_MONTHS} mois. La date de mise à jour affichée en haut et en bas de chaque page est celle de la dernière vérification.</p>
+    <h2>Corrections</h2>
+    <p>Toute erreur signalée à <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> est vérifiée sur la source ; si elle est confirmée, le paramètre est corrigé, les tests sont complétés et la date de mise à jour change. Une erreur relevée dans une source officielle est documentée sur la page <a href={route('method', lang)}>méthodologie</a>.</p>
+    <h2>Indépendance</h2>
+    <p>Le site n’est lié à aucune étude notariale, banque, courtier ou agence. Il ne collecte pas de contacts pour les revendre. Une éventuelle publicité est signalée comme telle et n’est jamais placée au-dessus du calculateur.</p>
+    <p class="text-sm text-navy-500">Dernière mise à jour : {displayDate(LAST_UPDATED, 'fr-FR')}.</p>
+  </div>
+</PageLayout>

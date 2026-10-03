@@ -1,0 +1,52 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, F, P, tauxGlobalAncien } from '../../lib/tables';
+import { economieMobilier } from '../../lib/engine/notaire';
+import { src } from '../../lib/sources';
+const lang = 'fr';
+const base = F(350000, '92');
+const primo = F(350000, '92', 'ancien', 'primo');
+const meubles = economieMobilier(350000, 10000, '92');
+const agence = F(367500, '92');
+const remise = F(350000, '92', 'ancien', 'standard', { remisePct: 20 });
+const neuf = F(350000, '92', 'neuf');
+const faqs = [
+  { q: 'Quel est le levier qui fait le plus baisser les frais de notaire ?', a: `Acheter dans le neuf, où la taxe réduite divise les frais par trois : sur 350 000 € dans les Hauts-de-Seine, ${$(neuf.total)} au lieu de ${$(base.total)}. Dans l’ancien, le levier le plus fort est le statut de primo-accédant, qui économise ${$(base.droits - primo.droits)} au même prix, suivi de la commission d’agence à la charge de l’acquéreur et de la liste des meubles.` },
+  { q: 'Négocier le prix réduit-il les frais de notaire ?', a: 'Oui, mécaniquement : les droits de mutation, les émoluments et la contribution de sécurité immobilière sont proportionnels au prix. Chaque tranche de 10 000 € gagnée dans la négociation fait économiser un peu plus de 700 € de frais dans un département à 5 %. C’est souvent le levier le plus rentable, parce qu’il agit sur le prix et sur les frais à la fois.' },
+  { q: 'Peut-on sous-évaluer le prix pour payer moins de droits ?', a: 'Non. Déclarer un prix inférieur au prix réellement payé, avec un complément versé hors de l’acte, est une dissimulation de prix, sanctionnée par une amende fiscale et la nullité de la contre-lettre. L’administration compare aussi les prix déclarés aux valeurs du marché et peut redresser une vente manifestement sous-évaluée, même sans dessous-de-table.' },
+  { q: 'Acheter via une SCI réduit-il les frais ?', a: 'Non pour l’achat lui-même : une société civile immobilière qui achète un bien paie les mêmes droits de mutation qu’un particulier, et ne bénéficie pas du taux du primo-accédant, réservé aux personnes physiques qui achètent leur résidence principale. La SCI peut avoir d’autres intérêts, de transmission ou de gestion, mais elle ajoute ses propres frais de constitution.' },
+  { q: 'Le choix du notaire change-t-il le montant des frais ?', a: `Le barème est le même partout ; seule la remise peut différer d’une étude à l’autre. Au-delà de 100 000 €, une remise de 20 % sur la part des émoluments au-delà du seuil représente ${$(base.total - remise.total)} sur un achat de 350 000 €. C’est le levier le plus faible des cinq, mais il ne coûte qu’une question posée au premier rendez-vous.` },
+  { q: 'Peut-on cumuler tous les leviers ?', a: `Oui, la plupart se cumulent : un primo-accédant peut faire lister les meubles, payer lui-même la commission d’agence et obtenir une remise. Sur 350 000 € dans les Hauts-de-Seine avec 10 000 € de meubles, les trois premiers ramènent les frais de ${$(base.total)} à ${$(F(350000, '92', 'ancien', 'primo', { mobilier: 10000, remisePct: 20 }).total)}. Chaque levier a ses conditions : seul le premier dépend uniquement de votre situation.` },
+];
+---
+<GuideLayout lang={lang} id="reduire" breadcrumbLabel="Réduire ses frais"
+  title={`Réduire ses frais de notaire en ${YEAR} : 6 leviers légaux`}
+  h1="Réduire ses frais de notaire : six leviers légaux, chiffrés sur le même achat"
+  description={`Réduire ses frais de notaire en ${YEAR} : primo-accédant, meubles, agence, remise, neuf, prix. Chaque levier chiffré sur un achat de 350 000 €, et les pièges.`}
+  intro="Ce qui marche, combien ça rapporte, et ce qui expose à un redressement."
+  resume={`Les frais de notaire ne se négocient presque pas, mais ils se réduisent légalement. Sur un appartement ancien de 350 000 € dans les Hauts-de-Seine, la facture de départ s’élève à ${$(base.total)}. Le statut de primo-accédant, qui écarte la hausse des droits à 5 %, la fait baisser de ${$(base.droits - primo.droits)}. Une liste de meubles de 10 000 € annexée à l’acte fait gagner ${$(meubles.economie)}. Une commission d’agence de 17 500 € à la charge de l’acquéreur plutôt qu’incluse dans le prix évite ${$(agence.total - base.total)}. Une remise de 20 % sur les émoluments, si le notaire la pratique, rapporte ${$(base.total - remise.total)}. Acheter neuf au même prix ramènerait les frais à ${$(neuf.total)}. Et chaque euro négocié sur le prix baisse aussi les frais.`}
+  faqs={faqs}
+  related={[{ href: route('primo', lang), name: 'Primo-accédant', description: 'Le premier levier, sans condition de revenus.' }, { href: route('mobilier', lang), name: 'Déduire les meubles', description: 'Ce qui se liste et ce qui ne se liste pas.' }, { href: route('agence', lang), name: 'Frais d’agence', description: 'La ligne du mandat qui compte.' }]}
+  sources={src(lang, 'dgfip_dmto', 'notaires_frais')}>
+  <MiniSim client:visible kind="reduire" lang={lang} href={route('home', lang)} />
+  <h2>Les leviers côte à côte</h2>
+  <ContentTable headers={['Levier', 'Frais après', 'Économie', 'Condition']} align={['l', 'r', 'r', 'l']} rows={[
+    ['Aucun', $(base.total), '—', '—'],
+    ['Primo-accédant', $(primo.total), $(base.total - primo.total), 'Pas propriétaire de sa résidence principale depuis 2 ans'],
+    ['Meubles listés (10 000 €)', $(meubles.avec), $(meubles.economie), 'Meubles réels, valeur d’occasion justifiable'],
+    ['Commission à la charge de l’acquéreur', $(base.total), $(agence.total - base.total), 'Prévu au mandat, avant le compromis'],
+    ['Remise de 20 % sur les émoluments', $(remise.total), $(base.total - remise.total), 'Si l’étude la pratique'],
+    ['Achat dans le neuf', $(neuf.total), $(base.total - neuf.total), 'Vente soumise à la TVA'],
+  ]} caption="Hauts-de-Seine, prix de 350 000 €. Pour la commission, comparaison avec une commission de 17 500 € incluse dans le prix." />
+  <h2>Ce qui ne marche pas, ou mal</h2>
+  <p>Sous-évaluer le prix, ou verser une partie « de la main à la main », est une fraude : l’amende fiscale et le rappel des droits dépassent de loin l’économie, sans compter la nullité de l’accord occulte. Gonfler la valeur des meubles expose au même redressement que la sous-évaluation. Ventiler artificiellement le prix entre le terrain et la construction, ou entre deux actes, n’échappe pas davantage à l’administration, qui requalifie l’opération selon sa réalité économique.</p>
+  <p>Passer par une société n’allège pas les droits à l’achat. Et changer de notaire ne change pas le barème. Enfin, retarder la signature en espérant une baisse des taux départementaux est un pari : la hausse à 5 % court jusqu’au 31 mars 2028, et rien ne garantit que les départements reviendront en arrière avant.</p>
+  <h2>L’ordre dans lequel agir</h2>
+  <p>Avant de visiter, vérifiez votre statut de primo-accédant : il ne dépend que de vous. Pendant la négociation, discutez le prix et la prise en charge de la commission, qui se décident avant le compromis. Au compromis, faites établir la liste des meubles avec des valeurs prudentes. Au premier rendez-vous avec le notaire, demandez s’il pratique une remise. Chaque étape a sa fenêtre : une fois l’acte signé, plus rien ne se rattrape.</p>
+  <h2>Comparer avec un autre département</h2>
+  <p>Si votre recherche couvre plusieurs départements, l’écart de droits peut peser : entre un département à 5 % et un département resté à 4,50 %, il atteint {$(350000 * (tauxGlobalAncien(5) - tauxGlobalAncien(4.5)) / 100)} sur 350 000 €. Le <a href={route('comparer', lang)}>comparateur</a> le chiffre pour votre prix, et le <a href={route('taux450', lang)}>guide des départements à 4,50 %</a> les présente un par un.</p>
+</GuideLayout>

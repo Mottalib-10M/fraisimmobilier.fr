@@ -1,0 +1,39 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { webPageSchema, breadcrumbSchema } from '../../lib/seo';
+import { pct, $, P, tauxGlobalAncien, tauxGlobalNeuf } from '../../lib/tables';
+const lang = 'en';
+const title = `Notary fees glossary France ${YEAR}: the terms explained`;
+const description = `French notary fees glossary ${YEAR}: DMTO, émoluments, débours, CSI, compromis, acte authentique, primo-accédant, VEFA. Short definitions, current figures.`;
+const path = route('glossary', lang);
+const jsonLd = [webPageSchema({ name: title, description, path, lang }), breadcrumbSchema([{ name: 'Home', path: route('home', lang) }, { name: 'Glossary', path }])];
+const T: Array<[string, string, string?]> = [
+  ['Acte authentique (final deed)', 'The deed of sale signed before the notary, which transfers ownership and makes the fees payable.'],
+  ['Assiette (taxable base)', 'The amount a rate is applied to: the stated price, less listed furniture and any agency commission paid by the buyer.', 'mobilier'],
+  ['Compromis de vente (preliminary contract)', 'The binding pre-contract between seller and buyer; no acquisition costs are due at this stage, apart from the deposit.'],
+  ['Contribution de sécurité immobilière (CSI)', `A charge of ${pct(P.csi.taux, lang)} of the price, at least ${$(P.csi.minimum, lang)}, collected by the State for registering the sale.`, 'csi'],
+  ['Débours (disbursements)', 'Sums the notary advances to third parties on your behalf and passes on with no mark-up.', 'debours'],
+  ['Département', 'One of France’s 101 administrative areas, each of which votes its own transfer tax rate.', 'departements'],
+  ['Droits de mutation à titre onéreux (DMTO)', `Transfer tax on the sale: départemental tax, municipal surcharge and collection fee, ${pct(tauxGlobalAncien(5), lang, 3)} of the price in a 5% département.`, 'dmto'],
+  ['Émoluments (emoluments)', 'The notary’s regulated fee for a tariffed deed, identical at every office.', 'emoluments'],
+  ['Frais d’assiette (collection fee)', `A State charge equal to ${pct(P.dmto.frais_assiette_droit_commun, lang)} of the départemental tax (${pct(P.dmto.frais_assiette_taux_reduit, lang)} at the reduced rate).`],
+  ['Honoraires (fees)', 'The notary’s unregulated pay for a non-tariffed service, agreed in writing.'],
+  ['Primo-accédant (first-time buyer)', 'A buyer who has not owned their main home for two years, exempt from the 5% transfer tax increase.', 'primo'],
+  ['Provision (fee deposit)', 'The sum paid to the notary before signing, adjusted in the final account.'],
+  ['Publicité foncière (land registration)', 'Entry of the sale in the property register, which makes it binding on everyone.'],
+  ['Remise (discount)', `An optional reduction of up to ${pct(P.emoluments.remise_max, lang, 0)} on the part of the emoluments calculated above ${$(P.emoluments.remise_seuil, lang)}.`, 'remise'],
+  ['Taux réduit (reduced rate)', `Land publicity tax on VAT-able sales: ${pct(tauxGlobalNeuf(), lang, 3)} of the price, collection fee included.`, 'neuf'],
+  ['VEFA (off-plan sale)', 'Vente en l’état futur d’achèvement: buying on plan from a developer, subject to VAT and the reduced rate.', 'vefa'],
+];
+---
+<PageLayout title={title} description={description} lang={lang} jsonLd={jsonLd} breadcrumbs={[{ label: 'Glossary' }]}>
+  <div class="prose prose-slate max-w-none">
+    <h1>Glossary of French notary fees</h1>
+    <p>The French terms that appear on a notary’s statement or in this site’s guides, with an English explanation and current figures. Each definition links to the guide that develops it.</p>
+    <dl>
+      {T.map(([t, d, id]) => <><dt><strong>{t}</strong></dt><dd>{d}{id && <> <a href={route(id, lang)}>Read the guide</a>.</>}</dd></>)}
+    </dl>
+  </div>
+</PageLayout>

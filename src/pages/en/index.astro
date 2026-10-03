@@ -1,0 +1,100 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import NotaireCalculator from '../../components/calc/NotaireCalculator';
+import ContentTable from '../../components/ContentTable.astro';
+import AdSlot from '../../components/AdSlot.astro';
+import Sources from '../../components/Sources.astro';
+import { YEAR, LAST_UPDATED } from '../../data/site-config';
+import { route, AMOUNTS } from '../../i18n/routes';
+import { amountLabel } from '../../i18n/nav';
+import { webApplicationSchema, faqSchema, breadcrumbSchema, organizationSchema, personSchema, websiteSchema } from '../../lib/seo';
+import { F, $, pct, P, COUNT, exempleRows, tranchesRows, tauxGlobalAncien, tauxGlobalNeuf, nom } from '../../lib/tables';
+import { displayDate } from '../../lib/format';
+const lang = 'en';
+const title = `Notary fees France ${YEAR}: calculator by département`;
+const description = `French notary fees ${YEAR} with your département’s transfer tax rate as of 1 June: tax, emoluments, CSI, disbursements. Resale, new build, first-time buyers.`;
+const paris = F(250000, '75'); const indre = F(250000, '36'); const nice = F(250000, '06'); const neuf = F(250000, '75', 'neuf'); const primo = F(250000, '75', 'ancien', 'primo');
+const t5 = tauxGlobalAncien(5), t45 = tauxGlobalAncien(4.5), t38 = tauxGlobalAncien(3.8);
+const ex200 = F(200000, '33');
+const a450 = COUNT.a450.map((d) => nom(d, lang)).join(', ');
+const faqs = [
+  { q: 'How much are notary fees on a €250,000 house in France?', a: `On a resale property in Paris, or in any département charging the 5% rate, about ${$(paris.total, lang)}, or ${pct(paris.pourcentage, lang)} of the price: ${$(paris.droits, lang)} of transfer tax, ${$(paris.emoluments.ttc, lang)} of notary emoluments including VAT, the flat formalities fee, the land registry contribution and ${$(P.debours_defaut, lang)} of estimated disbursements. The same house in Indre costs ${$(indre.total, lang)} in fees.` },
+  { q: 'Who pays notary fees in France, the buyer or the seller?', a: 'The buyer, unless the contract says otherwise: the French Civil Code puts the costs of the deed on the purchaser. The seller pays only what concerns them, such as releasing their mortgage, the compulsory surveys and any capital gains tax, which the notary deducts from the sale price. Having your own notary costs the buyer nothing extra, as the two offices share the fee.' },
+  { q: 'Do foreign buyers pay more notary fees in France?', a: `No. Transfer tax, the notary tariff and the land registry contribution do not depend on nationality or tax residence. Only the location of the property matters, through its département’s rate: ${pct(t5, lang, 2)} in most of France. A non-resident buying a holiday home pays exactly what a French resident would pay for the same property.` },
+  { q: 'Why are notary fees so much lower on a new build?', a: `Because a sale subject to French property VAT does not pay standard transfer tax but a reduced land publicity tax of 0.70%, or ${pct(tauxGlobalNeuf(), lang, 3)} with the collection fee. On €250,000 the fees fall to ${$(neuf.total, lang)} against ${$(paris.total, lang)} on a resale in Paris. The notary’s emoluments are identical; only the tax changes.` },
+  { q: 'What is a first-time buyer for French transfer tax?', a: `Someone who has not owned their main home in the two years before the purchase and is buying a home to live in. In départements charging 5%, they pay 4.50%, because the increase voted since April 2025 does not apply to them. On €250,000 the saving is ${$(paris.droits - primo.droits, lang)}. There is no income or price ceiling.` },
+  { q: 'When are notary fees paid in France?', a: 'On the day the final deed (acte authentique) is signed, by bank transfer that must reach the notary’s account before the appointment. The notary asks for a deposit slightly above the estimated fees, then sends a final statement and refunds any surplus, usually some weeks after the sale is registered at the land registry.' },
+  { q: 'Can I include notary fees in my French mortgage?', a: `Some banks will finance part or all of the fees, but most French lenders expect your own deposit to cover them, because the money buys nothing the bank could recover. Plan for about ${pct(paris.pourcentage, lang, 1)} of the price on a resale at 5%, and about ${pct(neuf.pourcentage, lang, 1)} on a new build, before loan guarantee costs.` },
+  { q: 'Is any of my data sent anywhere?', a: 'No. The calculation runs in your browser using the rates embedded in the page: the price, département and situation you enter are not sent to any server, not stored and need no account. The shareable link encodes your inputs in the page address only if you choose to copy it.' },
+];
+const related = [
+  { href: route('departements', lang), name: 'Fees by département', description: 'All 101 départements, rates as of 1 June 2026.' },
+  { href: route('comparer', lang), name: 'Compare two départements', description: 'Same property, two rates, the gap in euros.' },
+  { href: route('neuf', lang), name: 'New-build purchase', description: 'Reduced rate, off-plan, land from a developer.' },
+  { href: route('primo', lang), name: 'First-time buyers', description: 'Why the 5% increase does not apply to you.' },
+  { href: route('emoluments', lang), name: 'Notary emoluments', description: 'The regulated scale, bracket by bracket.' },
+  { href: route('tableau', lang), name: 'Fees table by price', description: 'From €50,000 to €1 million, resale and new.' },
+];
+const jsonLd = [webApplicationSchema({ name: `French notary fees calculator ${YEAR}`, description, path: route('home', lang), lang }), faqSchema(faqs, lang), breadcrumbSchema([{ name: 'Home', path: route('home', lang) }]), organizationSchema(lang), personSchema(lang), websiteSchema(lang)];
+---
+<PageLayout title={title} description={description} lang={lang} jsonLd={jsonLd} faqs={faqs} related={related}>
+  <header class="mb-6">
+    <h1 class="text-3xl font-bold text-navy-900 md:text-4xl">French notary fees calculator {YEAR}: your département’s rate, not an average</h1>
+    <p class="mt-3 text-lg text-navy-600">Price, département, resale or new: the calculator applies the transfer tax rate voted by <strong>your</strong> département as of 1 June {YEAR}, the regulated notary scale (overseas départements included) and the first-time buyer rule.</p>
+    <p class="mt-3"><span class="inline-flex items-center gap-1.5 rounded-full border border-navy-200 bg-white px-3 py-1 text-xs font-medium text-navy-600">DGFiP table as of 1 June {YEAR} · notary tariff · updated {displayDate(LAST_UPDATED, 'en-GB')}</span></p>
+  </header>
+  <NotaireCalculator client:load lang={lang} methodHref={route('method', lang)} />
+  <section class="prose prose-slate max-w-none">
+    <p>On a €250,000 resale property in Paris, French notary fees (frais de notaire) come to {$(paris.total, lang)}, or {pct(paris.pourcentage, lang)} of the price. Nearly eight euros in ten never reach the notary: {$(paris.droits, lang)} is transfer tax paid to the département, the municipality and the State. The notary’s regulated pay is {$(paris.emoluments.ttc, lang)} of proportional emoluments including VAT and {$(paris.formalitesTTC, lang)} for formalities; on top come {$(paris.csi, lang)} of land registry contribution and the disbursements. The same purchase costs {$(nice.total, lang)} in Alpes-Maritimes, still at 4.50%, and {$(indre.total, lang)} in Indre, the only département at 3.80%. On a new build the tax drops to {pct(tauxGlobalNeuf(), lang, 3)} and the fees to {$(neuf.total, lang)}. A first-time buyer purchasing a main home in a 5% département pays {$(primo.total, lang)}. These figures come from the table published by the French tax administration (DGFiP) and the notary tariff in force until 2028.</p>
+    <AdSlot slot="home-1" />
+    <h2 id="calcul">How French notary fees are worked out</h2>
+    <p>The name is misleading: “notary fees” are really acquisition costs, and the notary mainly collects them on behalf of others. In France every property sale must be signed before a notaire, a public officer who drafts the deed, checks the title and registers the sale. The statement handed to you on signing adds up five items, which the calculator reproduces one by one.</p>
+    <ol>
+      <li><strong>Transfer tax (droits de mutation).</strong> A départemental tax (5%, 4.50% or 3.80% depending on the département), a municipal surcharge of {pct(P.dmto.taxe_communale, lang)} and a State collection fee equal to {pct(P.dmto.frais_assiette_droit_commun, lang)} of the départemental tax. Total: {pct(t5, lang, 3)}, {pct(t45, lang, 3)} or {pct(t38, lang, 3)} of the price.</li>
+      <li><strong>Proportional emoluments.</strong> The notary’s fee for the deed of sale, set by article A444-91 of the French Commercial Code, calculated in sliding brackets from {pct(P.emoluments.zones.metro.taux[0], lang, 3)} down to {pct(P.emoluments.zones.metro.taux[3], lang, 3)}, plus VAT at {pct(P.emoluments.zones.metro.tva, lang, 0)}.</li>
+      <li><strong>Formalities.</strong> A flat fee of {$(P.emoluments.formalites_forfait_ht, lang, 2)} excluding VAT covers part of the land registry paperwork.</li>
+      <li><strong>Land registry contribution (CSI).</strong> {pct(P.csi.taux, lang)} of the price, at least {$(P.csi.minimum, lang)}, collected by the State for registering the sale.</li>
+      <li><strong>Disbursements (débours).</strong> Money the notary advances for you: planning documents, mortgage search, co-ownership papers, cadastral extracts. The amount varies by file; the calculator uses {$(P.debours_defaut, lang)} by default, to be replaced by the figure in your quote.</li>
+    </ol>
+    <h3>Worked example: €200,000 in Gironde</h3>
+    <p>Gironde (Bordeaux) charges the 5% rate. The transfer tax splits into {$(ex200.droitsDepartement, lang)} départemental tax, {$(ex200.droitsCommune, lang)} municipal tax and {$(ex200.droitsAssiette, lang)} collection fee, {$(ex200.droits, lang)} in all. The emoluments are worked out bracket by bracket: {pct(P.emoluments.zones.metro.taux[0], lang, 3)} on the first €6,500, {pct(P.emoluments.zones.metro.taux[1], lang, 3)} up to €17,000, {pct(P.emoluments.zones.metro.taux[2], lang, 3)} up to €60,000 and {pct(P.emoluments.zones.metro.taux[3], lang, 3)} above, {$(ex200.emoluments.ht, lang, 2)} excluding VAT, exactly the example published by service-public.fr. With VAT, {$(ex200.emoluments.ttc, lang, 2)}. Formalities, CSI and disbursements bring the total to {$(ex200.total, lang)}.</p>
+    <h2 id="departement">Why your département changes everything</h2>
+    <p>France is divided into 101 départements, administrative areas each run by an elected council. The 2025 Finance Act allowed them to raise their transfer tax from 4.50% to 5% for sales signed between 1 April 2025 and 31 March 2028. Almost all of them did: as of 1 June {YEAR}, the DGFiP table lists {COUNT.zones5} tax areas at 5%. Eleven départements stayed at 4.50%: {a450}. Indre alone still applies 3.80%. A calculator that applies “about 8%” everywhere is therefore wrong by hundreds to thousands of euros depending on the location.</p>
+    <p>Three départements have also voted special rules that most simulators ignore: Savoie applies 4.00% to buyers of a first property who undertake to live in it for five years; Calvados has voted a €46,000 allowance on certain purchases; Hautes-Pyrénées cuts the rate to 3.80% for block sales of flats with a tenant’s right of first refusal. The Rhône is split in two: the Lyon Metropolis and the rest of the département vote separately, and both currently apply 5%.</p>
+    <p>Finally, the overseas départements have their own, higher emolument scale and their own VAT: 8.5% in Guadeloupe, Martinique and Réunion, none in French Guiana and Mayotte. On a €250,000 purchase in Réunion the emoluments reach {$(F(250000, '974').emoluments.ttc, lang)}, against {$(paris.emoluments.ttc, lang)} in mainland France. The <a href={route('departements', lang)}>table of all 101 départements</a> gives each rate and its fees; the <a href={route('comparer', lang)}>comparison tool</a> shows the gap between two places for the same property.</p>
+    <h2 id="taux">Transfer tax rates as of 1 June {YEAR}</h2>
+    <ContentTable headers={['Départemental rate', 'Overall rate', 'Départements', 'Fees on €250,000']} align={['r', 'r', 'l', 'r']} rows={[
+      [pct(5, lang), pct(t5, lang, 3), `${COUNT.zones5} tax areas (incl. Paris, Gironde, Nord, Rhône)`, $(paris.total, lang)],
+      [pct(4.5, lang), pct(t45, lang, 3), `${COUNT.a450.length} départements`, $(nice.total, lang)],
+      [pct(3.8, lang), pct(t38, lang, 3), 'Indre', $(indre.total, lang)],
+      [`${pct(0.7, lang)} (new)`, pct(tauxGlobalNeuf(), lang, 3), 'Everywhere, VAT-able sales', $(neuf.total, lang)],
+    ]} caption="Overall rate = départemental tax + 1.20% municipal tax + collection fee. Disbursements estimated at €500." />
+    <h2 id="exemples">Example notary fees {YEAR} on a resale (5% département)</h2>
+    <ContentTable headers={['Price', 'Transfer tax', 'Emoluments and formalities incl. VAT', 'CSI and disbursements', 'Total', 'Share of price']} align={['r', 'r', 'r', 'r', 'r', 'r']} rows={exempleRows(lang, '75')} />
+    <p>The share of fees falls slightly as the price rises, because the emoluments slide and the flat items weigh less on a large amount. It never drops below {pct(t5, lang, 2)}, though: transfer tax stays proportional whatever the price. For a garage or a small plot the opposite happens: the {$(P.emoluments.minimum_ht, lang)} minimum emolument, the flat fee and the disbursements can push fees well above 10% of the price.</p>
+    <h2 id="emoluments">The notary’s emolument scale</h2>
+    <ContentTable headers={['Price bracket', 'Rate excl. VAT (mainland)']} align={['l', 'r']} rows={tranchesRows(lang)} caption="French Commercial Code, art. A444-91; rates applicable since 1 January 2021, tariff valid until 29 February 2028." />
+    <p>This scale is the same at every notary’s office in mainland France: you cannot shop around for a cheaper notary on a sale. The only room for discussion is the discount a notary may grant, up to 20%, on the part of the emoluments calculated above €100,000. It must be displayed at the office and offered to every client on the same terms. See the guide to the <a href={route('remise', lang)}>notary fee discount</a>.</p>
+    <h2 id="cas">Special cases</h2>
+    <h3>New builds, off-plan and building land from a developer</h3>
+    <p>The reduced {pct(tauxGlobalNeuf(), lang, 3)} rate applies to sales subject to French property VAT: a new home bought from a developer, an off-plan purchase (VEFA), a resale by a VAT-registered professional within five years of completion, building land sold by a VAT-registered seller. Between private individuals, a plot or a recent house falls under the standard rate. See <a href={route('neuf', lang)}>new-build fees</a>, <a href={route('vefa', lang)}>off-plan</a> and <a href={route('terrain', lang)}>buying land</a>.</p>
+    <h3>First-time buyers and first property</h3>
+    <p>A first-time buyer purchasing a main home escapes the 5% increase. In a 5% area that brings the overall rate back to {pct(t45, lang, 3)}. In Savoie, the “first property” reduction under article 1594 F septies of the French General Tax Code lowers the départemental rate to 4.00%, provided the home is lived in as a main residence for five years. The <a href={route('primo', lang)}>first-time buyer guide</a> sets out the conditions.</p>
+    <h3>Gifts, garages, capital gains</h3>
+    <p>A gift follows different rules: gift tax after an allowance, and its own emoluments. The <a href={route('donation', lang)}>gift calculator</a> applies them. For a <a href={route('garage', lang)}>garage or parking space</a>, the minimum charge changes everything. And when you sell, the fees paid on purchase are added to the acquisition price used for capital gains tax, either at their actual amount or as a flat {pct(P.plus_value.forfait_frais_acquisition, lang, 1)}: see <a href={route('plusvalue', lang)}>notary fees and capital gains</a>.</p>
+    <AdSlot slot="home-2" />
+    <h2 id="populaires">Common calculations by price</h2>
+    <ul>{AMOUNTS.map((a) => <li><a href={route(`amount-${a}`, lang)}>Notary fees on a {amountLabel(a, lang)}</a></li>)}</ul>
+    <h2 id="conseils">Six legal ways to pay less</h2>
+    <ol>
+      <li>Check whether you count as a first-time buyer: two years without owning your main home is enough, with no income test.</li>
+      <li>Have the furniture listed in the deed at a realistic, provable value (fitted appliances that can be removed, furniture).</li>
+      <li>Negotiate for the agency commission to be payable by the buyer rather than included in the price: it then drops out of the taxable base.</li>
+      <li>Above €100,000, ask the notary whether the office grants a discount on its emoluments, and at what rate.</li>
+      <li>Compare with new builds: at the same price, the fee gap often exceeds five percentage points.</li>
+      <li>If you are torn between two neighbouring départements, check the gap with the <a href={route('comparer', lang)}>comparison tool</a>.</li>
+    </ol>
+    <p>The guide to <a href={route('reduire', lang)}>reducing notary fees</a> puts a figure on each lever and flags those that risk a tax reassessment.</p>
+    <Sources lang={lang} />
+  </section>
+</PageLayout>

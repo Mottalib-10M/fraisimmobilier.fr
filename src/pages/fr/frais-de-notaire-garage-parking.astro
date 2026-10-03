@@ -1,0 +1,33 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import NotaireCalculator from '../../components/calc/NotaireCalculator';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, F, P } from '../../lib/tables';
+import { src } from '../../lib/sources';
+const lang = 'fr';
+const g = F(20000, '75'), g2 = F(20000, '75', 'ancien', 'standard', { debours: 250 });
+const faqs = [
+  { q: 'Combien de frais de notaire pour une place de parking de 20 000 € ?', a: `Environ ${$(g.total)} à Paris avec 500 € de débours estimés, soit ${pct(g.pourcentage, lang, 1)} du prix, et ${$(g2.total)} si les débours se limitent à 250 €. Les droits de mutation ne font que ${$(g.droits)} : le reste vient des émoluments, du forfait de formalités et des débours, qui pèsent lourd sur un petit prix.` },
+  { q: 'Le notaire est-il obligatoire pour acheter un parking ?', a: 'Oui. Une place de parking ou un box est un bien immobilier ; sa vente doit être publiée au service de la publicité foncière, ce qui suppose un acte authentique reçu par un notaire. Le compromis peut être signé sous seing privé, mais le transfert de propriété ne devient opposable aux tiers qu’après l’acte notarié et sa publication.' },
+  { q: 'Peut-on acheter le parking dans le même acte que l’appartement ?', a: 'Oui, et c’est souvent plus économique : le prix du lot de stationnement s’ajoute à celui du logement dans un seul acte. Les émoluments sont calculés sur le prix total, à un taux marginal plus faible, et il n’y a qu’un forfait de formalités et une série de débours. Deux actes séparés multiplient les postes fixes.' },
+];
+---
+<GuideLayout lang={lang} id="garage" breadcrumbLabel="Garage et parking"
+  title={`Frais de notaire garage et parking ${YEAR} : les frais fixes`}
+  h1="Frais de notaire d’un garage ou d’une place de parking : quand les petits prix coûtent cher"
+  description={`Frais de notaire d’un garage ou d’un parking ${YEAR} : minimum de 90 € HT, plafond de 10 %, forfait de formalités. Calcul pour un petit prix, astuce du même acte.`}
+  intro="Sur un petit prix, les frais fixes font la facture."
+  resume={`Acheter une place de parking, un box ou une cave suit les mêmes règles qu’un appartement : droits de mutation du département, émoluments du notaire, forfait de formalités, contribution de sécurité immobilière et débours. Mais sur un prix de quelques milliers ou dizaines de milliers d’euros, les postes fixes changent tout. Les émoluments sont soumis à un minimum de ${$(P.emoluments.minimum_ht)} HT et plafonnés à ${pct(P.emoluments.plafond_pourcentage_valeur, lang, 0)} de la valeur du bien ; le forfait de formalités, ${$(P.emoluments.formalites_forfait_ht, lang, 2)} HT, et les débours ne baissent pas avec le prix. Pour une place de 20 000 € à Paris, les frais atteignent ${$(g.total)}, soit ${pct(g.pourcentage, lang, 1)} du prix, contre moins de 8 % pour un appartement. Acheter le parking dans le même acte que le logement évite de payer deux fois les postes fixes.`}
+  faqs={faqs}
+  related={[{ href: route('emoluments', lang), name: 'Émoluments du notaire', description: 'Minimum et plafond expliqués.' }, { href: route('debours', lang), name: 'Débours et formalités', description: 'Les postes qui ne baissent pas.' }, { href: route('terrain', lang), name: 'Achat d’un terrain', description: 'L’autre petit prix fréquent.' }]}
+  sources={src(lang, 'notaires_frais', 'sp_frais_notaire', 'dgfip_dmto')}>
+  <div slot="tool" data-outil><NotaireCalculator client:load lang={lang} defaultPrix={20000} methodHref={route('method', lang)} /></div>
+  <h2>La part des frais selon le prix</h2>
+  <ContentTable headers={['Prix', 'Droits de mutation', 'Émoluments et formalités TTC', 'Total', 'Part du prix']} align={['r', 'r', 'r', 'r', 'r']} rows={[3000, 8000, 15000, 25000, 40000].map((x) => { const f = F(x, '75'); return [$(x), $(f.droits), $(f.emoluments.ttc + f.formalitesTTC), $(f.total), pct(f.pourcentage, lang, 1)]; })} caption="Paris, débours estimés à 500 €. À 3 000 €, le plafond de 10 % limite les émoluments, pas les autres postes." />
+  <h2>Minimum et plafond : comment ils jouent</h2>
+  <p>Le barème proportionnel donnerait à peine plus de 100 € HT d’émoluments pour un box de 3 000 €. Le plafond de {pct(P.emoluments.plafond_pourcentage_valeur, lang, 0)} de la valeur les limite à 300 € HT, ce qui ne change rien ici, et le minimum de {$(P.emoluments.minimum_ht)} HT n’est pas atteint. Pour une cave vendue 600 €, le barème donnerait 23 € HT et le plafond 60 € HT, sous le minimum de {$(P.emoluments.minimum_ht)}. Notaires de France présente le plafond comme la protection des ventes de faible montant : le calculateur l’applique dans ce cas et l’indique sur la ligne des émoluments. Pour une vente aussi petite, faites confirmer le montant par le notaire.</p>
+  <h2>Réduire la note</h2>
+  <p>Le levier le plus efficace est de regrouper : un parking acheté avec l’appartement, deux lots achetés ensemble, une cave intégrée à la vente principale. Les débours se négocient aussi sur un petit dossier : un lot de copropriété dont le syndic fournit rapidement les pièces coûte moins à documenter. Enfin, le taux du département joue comme pour un logement : la même place coûte un peu moins de droits dans un département resté à 4,50 %.</p>
+</GuideLayout>

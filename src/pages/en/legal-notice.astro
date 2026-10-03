@@ -1,0 +1,31 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import LegalIdentity from '../../components/LegalIdentity.astro';
+import { AUTHOR_NAME, CONTACT_EMAIL, LAST_UPDATED, LEGAL, SITE_URL } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { displayDate } from '../../lib/format';
+const lang = 'en';
+---
+<PageLayout title="Legal notice – French notary fees calculator" description="Publisher, publication director, host, intellectual property, limitation of liability and applicable law for the French notary fees calculator." lang={lang} noindex={true} breadcrumbs={[{ label: 'Legal notice' }]} showAuthor={false}>
+  <div class="prose prose-slate max-w-none">
+    <h1>Legal notice</h1>
+    <p>Information published under article 6 III-1 of French Law no. 2004-575 of 21 June 2004 on confidence in the digital economy.</p>
+    <h2>Publisher</h2>
+    <LegalIdentity lang={lang} />
+    <p>Publication director: {AUTHOR_NAME}, responsible for the content published on {SITE_URL}.</p>
+    <h2>Host</h2>
+    <LegalIdentity mode="hosting" lang={lang} />
+    <h2>Purpose of the site and no advice</h2>
+    <p>The site provides a notary fees calculator and guides, free of charge and for information. Results are estimates based on the rates published by the tax administration and the regulated notary tariff. They are neither legal or tax advice nor a quote: only the statement drawn up by your notary is binding. The method and its limits are described in the <a href={route('method', lang)}>methodology</a>.</p>
+    <h2>Limitation of liability</h2>
+    <p>Parameters are updated and checked against official examples, without any guarantee that they are error-free or exhaustive. The publisher cannot be held liable for a decision taken solely on the basis of an estimate, nor for an interruption of the service. Errors can be reported via the <a href={route('contact', lang)}>contact page</a>.</p>
+    <h2>Intellectual property</h2>
+    <p>The texts, code and design of the site belong to the publisher; reproduction without permission is prohibited, except for short quotations with a link. Public data cited is reused under the <a href="https://www.etalab.gouv.fr/licence-ouverte-open-licence" rel="nofollow noopener" target="_blank">Etalab Open Licence</a>.</p>
+    <h2>Embedding the calculator</h2>
+    <p>The calculator may be embedded free of charge in an iframe, with the credit link visible: see the <a href={route('widget', lang)}>widget page</a>.</p>
+    <h2>Personal data</h2>
+    <p>What you enter never leaves your browser. See the <a href={route('privacy', lang)}>privacy policy</a> and the <a href={route('cookies', lang)}>cookies page</a>.</p>
+    <h2>Reporting and applicable law</h2>
+    <p>Unlawful content can be reported to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. This notice is governed by French law; the competent courts are those of {LEGAL.jurisdiction}. Last updated: {displayDate(LAST_UPDATED, 'en-GB')}.</p>
+  </div>
+</PageLayout>

@@ -1,0 +1,34 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import NotaireCalculator from '../../components/calc/NotaireCalculator';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, F, P, tauxGlobalAncien } from '../../lib/tables';
+import { src } from '../../lib/sources';
+const lang = 'en';
+const s = F(320000, '75'), d = F(560000, '75'), dp = F(560000, '75', 'ancien', 'primo'), dr = F(560000, '75', 'ancien', 'standard', { remisePct: 20 });
+const faqs = [
+  { q: 'What are notary fees on a studio in Paris?', a: `For a €320,000 resale studio, the calculator gives ${$(s.total, lang)}, or ${pct(s.pourcentage, lang)} of the price, including ${$(s.droits, lang)} of transfer tax at the overall rate of ${pct(tauxGlobalAncien(5), lang, 3)}. A first-time buyer making it their main home pays ${$(F(320000, '75', 'ancien', 'primo').total, lang)}, thanks to the 4.50% rate.` },
+  { q: 'Does Paris apply the 5% transfer tax rate?', a: 'Yes. As of 1 June 2026, the DGFiP table shows a 5% rate voted for Paris, with the 4.50% rate kept for first-time buyers purchasing their main home. As Paris is both a municipality and a département, the City collects both the départemental tax and the municipal surcharge.' },
+  { q: 'Is the notary discount worth asking for in Paris?', a: `More than elsewhere, because prices often far exceed €100,000. On a €560,000 two-room flat, a 20% discount on the part of the emoluments above the threshold saves ${$(d.total - dr.total, lang)}. First-time buyer status saves ${$(d.total - dp.total, lang)}. Ask whether the office offers a discount before the preliminary contract.` },
+];
+---
+<GuideLayout lang={lang} id="paris" breadcrumbLabel="Paris"
+  title={`Notary fees in Paris ${YEAR}: calculator at the 5% rate`}
+  h1={`Notary fees in Paris in ${YEAR}: worked out for a studio, a two-room flat, a family home`}
+  description={`Notary fees in Paris ${YEAR}: transfer tax at 5%, first-time buyers at 4.50%, emoluments on high prices, the discount. Studio, two-room and four-room flats.`}
+  intro="Paris applies the 5% rate; high prices make the discount and first-time buyer status more valuable."
+  resume={`Paris has voted the 5% départemental rate: transfer tax on a resale there reaches ${pct(tauxGlobalAncien(5), lang, 3)} of the price, according to the DGFiP table of 1 June ${YEAR}. As prices are high, notary fees quickly run into tens of thousands of euros: ${$(s.total, lang)} for a studio at €320,000, ${$(d.total, lang)} for a two-room flat (deux-pièces) at €560,000. Two levers carry more weight here than elsewhere. First-time buyer status, which brings the départemental tax back to 4.50% on a main home, saves ${$(d.total - dp.total, lang)} on the two-room flat. The discount on emoluments, which a notary may grant above €100,000, adds ${$(d.total - dr.total, lang)} at 20%. The calculator below is set to Paris; French flats are described by their number of main rooms, not bedrooms. The table below compares three typical Paris purchases.`}
+  faqs={faqs}
+  related={[{ href: route('primo', lang), name: 'First-time buyers', description: 'The exemption from the increase.' }, { href: route('remise', lang), name: 'Notary fee discount', description: 'Above €100,000.' }, { href: route('amount-500000', lang), name: '€500,000 purchase', description: 'A Paris price in detail.' }]}
+  sources={src(lang, 'dgfip_dmto', 'notaires_frais', 'sp_frais_notaire')}>
+  <div slot="tool" data-outil><NotaireCalculator client:load lang={lang} defaultDep="75" defaultPrix={420000} methodHref={route('method', lang)} /></div>
+  <h2>Three Paris purchases</h2>
+  <ContentTable headers={['Property (resale)', 'Price', 'Fees, standard case', 'First-time buyer', 'First-time buyer + 20% discount']} align={['l', 'r', 'r', 'r', 'r']} rows={[['Studio', 320000], ['Two-room flat', 560000], ['Four-room flat', 1100000]].map(([l, p]) => [l as string, $(p as number, lang), $(F(p as number, '75').total, lang), $(F(p as number, '75', 'ancien', 'primo').total, lang), $(F(p as number, '75', 'ancien', 'primo', { remisePct: 20 }).total, lang)])} caption="Disbursements estimated at €500. The discount is optional and depends on the office." />
+  <h2>What is specific to Paris</h2>
+  <p>Paris is the only authority that is both a municipality and a département: the City therefore collects both the départemental tax and the municipal surcharge on a sale. For the buyer, the calculation does not change. What changes is the scale: at these prices, the top bracket of the emolument scale, at {pct(P.emoluments.zones.metro.taux[3], lang, 3)} excluding VAT, carries most of the notary’s pay, and the discount under article R444-10 of the Commercial Code applies to a large base.</p>
+  <p>Co-ownership is the rule in Paris: allow for the managing agent’s documents in the disbursements, and check in the pre-statement any approved works that would fall to you. They do not add to the notary fees, but to the budget.</p>
+  <h2>Paris and the inner suburbs</h2>
+  <p>Hauts-de-Seine, Seine-Saint-Denis and Val-de-Marne also apply 5%: at the same price, fees are identical on both sides of the ring road. The whole Île-de-France region is at 5%; the nearest gap is to the north, in Oise, still at 4.50% and bordering Val-d’Oise. The <a href={route('comparer', lang)}>comparison tool</a> works it out.</p>
+</GuideLayout>

@@ -1,0 +1,52 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, F, P, tauxGlobalAncien } from '../../lib/tables';
+import { economieMobilier } from '../../lib/engine/notaire';
+import { src } from '../../lib/sources';
+const lang = 'en';
+const base = F(350000, '92');
+const primo = F(350000, '92', 'ancien', 'primo');
+const meubles = economieMobilier(350000, 10000, '92');
+const agence = F(367500, '92');
+const remise = F(350000, '92', 'ancien', 'standard', { remisePct: 20 });
+const neuf = F(350000, '92', 'neuf');
+const faqs = [
+  { q: 'Which lever cuts French notary fees the most?', a: `Buying new, where the reduced tax divides the fees by three: on €350,000 in Hauts-de-Seine, ${$(neuf.total, lang)} instead of ${$(base.total, lang)}. On a resale, the strongest lever is first-time buyer status, which saves ${$(base.droits - primo.droits, lang)} at the same price, followed by an agency commission paid by the buyer and the furniture list.` },
+  { q: 'Does negotiating the price reduce notary fees?', a: 'Yes, mechanically: transfer tax, emoluments and the land registry contribution are proportional to the price. Each €10,000 knocked off in negotiation saves just over €700 of fees in a 5% département. It is often the most profitable lever, because it works on both the price and the fees.' },
+  { q: 'Can I understate the price to pay less tax?', a: 'No. Declaring a price lower than the price actually paid, with the balance paid outside the deed, is concealment of price, punished by a tax fine and the nullity of the side agreement. The tax office also compares declared prices with market values and can reassess a sale that is clearly undervalued, even without any cash under the table.' },
+  { q: 'Does buying through an SCI reduce the fees?', a: 'Not on the purchase itself: a property company (SCI) buying a property pays the same transfer tax as an individual, and does not benefit from the first-time buyer rate, which is reserved for individuals buying their main home. An SCI may have other advantages, for inheritance or management, but it adds its own set-up costs.' },
+  { q: 'Does the choice of notary change the fees?', a: `The scale is the same everywhere; only the discount can differ from one office to another. Above €100,000, a 20% discount on the part of the emoluments above the threshold is worth ${$(base.total - remise.total, lang)} on a €350,000 purchase. It is the weakest of the levers, but it costs only a question at the first appointment.` },
+  { q: 'Can all the levers be combined?', a: `Yes, most can: a first-time buyer can have the furniture listed, pay the agency commission directly and obtain a discount. On €350,000 in Hauts-de-Seine with €10,000 of furniture, the first three bring fees down from ${$(base.total, lang)} to ${$(F(350000, '92', 'ancien', 'primo', { mobilier: 10000, remisePct: 20 }).total, lang)}. Each lever has its own conditions: only the first depends solely on your situation.` },
+];
+---
+<GuideLayout lang={lang} id="reduire" breadcrumbLabel="Reducing your fees"
+  title={`Reduce notary fees in France ${YEAR}: six legal levers`}
+  h1="Reducing French notary fees: six legal levers, priced on the same purchase"
+  description={`How to reduce French notary fees in ${YEAR}: first-time buyer, furniture, agency fee, discount, new build, price. Each lever priced on a €350,000 purchase.`}
+  intro="What works, how much it saves, and what risks a tax reassessment."
+  resume={`French notary fees can hardly be negotiated, but they can be legally reduced. On a €350,000 resale flat in Hauts-de-Seine, the starting bill is ${$(base.total, lang)}. First-time buyer status, which avoids the 5% transfer tax rate, lowers it by ${$(base.droits - primo.droits, lang)}. A €10,000 furniture list attached to the deed saves ${$(meubles.economie, lang)}. A €17,500 agency commission paid by the buyer rather than included in the price avoids ${$(agence.total - base.total, lang)}. A 20% discount on emoluments, if the notary offers it, saves ${$(base.total - remise.total, lang)}. Buying new at the same price would bring the fees down to ${$(neuf.total, lang)}. And every euro negotiated off the price also lowers the fees. None of these levers depends on your nationality or residence. The table below sets the levers side by side on the same purchase.`}
+  faqs={faqs}
+  related={[{ href: route('primo', lang), name: 'First-time buyers', description: 'The first lever, with no income test.' }, { href: route('mobilier', lang), name: 'Deducting furniture', description: 'What can and cannot be listed.' }, { href: route('agence', lang), name: 'Agency fees', description: 'The line in the mandate that counts.' }]}
+  sources={src(lang, 'dgfip_dmto', 'notaires_frais')}>
+  <MiniSim client:visible kind="reduire" lang={lang} href={route('home', lang)} />
+  <h2>The levers side by side</h2>
+  <ContentTable headers={['Lever', 'Fees after', 'Saving', 'Condition']} align={['l', 'r', 'r', 'l']} rows={[
+    ['None', $(base.total, lang), '—', '—'],
+    ['First-time buyer', $(primo.total, lang), $(base.total - primo.total, lang), 'Not owned your main home for 2 years'],
+    ['Furniture listed (€10,000)', $(meubles.avec, lang), $(meubles.economie, lang), 'Real items, justifiable second-hand value'],
+    ['Commission paid by the buyer', $(base.total, lang), $(agence.total - base.total, lang), 'Set in the mandate, before the compromis'],
+    ['20% discount on emoluments', $(remise.total, lang), $(base.total - remise.total, lang), 'If the office offers it'],
+    ['Buying new', $(neuf.total, lang), $(base.total - neuf.total, lang), 'Sale subject to VAT'],
+  ]} caption="Hauts-de-Seine, €350,000 price. For the commission: compared with a €17,500 commission included in the price." />
+  <h2>What does not work, or works badly</h2>
+  <p>Understating the price, or paying part of it in cash outside the deed, is fraud: the tax fine and the recovery of tax far exceed the saving, not to mention the nullity of the hidden agreement. Overstating the furniture leads to the same reassessment as understating the price. Artificially splitting the price between land and building, or across two deeds, does not escape the tax office either; it requalifies the transaction according to its economic reality.</p>
+  <p>Buying through a company does not reduce the tax on purchase. Changing notary does not change the scale. And delaying the signing in the hope that départements will cut their rates is a gamble: the 5% rate runs until 31 March 2028, and nothing guarantees that départements will reverse it before then.</p>
+  <h2>The order in which to act</h2>
+  <p>Before viewing properties, check your first-time buyer status: it depends only on you. During negotiation, discuss the price and who pays the commission, both settled before the preliminary contract. At the preliminary contract, have the furniture list drawn up with cautious values. At the first meeting with the notary, ask whether the office offers a discount. Each step has its window: once the deed is signed, nothing can be recovered.</p>
+  <h2>Comparing with another département</h2>
+  <p>If your search covers several départements, the tax gap can matter: between a 5% département and one still at 4.50%, it reaches {$(350000 * (tauxGlobalAncien(5) - tauxGlobalAncien(4.5)) / 100, lang)} on €350,000. The <a href={route('comparer', lang)}>comparison tool</a> works it out for your price, and the <a href={route('taux450', lang)}>guide to the 4.50% départements</a> presents each of them.</p>
+</GuideLayout>

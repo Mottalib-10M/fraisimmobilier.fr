@@ -1,0 +1,32 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import NotaireCalculator from '../../components/calc/NotaireCalculator';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, F, tauxGlobalAncien } from '../../lib/tables';
+import { src } from '../../lib/sources';
+const lang = 'en';
+const m = F(290000, '69m'), n = F(290000, '69m', 'neuf');
+const faqs = [
+  { q: 'Are notary fees different in Lyon and in the rest of the Rhône?', a: `Not at present. The Lyon Metropolis and the Rhône département each vote their own rate, but both apply 5% as of 1 June 2026 according to the DGFiP. For a €290,000 resale flat, fees are therefore ${$(m.total, lang)} in Villeurbanne as in Villefranche-sur-Saône.` },
+  { q: 'Why does the Lyon Metropolis vote its own rate?', a: 'Since 2015 the Lyon Metropolis has exercised a département’s powers on its territory, including collecting transfer tax. The rest of the Rhône keeps a separate départemental council. The two authorities vote separately and the DGFiP table gives them two rows: they could apply different rates.' },
+  { q: 'Does buying new in Lyon change the fees much?', a: `Yes, as everywhere: on €290,000, fees fall to ${$(n.total, lang)} on a VAT-able sale, against ${$(m.total, lang)} on a resale. The reduced rate does not depend on the authority, and the gap is about five and a half points of the price.` },
+];
+---
+<GuideLayout lang={lang} id="lyon" breadcrumbLabel="Lyon and the Rhône"
+  title={`Notary fees in Lyon ${YEAR}: Metropolis and Rhône at 5%`}
+  h1={`Notary fees in Lyon in ${YEAR}: one metropolis, one département, two decisions`}
+  description={`Notary fees in Lyon and the Rhône ${YEAR}: the Metropolis and the département each vote their rate, both at 5%. Calculator for your purchase, resale or new build.`}
+  intro="The only département split in two for transfer tax."
+  resume={`The Rhône is a unique case in the French transfer tax table: since 2015, the Lyon Metropolis has exercised a département’s powers on its territory, including setting and collecting transfer tax, while the rest of the area is run by the Rhône départemental council. The two authorities vote separately. As of 1 June ${YEAR}, according to the DGFiP, both apply the 5% rate, with 4.50% for first-time buyers: the overall rate reaches ${pct(tauxGlobalAncien(5), lang, 3)} on both sides. For a €290,000 resale flat, fees come to ${$(m.total, lang)} in Lyon as in the Beaujolais. The calculator keeps the two rows apart to track any future divergence, and applies the 4.50% first-time buyer rate on both sides. Lyon’s many new-build schemes fall under the reduced rate instead.`}
+  faqs={faqs}
+  related={[{ href: route('agence', lang), name: 'Agency fees', description: 'A worked example in Lyon.' }, { href: route('departements', lang), name: 'All départements', description: 'The 102 rows of the table.' }, { href: route('vefa', lang), name: 'Off-plan (VEFA)', description: 'New builds, common in the Metropolis.' }]}
+  sources={src(lang, 'dgfip_dmto', 'impots_droits')}>
+  <div slot="tool" data-outil><NotaireCalculator client:load lang={lang} defaultDep="69m" defaultPrix={290000} methodHref={route('method', lang)} /></div>
+  <h2>Lyon Metropolis and Rhône side by side</h2>
+  <ContentTable headers={['Price', 'Lyon Metropolis', 'Rhône outside the Metropolis', 'New build (both)']} align={['r', 'r', 'r', 'r']} rows={[180000, 290000, 400000, 600000].map((x) => [$(x, lang), $(F(x, '69m').total, lang), $(F(x, '69r').total, lang), $(F(x, '69m', 'neuf').total, lang)])} caption="Resale, standard case, disbursements estimated at €500." />
+  <h2>Why track both rows</h2>
+  <p>The two authorities have the same rate today, but nothing obliges them to. If one went back to 4.50% before the increase period ends on 31 March 2028, a buyer hesitating between a municipality in the Metropolis and a neighbouring one in the Rhône would see a gap of about 0.51% of the price appear. This site follows every update of the DGFiP table and shows the date it was checked.</p>
+  <p>The Lyon market has a large share of new homes and off-plan sales. For these purchases the question of the authority does not arise: the reduced tax is the same everywhere. The <a href={route('vefa', lang)}>off-plan guide</a> explains the payment schedule.</p>
+</GuideLayout>

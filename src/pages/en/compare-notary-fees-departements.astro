@@ -1,0 +1,37 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import CompareCalculator from '../../components/calc/CompareCalculator';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct } from '../../lib/tables';
+import { comparer } from '../../lib/engine/notaire';
+import { src } from '../../lib/sources';
+const lang = 'en';
+const c = comparer(300000, '75', '36');
+const pairs: Array<[string, string, string]> = [['06', '83', 'Nice or Toulon'], ['60', '95', 'Oise or Val-d’Oise'], ['26', '38', 'Drôme or Isère'], ['71', '21', 'Saône-et-Loire or Côte-d’Or'], ['16', '17', 'Charente or Charente-Maritime'], ['36', '37', 'Indre or Indre-et-Loire']];
+const faqs = [
+  { q: 'How much can I save by buying in the neighbouring département?', a: `Up to 1.23% of the price between a 5% département and Indre, about 0.51% between a 5% département and one still at 4.50%. On €300,000, the gap between Paris and Indre reaches ${$(c.ecart, lang)}. Between two départements applying the same rate it is nil: only disbursements may vary.` },
+  { q: 'Does the comparison tool take first-time buyer status into account?', a: 'Yes. Choose “first-time buyer”: in a 5% département the rate falls to 4.50%, and the gap with a département still at 4.50% disappears. Only Indre, at 3.80%, remains cheaper. This changes the picture: for a first-time buyer, the map of rates is almost uniform.' },
+  { q: 'Are notary fees enough to choose a département?', a: 'No. The fee gap is paid once, on purchase; the price per square metre, property tax, transport and jobs weigh far more over time. The tax gap is a way to compare two similar properties either side of a départemental border, not a reason to choose where to live.' },
+  { q: 'Why do two 5% départements sometimes show different fees?', a: 'In the comparison tool they give the same fees for the same price, except overseas, where the emolument scale and VAT differ. In reality disbursements can vary from one file to another, and Calvados applies an allowance on certain purchases, which the tool flags without calculating it.' },
+];
+---
+<GuideLayout lang={lang} id="comparer" breadcrumbLabel="Compare two départements"
+  title={`Compare notary fees in France by département in ${YEAR}`}
+  h1="Compare French notary fees between two départements for the same purchase"
+  description={`Compare French notary fees in two départements in ${YEAR}: same price, two transfer tax rates, the gap in euros. First-time buyer, overseas, neighbouring pairs.`}
+  intro="Two properties either side of a départemental border do not cost the same fees."
+  resume={`French notary fees on the same purchase change from one département to another, because each départemental council votes its transfer tax rate. The comparison tool calculates the full fees in two départements for the price you enter and shows the gap in euros. Between Paris, at 5%, and Indre, the only département at 3.80%, it reaches ${$(c.ecart, lang)} on a €300,000 resale property. Between a 5% département and one of the eleven still at 4.50%, it is about 0.51% of the price. Neighbouring pairs with different rates are rare but real: Alpes-Maritimes and Var, Oise and Val-d’Oise, Drôme and Isère, Charente and Charente-Maritime. For a first-time buyer, most gaps disappear. It is most useful if you are searching near a départemental border. The table below lists six such pairs.`}
+  faqs={faqs}
+  related={[{ href: route('departements', lang), name: 'All 101 départements', description: 'The full table.' }, { href: route('nice', lang), name: 'Nice and Alpes-Maritimes', description: 'The big market still at 4.50%.' }, { href: route('indre', lang), name: 'Indre', description: 'The only 3.80% rate.' }]}
+  sources={src(lang, 'dgfip_dmto', 'impots_droits')}>
+  <div slot="tool" data-outil><CompareCalculator client:load lang={lang} /></div>
+  <h2>Neighbours that did not vote the same rate</h2>
+  <ContentTable headers={['Pair', 'Rates', 'Fees on €300,000', 'Gap']} align={['l', 'l', 'l', 'r']} rows={pairs.map(([a, b, label]) => { const x = comparer(300000, a, b); return [label, `${pct(x.a.tauxDep, lang)} / ${pct(x.b.tauxDep, lang)}`, `${$(x.a.total, lang)} / ${$(x.b.total, lang)}`, $(Math.abs(x.ecart), lang)]; })} caption="Resale, standard case, disbursements estimated at €500." />
+  <h2>When the comparison makes sense</h2>
+  <p>The fee gap matters most to a buyer searching in an area that straddles two départements: the Rhône valley between Drôme and Isère, the hinterland between Alpes-Maritimes and Var, the area north of Paris between Oise and Val-d’Oise. At the same price, the property on the side of the département still at 4.50% costs a few thousand euros less to buy. Elsewhere, almost all of France is at 5%, and the département no longer makes much difference.</p>
+  <p>The comparison also works the other way round: a seller in a département still at 4.50% can point out to buyers that fees are lower than a few kilometres away. And the gap shrinks to nothing for a first-time buyer, who pays 4.50% wherever the 5% rate was voted.</p>
+  <h2>What the tool assumes</h2>
+  <p>A resale purchase, at the same price in both départements, with identical disbursements. It does not include differences in property prices, property tax or loan guarantee costs. For a new-build purchase there is no point comparing: the reduced tax is the same everywhere in France.</p>
+</GuideLayout>

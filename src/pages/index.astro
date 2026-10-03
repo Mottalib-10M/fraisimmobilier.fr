@@ -1,179 +1,44 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import NotaireCalculator from '../components/NotaireCalculator';
+// Racine : redirige vers la langue par défaut. Page noindex, mais elle doit rester
+// lisible et navigable sans JS — un visiteur d'une autre langue du site doit pouvoir
+// atteindre sa version depuis ici.
+import { DEFAULT_LOCALE, LOCALES, route } from '../i18n/routes';
+import { SITE_NAMES, SITE_URL } from '../data/site-config';
+
+const target = route('home', DEFAULT_LOCALE);
+const title = SITE_NAMES[DEFAULT_LOCALE];
+const languageName = (loc: string) => {
+  const name = new Intl.DisplayNames([loc], { type: 'language' }).of(loc) ?? loc;
+  return name.charAt(0).toUpperCase() + name.slice(1);
+};
+const links = LOCALES.map((loc) => ({
+  href: route('home', loc),
+  label: `${SITE_NAMES[loc] ?? title} (${languageName(loc)})`,
+}));
 ---
-
-<Layout
-  title="Calcul Frais de Notaire 2026 - Simulateur Gratuit Immobilier & Succession"
-  description="Calculez gratuitement vos frais de notaire pour un achat immobilier (ancien ou neuf) et vos droits de succession. Barèmes 2026 à jour, résultat instantané."
->
-  <!-- Hero -->
-  <section class="bg-gradient-to-b from-primary-600 to-primary-700 text-white py-16">
-    <div class="max-w-4xl mx-auto px-4 text-center">
-      <h1 class="text-3xl sm:text-5xl font-extrabold leading-tight mb-4">
-        Calculateur de Frais de Notaire<br class="hidden sm:block" /> et Droits de Succession
-      </h1>
-      <p class="text-lg sm:text-xl text-primary-100 max-w-2xl mx-auto">
-        Estimez instantanément et gratuitement vos frais de notaire pour un achat immobilier
-        ou vos droits de succession. Barèmes officiels 2026.
-      </p>
-    </div>
-  </section>
-
-  <!-- Calculator -->
-  <section class="py-12 px-4 -mt-8">
-    <NotaireCalculator client:idle />
-  </section>
-
-  <!-- SEO Content -->
-  <section class="max-w-4xl mx-auto px-4 py-12">
-    <div class="prose prose-lg max-w-none">
-      <h2 class="text-2xl font-bold text-primary-600 mb-6">Comprendre les frais de notaire en France</h2>
-
-      <p>
-        Les <strong>frais de notaire</strong>, souvent appelés « frais d'acquisition », constituent une composante essentielle de tout achat immobilier en France. Contrairement à ce que leur nom suggère, ces frais ne sont pas uniquement destinés à rémunérer le notaire : ils comprennent principalement des <strong>taxes et droits collectés pour le compte de l'État et des collectivités locales</strong>. En réalité, la rémunération du notaire ne représente qu'une fraction relativement modeste de l'ensemble.
-      </p>
-
-      <p>
-        Lors de l'achat d'un bien immobilier, l'acquéreur doit s'acquitter de ces frais en plus du prix de vente. Leur montant varie sensiblement selon que le bien est <strong>ancien</strong> (environ 7 à 8 % du prix) ou <strong>neuf</strong> (environ 2 à 3 % du prix). Cette différence considérable s'explique essentiellement par le taux des droits de mutation, beaucoup plus élevé dans l'ancien.
-      </p>
-
-      <h3 class="text-xl font-bold text-primary-700 mt-8 mb-4">De quoi sont composés les frais de notaire ?</h3>
-
-      <p>
-        Les frais de notaire se décomposent en quatre grandes catégories, chacune ayant une fonction et un bénéficiaire distincts :
-      </p>
-
-      <h4 class="font-bold text-primary-700 mt-6 mb-2">1. Les droits de mutation (ou taxe de publicité foncière)</h4>
-      <p>
-        C'est la composante la plus importante des frais de notaire, représentant la grande majorité du montant total. Pour un bien <strong>ancien</strong>, le taux est de <strong>5,81 %</strong> du prix de vente dans la quasi-totalité des départements français. Ce taux se décompose en taxe communale (1,20 %), taxe départementale (4,50 %) et taxe de l'État (2,37 % de la taxe départementale, soit environ 0,107 %). Quelques départements appliquent encore un taux réduit de 3,80 % pour la part départementale.
-      </p>
-      <p>
-        Pour un bien <strong>neuf</strong> (vente en l'état futur d'achèvement ou VEFA), les droits de mutation sont considérablement réduits à <strong>0,715 %</strong>, car la TVA immobilière de 20 % s'applique déjà au prix de vente. C'est pourquoi les frais de notaire dans le neuf sont nettement inférieurs.
-      </p>
-
-      <h4 class="font-bold text-primary-700 mt-6 mb-2">2. Les émoluments du notaire</h4>
-      <p>
-        Il s'agit de la rémunération proprement dite du notaire. Contrairement à une idée reçue, ces émoluments ne sont pas librement fixés : ils sont <strong>réglementés par l'État</strong> selon un barème proportionnel dégressif. Plus le prix du bien est élevé, plus le taux appliqué diminue :
-      </p>
-      <ul>
-        <li>De 0 à 6 500 € : <strong>3,870 %</strong></li>
-        <li>De 6 500 € à 17 000 € : <strong>1,596 %</strong></li>
-        <li>De 17 000 € à 60 000 € : <strong>1,064 %</strong></li>
-        <li>Au-delà de 60 000 € : <strong>0,799 %</strong></li>
-      </ul>
-      <p>
-        À ces émoluments s'ajoute la <strong>TVA à 20 %</strong>. Pour un bien à 250 000 €, les émoluments s'élèvent à environ 2 400 € HT, soit environ 2 900 € TTC. Le notaire peut accorder une remise de 20 % maximum sur la tranche supérieure à 100 000 €, mais cette pratique reste peu courante.
-      </p>
-
-      <h4 class="font-bold text-primary-700 mt-6 mb-2">3. La contribution de sécurité immobilière</h4>
-      <p>
-        Cette contribution finance le service de la publicité foncière, c'est-à-dire l'enregistrement de la vente au fichier immobilier. Son taux est de <strong>0,10 % du prix du bien</strong>, avec un minimum de 15 €. Pour un bien à 200 000 €, elle s'élève donc à 200 €.
-      </p>
-
-      <h4 class="font-bold text-primary-700 mt-6 mb-2">4. Les débours</h4>
-      <p>
-        Les débours correspondent aux frais avancés par le notaire pour le compte de l'acheteur : documents d'urbanisme, extraits cadastraux, frais de publication, timbres fiscaux, etc. Ils sont estimés forfaitairement à environ <strong>1 200 €</strong> mais peuvent varier d'une transaction à l'autre.
-      </p>
-
-      <h3 class="text-xl font-bold text-primary-700 mt-8 mb-4">Qui paie les frais de notaire ?</h3>
-
-      <p>
-        En principe, les frais de notaire sont <strong>à la charge de l'acquéreur</strong>. C'est une obligation légale en France : l'acheteur doit disposer, en plus du prix d'achat, de la somme nécessaire pour couvrir ces frais. C'est pourquoi les banques demandent généralement un apport personnel couvrant au minimum les frais de notaire lors d'une demande de prêt immobilier.
-      </p>
-      <p>
-        Il existe toutefois des exceptions. Dans le cadre d'une négociation, vendeur et acheteur peuvent convenir d'une clause « acte en mains » ou « frais de notaire inclus », ce qui signifie que le vendeur prend à sa charge tout ou partie des frais. Cette pratique est plus fréquente dans le neuf, où certains promoteurs proposent des offres « frais de notaire offerts » pour stimuler les ventes.
-      </p>
-
-      <h3 class="text-xl font-bold text-primary-700 mt-8 mb-4">Ancien vs. neuf : pourquoi une telle différence ?</h3>
-
-      <p>
-        La différence majeure entre les frais de notaire dans l'ancien et dans le neuf provient exclusivement des <strong>droits de mutation</strong>. Dans l'ancien, ces droits s'élèvent à 5,81 % du prix, tandis que dans le neuf, ils ne sont que de 0,715 %. Cette différence de plus de 5 points de pourcentage représente, sur un bien à 300 000 €, une économie d'environ <strong>15 000 €</strong> en faveur du neuf.
-      </p>
-      <p>
-        Pourquoi cette différence ? Le législateur a souhaité favoriser la construction neuve, génératrice d'emplois dans le secteur du bâtiment. De plus, les biens neufs sont déjà soumis à la <strong>TVA immobilière de 20 %</strong>, intégrée dans le prix de vente. Il serait donc doublement taxé d'appliquer en plus des droits de mutation au taux plein.
-      </p>
-      <p>
-        Pour l'acheteur, la différence est significative. Pour un appartement neuf à 300 000 €, les frais de notaire s'élèvent à environ 7 000 à 9 000 € (2 à 3 %), contre 21 000 à 24 000 € (7 à 8 %) pour un bien ancien au même prix. Cette économie peut représenter un argument décisif dans le choix entre ancien et neuf.
-      </p>
-
-      <h3 class="text-xl font-bold text-primary-700 mt-8 mb-4">Comment réduire ses frais de notaire ?</h3>
-
-      <p>
-        Plusieurs stratégies permettent de réduire le montant des frais de notaire :
-      </p>
-      <ul>
-        <li><strong>Déduire la valeur du mobilier :</strong> Si la vente inclut du mobilier (cuisine équipée, meubles, électroménager), sa valeur peut être déduite du prix de vente dans la limite du raisonnable (généralement 5 à 10 % du prix). Les droits de mutation ne s'appliquent alors que sur le prix du bien immobilier proprement dit.</li>
-        <li><strong>Négocier les frais d'agence :</strong> Si les frais d'agence sont à la charge du vendeur (ce qui est le plus courant), ils sont inclus dans le prix de vente et supportent donc les droits de mutation. En revanche, si l'acheteur paie directement les frais d'agence (mandat acheteur), ceux-ci ne sont pas soumis aux droits de mutation.</li>
-        <li><strong>Acheter dans le neuf :</strong> Comme expliqué ci-dessus, les frais de notaire dans le neuf sont considérablement réduits par rapport à l'ancien.</li>
-      </ul>
-
-      <h3 class="text-xl font-bold text-primary-700 mt-8 mb-4">Les droits de succession : un autre domaine du notaire</h3>
-
-      <p>
-        Le notaire joue également un rôle central dans le règlement des successions. En France, les <strong>droits de succession</strong> sont calculés selon un barème progressif qui dépend du <strong>lien de parenté</strong> entre le défunt et l'héritier, et du <strong>montant de la part héritée</strong>.
-      </p>
-      <p>
-        Le conjoint survivant ou le partenaire de PACS est <strong>totalement exonéré</strong> de droits de succession depuis la loi TEPA de 2007. Pour les enfants, un abattement de 100 000 € s'applique par parent et par enfant, au-delà duquel un barème progressif de 5 % à 45 % s'applique. Les frères et sœurs bénéficient d'un abattement de 15 932 € avec des taux de 35 % et 45 %. Les héritiers plus éloignés sont soumis à des taux beaucoup plus lourds : 55 % pour les neveux et nièces, 60 % pour les non-parents.
-      </p>
-      <p>
-        Une personne en situation de handicap bénéficie d'un <strong>abattement supplémentaire de 159 325 €</strong>, cumulable avec l'abattement lié au lien de parenté. Par exemple, un enfant handicapé bénéficie d'un abattement total de 259 325 €.
-      </p>
-
-      <h3 class="text-xl font-bold text-primary-700 mt-8 mb-4">Foire aux questions</h3>
-
-      <div class="space-y-6">
-        <div>
-          <h4 class="font-bold text-gray-800">Les frais de notaire sont-ils négociables ?</h4>
-          <p>
-            Les émoluments du notaire sont réglementés et peu négociables. Le notaire peut toutefois accorder une remise de 20 % maximum sur la tranche d'émoluments au-delà de 100 000 €. Les droits de mutation, en revanche, sont des taxes fixes non négociables.
-          </p>
-        </div>
-
-        <div>
-          <h4 class="font-bold text-gray-800">Peut-on intégrer les frais de notaire dans le prêt immobilier ?</h4>
-          <p>
-            Oui, certaines banques proposent un prêt « à 110 % » qui couvre à la fois le prix du bien et les frais de notaire. Cependant, cette solution entraîne un coût total du crédit plus élevé et peut nécessiter des garanties supplémentaires. La plupart des établissements préfèrent que l'acquéreur dispose d'un apport personnel couvrant au minimum les frais de notaire.
-          </p>
-        </div>
-
-        <div>
-          <h4 class="font-bold text-gray-800">Quand doit-on payer les frais de notaire ?</h4>
-          <p>
-            Les frais de notaire sont payés le jour de la <strong>signature de l'acte authentique de vente</strong>, c'est-à-dire le jour où vous devenez officiellement propriétaire. Ils sont versés au notaire qui se charge de reverser les taxes aux administrations compétentes. Le notaire peut envoyer un complément ou un remboursement dans les mois suivants si le montant provisoire différait du montant définitif.
-          </p>
-        </div>
-
-        <div>
-          <h4 class="font-bold text-gray-800">Les frais de notaire sont-ils les mêmes partout en France ?</h4>
-          <p>
-            Presque. Les émoluments du notaire et la contribution de sécurité immobilière sont identiques sur tout le territoire. La seule variation possible concerne la <strong>part départementale des droits de mutation</strong>, qui peut être de 3,80 % au lieu de 4,50 % dans certains départements (Indre, Isère, Morbihan, Mayotte). Cela réduit le taux global de 5,81 % à 5,09 %.
-          </p>
-        </div>
-
-        <div>
-          <h4 class="font-bold text-gray-800">Comment est calculé le montant net d'une succession ?</h4>
-          <p>
-            Le montant net de la succession correspond à la valeur totale du patrimoine du défunt (biens immobiliers, comptes bancaires, placements, véhicules, objets de valeur) après déduction des <strong>dettes</strong> (emprunts, impôts, frais funéraires dans la limite de 1 500 €). C'est sur ce montant net que s'appliquent les abattements puis le barème progressif des droits de succession.
-          </p>
-        </div>
-      </div>
-
-      <h3 class="text-xl font-bold text-primary-700 mt-8 mb-4">Sources officielles</h3>
-      <p>
-        Les barèmes utilisés dans notre simulateur sont issus des sources officielles françaises :
-      </p>
-      <ul>
-        <li><a href="https://www.service-public.fr/particuliers/vosdroits/F17759" class="text-primary-600 hover:underline" target="_blank" rel="noopener">Service-public.fr - Frais de notaire</a></li>
-        <li><a href="https://www.service-public.fr/particuliers/vosdroits/F14198" class="text-primary-600 hover:underline" target="_blank" rel="noopener">Service-public.fr - Droits de succession</a></li>
-        <li><a href="https://www.legifrance.gouv.fr/" class="text-primary-600 hover:underline" target="_blank" rel="noopener">Légifrance - Code général des impôts</a></li>
-      </ul>
-
-      <div class="bg-accent-50 border-l-4 border-accent-500 p-4 mt-8 rounded-r-lg">
-        <p class="text-sm text-gray-700">
-          <strong>Avertissement :</strong> Ce simulateur fournit une estimation indicative basée sur les barèmes en vigueur. Le montant exact des frais de notaire ou des droits de succession peut varier en fonction de votre situation personnelle, de la nature du bien, et d'éventuelles particularités fiscales. Pour un calcul définitif, nous vous recommandons de consulter un notaire.
-        </p>
-      </div>
-    </div>
-  </section>
-</Layout>
+<!doctype html>
+<html lang={DEFAULT_LOCALE}>
+  <head>
+    <meta charset="utf-8" />
+    <title>{title}</title>
+    <meta http-equiv="refresh" content={`0; url=${target}`} />
+    <link rel="canonical" href={`${SITE_URL}${target}`} />
+    <meta name="robots" content="noindex" />
+    <!-- La racine doit declarer sa favicon comme n'importe quelle page. Le robot
+         de Google qui collecte les favicons interroge d'abord la racine du
+         domaine et /favicon.ico ; une racine muette le laisse repartir les mains
+         vides, et Search Console affiche une icone generique pendant des
+         semaines. Constate le 2026-09-26 sur huit sites du portefeuille. -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <script is:inline define:vars={{ locales: LOCALES, target }}>
+      const nav = (navigator.language || '').slice(0, 2).toLowerCase();
+      const m = locales.find((l) => l === nav);
+      location.replace(m ? `/${m}/` : target);
+    </script>
+  </head>
+  <body>
+    {links.map((l, i) => <>{i > 0 && ' · '}<a href={l.href}>{l.label}</a></>)}
+  </body>
+</html>

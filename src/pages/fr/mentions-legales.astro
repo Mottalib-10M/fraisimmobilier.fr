@@ -1,0 +1,31 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import LegalIdentity from '../../components/LegalIdentity.astro';
+import { AUTHOR_NAME, CONTACT_EMAIL, LAST_UPDATED, LEGAL, SITE_URL } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { displayDate } from '../../lib/format';
+const lang = 'fr';
+---
+<PageLayout title="Mentions légales – frais de notaire calcul" description="Éditeur, directeur de la publication, hébergeur, propriété intellectuelle, limites de responsabilité et droit applicable au calculateur de frais de notaire." lang={lang} noindex={true} breadcrumbs={[{ label: 'Mentions légales' }]} showAuthor={false}>
+  <div class="prose prose-slate max-w-none">
+    <h1>Mentions légales</h1>
+    <p>Informations publiées en application de l’article 6 III-1 de la loi n° 2004-575 du 21 juin 2004 pour la confiance dans l’économie numérique.</p>
+    <h2>Éditeur du site</h2>
+    <LegalIdentity lang={lang} />
+    <p>Directeur de la publication : {AUTHOR_NAME}, responsable des contenus publiés sur {SITE_URL}.</p>
+    <h2>Hébergeur</h2>
+    <LegalIdentity mode="hosting" lang={lang} />
+    <h2>Objet du site et absence de conseil</h2>
+    <p>Le site met à disposition un calculateur de frais de notaire et des guides, à titre gratuit et informatif. Les résultats sont des estimations calculées à partir des taux publiés par l’administration fiscale et du tarif réglementé des notaires. Ils ne constituent ni un conseil juridique ou fiscal, ni un devis : seul le décompte établi par votre notaire fait foi. La méthode et les limites sont décrites dans la <a href={route('method', lang)}>méthodologie</a>.</p>
+    <h2>Limites de responsabilité</h2>
+    <p>Les paramètres sont mis à jour et vérifiés sur des exemples officiels, sans garantie d’absence d’erreur ni d’exhaustivité. L’éditeur ne peut être tenu responsable d’une décision prise sur la seule base d’une estimation, ni d’une interruption du service. Une erreur peut être signalée par la page <a href={route('contact', lang)}>contact</a>.</p>
+    <h2>Propriété intellectuelle</h2>
+    <p>Les textes, le code et la présentation du site appartiennent à l’éditeur ; toute reproduction sans autorisation est interdite, sauf courte citation avec lien. Les données publiques citées sont réutilisées sous <a href="https://www.etalab.gouv.fr/licence-ouverte-open-licence" rel="nofollow noopener" target="_blank">Licence ouverte Etalab</a>.</p>
+    <h2>Intégration du calculateur</h2>
+    <p>Le calculateur peut être intégré gratuitement en iframe, lien de crédit visible : voir la <a href={route('widget', lang)}>page widget</a>.</p>
+    <h2>Données personnelles</h2>
+    <p>Les saisies ne quittent pas votre navigateur. Voir la <a href={route('privacy', lang)}>politique de confidentialité</a> et la page <a href={route('cookies', lang)}>cookies</a>.</p>
+    <h2>Signalement et droit applicable</h2>
+    <p>Tout contenu illicite peut être signalé à <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. Les présentes mentions sont soumises au droit français ; les juridictions compétentes sont celles de {LEGAL.jurisdiction}. Dernière mise à jour : {displayDate(LAST_UPDATED, 'fr-FR')}.</p>
+  </div>
+</PageLayout>

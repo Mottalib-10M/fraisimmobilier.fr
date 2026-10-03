@@ -1,0 +1,56 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import Sources from '../../components/Sources.astro';
+import { YEAR, LAST_UPDATED } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { webPageSchema, breadcrumbSchema } from '../../lib/seo';
+import { $, pct, P, COUNT, tauxGlobalAncien, tauxGlobalNeuf, emolumentsBruts } from '../../lib/tables';
+import { displayDate } from '../../lib/format';
+const lang = 'fr';
+const title = `Frais de notaire ${YEAR} : méthode de calcul et sources`;
+const description = `Comment ce site calcule les frais de notaire ${YEAR} : tableau DGFiP au 1er juin, barème A444-91, outre-mer, tests sur les exemples officiels, limites connues.`;
+const path = route('method', lang);
+const jsonLd = [webPageSchema({ name: title, description, path, lang }), breadcrumbSchema([{ name: 'Accueil', path: route('home', lang) }, { name: 'Méthodologie', path }])];
+---
+<PageLayout title={title} description={description} lang={lang} jsonLd={jsonLd} breadcrumbs={[{ label: 'Méthodologie' }]}>
+  <div class="prose prose-slate max-w-none">
+    <h1>Méthodologie : comment les frais de notaire sont calculés ici</h1>
+    <p>Cette page décrit la formule appliquée par le calculateur, les données qu’il utilise, la façon dont nous les vérifions et ce qu’il ne sait pas faire. Les paramètres ont été relus sur leurs sources le {displayDate(P.retrieved_at, 'fr-FR')}. Tous les calculs s’exécutent dans votre navigateur ; aucune saisie n’est transmise.</p>
+    <h2>La formule</h2>
+    <p>Frais = droits de mutation + émoluments proportionnels TTC + forfait de formalités TTC + contribution de sécurité immobilière + débours. Le prix saisi est le prix net vendeur ; la valeur des meubles listés, si vous l’indiquez, en est déduite avant tout calcul.</p>
+    <ul>
+      <li><strong>Droits de mutation, ancien.</strong> Assiette × (taux départemental + taxe communale de {pct(P.dmto.taxe_communale)} + taux départemental × {pct(P.dmto.frais_assiette_droit_commun)}). Taux départemental : celui du tableau DGFiP au 1er juin {YEAR} ; 4,50 % pour un primo-accédant dans un département à 5 % ; 4,00 % en Savoie pour une première propriété.</li>
+      <li><strong>Droits, vente soumise à la TVA.</strong> Assiette × {pct(P.dmto.taux_reduit_neuf)} × (1 + {pct(P.dmto.frais_assiette_taux_reduit)}) = {pct(tauxGlobalNeuf(), lang, 5)}.</li>
+      <li><strong>Émoluments.</strong> Barème par tranches de l’article A444-91 du code de commerce, avec les barèmes propres à la Guadeloupe, la Martinique, la Guyane, La Réunion et Mayotte ; minimum de {$(P.emoluments.minimum_ht)} HT, plafond de {pct(P.emoluments.plafond_pourcentage_valeur, lang, 0)} du prix ; remise facultative d’au plus {pct(P.emoluments.remise_max, lang, 0)} sur la part calculée au-delà de {$(P.emoluments.remise_seuil)} ; TVA de la zone.</li>
+      <li><strong>Formalités.</strong> Forfait de {$(P.emoluments.formalites_forfait_ht, lang, 2)} HT (article A444-171, n° 194), TVA de la zone.</li>
+      <li><strong>Contribution de sécurité immobilière.</strong> {pct(P.csi.taux)} de l’assiette, minimum {$(P.csi.minimum)}.</li>
+      <li><strong>Débours.</strong> Saisis par l’utilisateur, {$(P.debours_defaut)} par défaut : une hypothèse de travail, pas un chiffre officiel.</li>
+    </ul>
+    <h2>Les données</h2>
+    <ContentTable headers={['Donnée', 'Source', 'Version']} align={['l', 'l', 'l']} rows={[
+      ['Taux départementaux (101 départements, Lyon et Rhône séparés)', 'DGFiP, tableau des droits d’enregistrement', '1er juin 2026'],
+      ['Taxe communale, frais d’assiette, taux réduit, CSI, formalités, remises', 'Notaires de France, les frais d’acquisition', `relu le ${P.retrieved_at}`],
+      ['Barèmes des émoluments, métropole et outre-mer', 'Service-Public.fr, fiche F17701', 'vérifiée le 5 août 2026'],
+      ['Droits et émoluments de donation', 'Service-Public.fr, fiches F14203 et F1404', 'vérifiée le 13 mai 2026'],
+      ['Forfaits de la plus-value', 'Service-Public.fr, fiche F10864', 'vérifiée le 15 avril 2026'],
+    ]} />
+    <p>Le tableau DGFiP au 1er juin {YEAR} compte {COUNT.zones5} zones à 5 % ({pct(tauxGlobalAncien(5), lang, 4)} au total), {COUNT.a450.length} départements à 4,50 % ({pct(tauxGlobalAncien(4.5), lang, 5)}) et l’Indre à 3,80 % ({pct(tauxGlobalAncien(3.8), lang, 5)}). Les données sont dans les fichiers <code>params-2026.json</code> et <code>departements.json</code> du site, jamais dans le texte des pages : chaque chiffre affiché est recalculé à partir de ces fichiers.</p>
+    <h2>La vérification</h2>
+    <p>Une batterie de tests automatiques rejoue les exemples publiés par les sources officielles à chaque modification du moteur : les émoluments de 1 995,25 € HT pour une vente de 200 000 € en métropole, les exemples de la Martinique, de la Guyane, de La Réunion et de Mayotte, les taux globaux de 6,3185 % et 5,80665 % annoncés par Notaires de France, et les neuf exemples de droits de donation de service-public.fr. Ils vérifient aussi le décompte des départements du tableau DGFiP.</p>
+    <p>En relisant la fiche de service-public.fr, nous avons relevé une erreur dans son exemple de la Guadeloupe : le total de {$(2426.58, lang, 2)} HT compte {$(1348.2, lang, 2)} pour la dernière tranche au lieu de 140 000 € × {pct(P.emoluments.zones.gp.taux[3], lang, 3)} = {$(140000 * P.emoluments.zones.gp.taux[3] / 100, lang, 2)}. Le site applique les taux de la fiche, soit {$(emolumentsBruts(200000, 'gp').total, lang, 2)} HT, et documente l’écart dans ses tests.</p>
+    <h2>Deux points d’interprétation</h2>
+    <p>La remise sur les émoluments : la fiche de service-public.fr la mentionne encore « si la prestation est supérieure à 150 000 € », Notaires de France retient le seuil de 100 000 € et le taux de 20 % au plus de l’article R444-10 du code de commerce. Le calculateur applique cette seconde règle, sur la seule part des émoluments au-delà du seuil. Le minimum et le plafond des émoluments : pour une vente minuscule où le plafond de 10 % tombe sous le minimum de 90 €, le calculateur retient le plafond, présenté par Notaires de France comme la protection des petites ventes.</p>
+    <h2>Ce que le calculateur ne fait pas</h2>
+    <ul>
+      <li>Les frais de garantie du prêt (hypothèque, privilège de prêteur de deniers, caution).</li>
+      <li>L’abattement de 46 000 € voté par le Calvados sur certaines acquisitions, et le taux de 3,80 % des ventes par lots dans les Hautes-Pyrénées : signalés, non appliqués.</li>
+      <li>La taxe communale réduite de Lamentin (Guadeloupe) et de Tsingoni (Mayotte).</li>
+      <li>Le forfait de formalités outre-mer, compté au tarif métropolitain faute de barème publié à part.</li>
+      <li>Les exonérations réservées aux organismes HLM, aux SEM et aux opérations particulières, le droit de partage, la cession de parts de société, le viager.</li>
+      <li>Saint-Martin, Saint-Barthélemy et Saint-Pierre-et-Miquelon.</li>
+    </ul>
+    <p>Le résultat est une estimation : seul le décompte de votre notaire fait foi. Une erreur se signale par la page <a href={route('contact', lang)}>contact</a> ; la procédure de correction figure dans la <a href={route('editorial', lang)}>charte éditoriale</a>. Dernière mise à jour : {displayDate(LAST_UPDATED, 'fr-FR')}.</p>
+    <Sources lang={lang} />
+  </div>
+</PageLayout>

@@ -1,0 +1,35 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import NotaireCalculator from '../../components/calc/NotaireCalculator';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { F, $, pct, P, COUNT, depRows, tauxGlobalAncien } from '../../lib/tables';
+import { src } from '../../lib/sources';
+const lang = 'en';
+const hi = F(250000, '75'), mid = F(250000, '06'), lo = F(250000, '36');
+const faqs = [
+  { q: 'Which French département has the lowest notary fees?', a: `Indre, the only département still applying the 3.80% reference rate. On a €250,000 resale purchase, fees there come to ${$(lo.total, lang)}, against ${$(hi.total, lang)} in a 5% département such as Paris. Next come the eleven départements still at 4.50%, where the same fees are ${$(mid.total, lang)}.` },
+  { q: 'Where can I find the official rate for my département?', a: 'In the table the DGFiP publishes every month on impots.gouv.fr, under registration duties, titled “rates, base allowances and rate reductions applicable”. This site uses the version of 1 June 2026, the latest available when checked, and shows the date on every page.' },
+  { q: 'Why does the table have 102 rows for 101 départements?', a: 'Because the Rhône is split in two for tax purposes: the Lyon Metropolis and the rest of the département each vote their own rate. Conversely, Corse-du-Sud and Haute-Corse share the rate of the Corsican authority, and Bas-Rhin and Haut-Rhin that of the European Collectivity of Alsace.' },
+  { q: 'Can the rate change during the year?', a: 'It can change with each vote of a départemental council, usually taking effect on the first of a month. The applicable rate is the one in force on the day the final deed is signed. If your signing is several months away, check the latest table published before your appointment with the notary.' },
+];
+---
+<GuideLayout lang={lang} id="departements" breadcrumbLabel="Fees by département"
+  title={`Notary fees by département in France ${YEAR}: all 101 rates`}
+  h1={`French notary fees by département in ${YEAR}: the rate and the cost, for all 101`}
+  description={`French notary fees by département ${YEAR}: transfer tax rates as of 1 June (5%, 4.50%, 3.80%), fees on €250,000, first-time buyer case. Full table, calculator.`}
+  intro="The DGFiP table of 1 June 2026, turned into real fees for every département."
+  resume={`The transfer tax rate is voted by each French département, and it is what makes notary fees vary from one place to another for the same price. As of 1 June ${YEAR}, according to the table published by the DGFiP, ${COUNT.zones5} tax areas apply a 5% départemental rate, or ${pct(tauxGlobalAncien(5), lang, 3)} with the municipal surcharge and the collection fee; ${COUNT.a450.length} départements stayed at 4.50% and Indre at 3.80%. On a €250,000 resale property, fees thus range from ${$(lo.total, lang)} in Indre to ${$(hi.total, lang)} in a 5% département. The table below gives, for each of the 101 départements, the rate voted, the overall rate and the calculated fees, in the standard case and for a first-time buyer purchasing a main home. Départements are listed by their official number, the one that also starts French postcodes.`}
+  faqs={faqs}
+  related={[{ href: route('comparer', lang), name: 'Compare two départements', description: 'The gap in euros for your price.' }, { href: route('taux450', lang), name: 'Départements at 4.50%', description: 'The eleven that did not raise it.' }, { href: route('hausse', lang), name: 'The rise to 5%', description: 'Origin, duration, exception.' }]}
+  sources={src(lang, 'dgfip_dmto', 'impots_droits', 'sp_frais_notaire')}>
+  <div slot="tool" data-outil><NotaireCalculator client:load lang={lang} methodHref={route('method', lang)} /></div>
+  <h2>All 101 départements as of 1 June {YEAR}</h2>
+  <ContentTable headers={['No.', 'Département', 'Rate voted', 'Overall rate', 'Fees on €250,000', 'First-time buyer']} align={['l', 'l', 'r', 'r', 'r', 'r']} rows={depRows(lang)} caption="Resale, disbursements estimated at €500. Savoie: first-time buyer column calculated with the 4.00% “first property” reduction." />
+  <h2>How to read the table</h2>
+  <p>The “rate voted” column shows the départemental rate from the DGFiP table. The “overall rate” adds the municipal surcharge of {pct(P.dmto.taxe_communale, lang)} and the State collection fee, equal to {pct(P.dmto.frais_assiette_droit_commun, lang)} of the départemental tax: it is the percentage actually charged on the price. The fees on €250,000 add this tax, the notary’s emoluments, the flat formalities fee, the land registry contribution and {$(P.debours_defaut, lang)} of estimated disbursements. The last column shows the effect of the first-time buyer exemption in 5% départements.</p>
+  <p>The five overseas départements have their own emolument scale and different VAT, which is why their fees differ from mainland ones at the same rate. The <a href={route('outremer', lang)}>overseas guide</a> covers them. Three départements have voted special schemes, flagged in the calculator: Savoie, Calvados and Hautes-Pyrénées.</p>
+  <h2>What the table does not show</h2>
+  <p>It ignores exemptions reserved for certain buyers, such as social housing bodies or semi-public companies, which each département chooses to apply or not. It does not single out the two overseas municipalities that cut their surcharge, Lamentin and Tsingoni. And it assumes a resale purchase: on a new build the reduced tax is the same everywhere, and the département changes nothing.</p>
+</GuideLayout>

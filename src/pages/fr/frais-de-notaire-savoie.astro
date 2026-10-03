@@ -1,0 +1,32 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import NotaireCalculator from '../../components/calc/NotaireCalculator';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, F, tauxGlobalAncien } from '../../lib/tables';
+import { src } from '../../lib/sources';
+const lang = 'fr';
+const s = F(260000, '73'), p = F(260000, '73', 'ancien', 'primo'), f = F(260000, '73', 'ancien', 'premiere'), hs = F(260000, '74', 'ancien', 'premiere');
+const faqs = [
+  { q: 'Qu’est-ce que le taux de 4,00 % en Savoie ?', a: `Une réduction votée par le conseil départemental pour les biens qui constituent la première propriété de l’acheteur, sur le fondement de l’article 1594 F septies du code général des impôts. Elle suppose d’occuper le logement comme résidence principale pendant au moins cinq ans. Le taux global des droits tombe alors à ${pct(tauxGlobalAncien(4), lang, 3)}, le plus bas de France après l’Indre.` },
+  { q: 'Combien économise un premier acheteur en Savoie ?', a: `Sur un appartement ancien de 260 000 € à Chambéry, les frais passent de ${$(s.total)} dans le cas général à ${$(p.total)} pour un primo-accédant, et à ${$(f.total)} avec la réduction « première propriété ». La même situation en Haute-Savoie, sans réduction votée, donne ${$(hs.total)}.` },
+  { q: 'Un appartement en station de ski profite-t-il de la réduction ?', a: 'Seulement s’il devient la résidence principale de l’acheteur pendant cinq ans et qu’il constitue sa première propriété. Une résidence secondaire ou un investissement locatif en station supporte le taux de 5 % voté par le département, comme dans le reste de la Savoie. L’engagement figure dans l’acte et peut être contrôlé.' },
+];
+---
+<GuideLayout lang={lang} id="savoie" breadcrumbLabel="Savoie"
+  title={`Frais de notaire Savoie ${YEAR} : 4,00 % en première propriété`}
+  h1={`Frais de notaire en Savoie en ${YEAR} : 5 % en général, 4,00 % pour une première propriété`}
+  description={`Frais de notaire en Savoie ${YEAR} : taux de 5 %, 4,50 % pour un primo-accédant, 4,00 % pour une première propriété occupée cinq ans. Chambéry, Aix-les-Bains.`}
+  intro="Le seul département à avoir voté la réduction « première propriété »."
+  resume={`La Savoie applique trois taux de droits de mutation selon la situation de l’acheteur, ce qui en fait le département le plus nuancé du tableau de la DGFiP au 1er juin ${YEAR}. Le cas général supporte le taux de 5 % voté depuis la loi de finances pour 2025. Le primo-accédant qui achète sa résidence principale reste à 4,50 %, comme partout. Et l’acheteur d’un bien qui constitue sa première propriété, s’il s’engage à l’occuper comme résidence principale pendant cinq ans, bénéficie d’un taux de 4,00 %, voté par le conseil départemental sur le fondement de l’article 1594 F septies du code général des impôts. Pour un appartement de 260 000 € à Chambéry, les frais passent ainsi de ${$(s.total)} à ${$(f.total)}. Choisissez « première propriété » dans le calculateur pour l’appliquer.`}
+  faqs={faqs}
+  related={[{ href: route('primo', lang), name: 'Primo-accédant', description: 'La règle nationale.' }, { href: route('departements', lang), name: 'Tous les départements', description: 'Le tableau complet.' }, { href: route('hausse', lang), name: 'Hausse à 5 %', description: 'Le cas général en Savoie.' }]}
+  sources={src(lang, 'dgfip_dmto', 'impots_droits')}>
+  <div slot="tool" data-outil><NotaireCalculator client:load lang={lang} defaultDep="73" defaultPrix={260000} defaultSituation="premiere" methodHref={route('method', lang)} /></div>
+  <h2>Les trois taux de la Savoie</h2>
+  <ContentTable headers={['Prix', 'Cas général (5 %)', 'Primo-accédant (4,50 %)', 'Première propriété (4,00 %)']} align={['r', 'r', 'r', 'r']} rows={[180000, 260000, 350000, 500000].map((x) => [$(x), $(F(x, '73').total), $(F(x, '73', 'ancien', 'primo').total), $(F(x, '73', 'ancien', 'premiere').total)])} caption="Ancien, débours estimés à 500 €." />
+  <h2>Les conditions à remplir</h2>
+  <p>La réduction vise le bien qui constitue la première propriété de l’acheteur, une notion distincte de celle du primo-accédant, définie par l’absence de propriété de la résidence principale pendant deux ans. Elle s’accompagne d’un engagement d’occupation à titre de résidence principale, de façon exclusive et continue, pendant au moins cinq ans à compter de l’achat. Rompre cet engagement sans motif reconnu expose au rappel de la différence de droits. Le notaire vérifie la situation et insère l’engagement dans l’acte ; faites-lui confirmer votre éligibilité avant de compter sur le taux de 4,00 %.</p>
+  <p>La Haute-Savoie voisine n’a pas voté de réduction comparable au 1er juin {YEAR} : un premier acheteur y paie 4,50 % s’il est primo-accédant, 5 % sinon. Pour un ménage qui hésite entre Annecy et Aix-les-Bains, la différence de frais est un argument de plus côté savoyard.</p>
+</GuideLayout>

@@ -1,0 +1,19 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import LegalIdentity from '../../components/LegalIdentity.astro';
+import { CONTACT_EMAIL } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { contactPageSchema } from '../../lib/seo';
+const lang = 'fr';
+const title = 'Contact – signaler une erreur sur le calcul des frais de notaire';
+const description = 'Écrire à l’éditeur du calculateur de frais de notaire : signaler un taux départemental modifié, une erreur de calcul, demander l’intégration du widget.';
+---
+<PageLayout title={title} description={description} lang={lang} noindex={true} jsonLd={[contactPageSchema({ name: title, description, path: route('contact', lang), lang })]} breadcrumbs={[{ label: 'Contact' }]} showAuthor={false}>
+  <div class="prose prose-slate max-w-none">
+    <h1>Contact</h1>
+    <p>Pour signaler une erreur, un taux départemental qui a changé ou une question sur le calcul : <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. Indiquez l’adresse de la page, le prix et le département saisis : nous pourrons reproduire le calcul.</p>
+    <p>Nous ne donnons pas de conseil individuel sur une vente en cours : pour un décompte opposable, adressez-vous à votre notaire. Pour intégrer le calculateur sur votre site, voir la <a href={route('widget', lang)}>page widget</a>.</p>
+    <h2>Éditeur</h2>
+    <LegalIdentity lang={lang} />
+  </div>
+</PageLayout>

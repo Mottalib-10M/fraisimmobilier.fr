@@ -1,0 +1,35 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import DonationCalculator from '../../components/calc/DonationCalculator';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, P } from '../../lib/tables';
+import { droitsDonation, emolumentsDonation } from '../../lib/engine/notaire';
+import { src } from '../../lib/sources';
+const lang = 'fr';
+const D = P.donation;
+const e = droitsDonation(200000, 'enfant'), em = emolumentsDonation(200000);
+const faqs = [
+  { q: 'Combien coûte une donation de 200 000 € à un enfant ?', a: `Après l’abattement de ${$(D.abattements.enfant)}, la part taxable est de 100 000 € et les droits de donation s’élèvent à ${$(e.droits)}, l’exemple exact publié par service-public.fr. S’y ajoutent les émoluments du notaire, ${$(em.ttc)} TTC selon le barème des donations, et pour un bien immobilier la taxe de publicité foncière, la contribution de sécurité immobilière et les débours.` },
+  { q: 'Tous les combien l’abattement se renouvelle-t-il ?', a: 'Tous les quinze ans. Une donation faite plus de quinze ans après la précédente bénéficie à nouveau de l’abattement entier ; dans l’intervalle, les donations successives entre les mêmes personnes s’additionnent et consomment le même abattement. C’est pourquoi le calculateur précise que l’abattement doit ne pas avoir été utilisé depuis quinze ans.' },
+  { q: 'Une donation entre époux paie-t-elle des droits ?', a: `Oui, au-delà de l’abattement de ${$(D.abattements.epoux)}, selon un barème progressif propre aux époux et partenaires de Pacs. Ce n’est pas le cas en succession, où le conjoint survivant est totalement exonéré. Une donation de 200 000 € entre époux supporte ${$(droitsDonation(200000, 'epoux').droits)} de droits.` },
+  { q: 'Les émoluments d’une donation sont-ils les mêmes que ceux d’une vente ?', a: `Non. Le barème des donations est plus élevé : ${pct(D.emoluments_autres_donations[0], lang, 3)} sur les premiers 6 500 €, puis ${pct(D.emoluments_autres_donations[1], lang, 3)}, ${pct(D.emoluments_autres_donations[2], lang, 3)} et ${pct(D.emoluments_autres_donations[3], lang, 3)} au-delà de 60 000 €, hors taxes. Une donation de sommes d’argent par acte notarié suit un barème réduit, plus faible encore.` },
+];
+---
+<GuideLayout lang={lang} id="donation" breadcrumbLabel="Donation"
+  title={`Frais de notaire donation ${YEAR} : droits et émoluments`}
+  h1={`Frais de notaire d’une donation en ${YEAR} : droits de donation et émoluments`}
+  description={`Frais de notaire d’une donation ${YEAR} : abattement de 100 000 € par enfant, barèmes selon le lien, émoluments du notaire. Calcul instantané, exemples officiels.`}
+  intro="Une donation n’a ni droits de mutation de vente ni barème d’achat : elle a les siens."
+  resume={`Les frais d’une donation chez le notaire comportent deux parts principales. Les droits de donation, d’abord, calculés après un abattement qui dépend du lien avec le donateur : ${$(D.abattements.enfant)} pour un enfant, ${$(D.abattements.epoux)} entre époux ou partenaires de Pacs, ${$(D.abattements.petit_enfant)} pour un petit-enfant, ${$(D.abattements.frere_soeur)} entre frères et sœurs, ${$(D.abattements.neveu_niece)} pour un neveu ou une nièce, renouvelables tous les quinze ans. Un barème progressif s’applique ensuite, de 5 à 45 % en ligne directe, ou un taux fixe de 55 à 60 % pour les parents éloignés et les tiers. Les émoluments du notaire, ensuite, suivent un barème propre aux donations, plus élevé que celui des ventes. Pour 200 000 € donnés à un enfant, les droits s’élèvent à ${$(e.droits)} et les émoluments à ${$(em.ttc)} TTC.`}
+  faqs={faqs}
+  related={[{ href: route('plusvalue', lang), name: 'Frais et plus-value', description: 'Le prix d’un bien reçu par donation.' }, { href: route('emoluments', lang), name: 'Émoluments du notaire', description: 'Le barème des ventes, pour comparer.' }, { href: route('home', lang), name: 'Calcul des frais d’achat', description: 'Pour une acquisition.' }]}
+  sources={src(lang, 'sp_donation', 'sp_faire_donation')}>
+  <div slot="tool" data-outil><DonationCalculator client:load lang={lang} /></div>
+  <h2>Droits de donation selon le lien et le montant</h2>
+  <ContentTable headers={['Montant donné', 'Enfant', 'Petit-enfant', 'Époux ou Pacs', 'Frère ou sœur', 'Neveu ou nièce']} align={['r', 'r', 'r', 'r', 'r', 'r']} rows={[50000, 100000, 150000, 200000, 300000, 500000].map((x) => [$(x), $(droitsDonation(x, 'enfant').droits), $(droitsDonation(x, 'petit_enfant').droits), $(droitsDonation(x, 'epoux').droits), $(droitsDonation(x, 'frere_soeur').droits), $(droitsDonation(x, 'neveu_niece').droits)])} caption="Abattement non utilisé depuis quinze ans, sans abattement handicap. Barèmes de service-public.fr, fiche F14203." />
+  <h2>Ce que le calculateur applique</h2>
+  <p>L’abattement correspondant au lien choisi, plus l’abattement spécifique de {$(D.abattements.handicap)} si le bénéficiaire est en situation de handicap, cumulable avec le premier. Puis le barème : progressif en ligne directe et entre époux, progressif en deux tranches entre frères et sœurs, taux fixe de {pct(D.taux_neveu_niece, lang, 0)} pour les neveux et nièces et les parents jusqu’au quatrième degré, de {pct(D.taux_autre, lang, 0)} au-delà ou entre personnes sans lien de parenté. Les droits sont arrondis à l’euro inférieur, comme dans les exemples de service-public.fr que nos tests reproduisent. Les émoluments suivent le barème des « autres donations » de la fiche officielle sur les donations.</p>
+  <p>Il ne calcule pas la taxe de publicité foncière et la contribution de sécurité immobilière dues sur la donation d’un bien immobilier, ni la donation en nue-propriété, dont la valeur taxable dépend de l’âge de l’usufruitier selon le barème fiscal de l’usufruit. Pour ces cas, le notaire établit un décompte détaillé.</p>
+</GuideLayout>

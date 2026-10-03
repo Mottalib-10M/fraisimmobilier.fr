@@ -1,0 +1,48 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, F, P } from '../../lib/tables';
+import { fraisAcquisitionPlusValue } from '../../lib/engine/notaire';
+import { src } from '../../lib/sources';
+const lang = 'fr';
+const fp = P.plus_value.forfait_frais_acquisition;
+const anc = F(200000, '75'), neuf = F(200000, '75', 'neuf');
+const xa = fraisAcquisitionPlusValue(200000, anc.total), xn = fraisAcquisitionPlusValue(200000, neuf.total);
+const faqs = [
+  { q: 'Les frais de notaire réduisent-ils l’impôt sur la plus-value ?', a: `Oui. À la revente d’un bien autre que la résidence principale, la plus-value imposable est la différence entre le prix de cession et le prix d’acquisition majoré. Les frais d’acquisition font partie de cette majoration : soit leur montant réel justifié, soit un forfait de ${pct(fp, lang, 1)} du prix d’achat, selon ce qui est le plus favorable. Ils diminuent donc la plus-value taxée.` },
+  { q: 'Vaut-il mieux retenir les frais réels ou le forfait de 7,5 % ?', a: `Le forfait, presque toujours, pour un achat récent dans le neuf : les frais réels y tournent autour de 2 à 3 %. Pour un achat dans l’ancien, la comparaison est serrée : sur 200 000 € à Paris, les frais réels calculés ici atteignent ${$(anc.total)}, contre ${$(xa.forfait)} pour le forfait. Les frais de garantie du prêt et la commission d’agence payée par l’acheteur peuvent faire pencher la balance vers le réel.` },
+  { q: 'Quels justificatifs garder pour les frais réels ?', a: 'Le décompte définitif du notaire, qui détaille les droits, les émoluments, les débours et la contribution de sécurité immobilière, et la facture de l’agence si vous avez payé la commission. Ces pièces doivent pouvoir être produites des années plus tard, à la revente : gardez-les avec l’acte de propriété. Sans justificatif, seul le forfait peut être retenu.' },
+  { q: 'La résidence principale est-elle concernée ?', a: 'Non. La plus-value réalisée lors de la vente de la résidence principale est exonérée d’impôt sur le revenu et de prélèvements sociaux. La question des frais d’acquisition ne se pose donc pas. Elle concerne les résidences secondaires, les logements locatifs, les terrains et les biens reçus par donation ou succession, pour lesquels les règles diffèrent.' },
+  { q: 'Le forfait de 7,5 % s’applique-t-il à un bien reçu par donation ?', a: 'Non. Pour un bien reçu gratuitement, le prix d’acquisition est la valeur déclarée dans l’acte de donation ou la déclaration de succession, et seuls les frais réellement payés à cette occasion, droits de mutation à titre gratuit et frais d’acte, peuvent s’y ajouter, sur justificatifs. Le forfait est réservé aux acquisitions à titre onéreux.' },
+  { q: 'Les travaux suivent-ils la même logique ?', a: `Oui, avec un autre forfait : ${pct(P.plus_value.forfait_travaux, lang, 0)} du prix d’achat pour les dépenses de construction, d’agrandissement ou d’amélioration, si le bien est détenu depuis plus de ${P.plus_value.forfait_travaux_detention_min_ans} ans, à la place des factures réelles. Frais d’acquisition et travaux s’additionnent pour majorer le prix d’achat, chacun au réel ou au forfait.` },
+];
+---
+<GuideLayout lang={lang} id="plusvalue" breadcrumbLabel="Frais et plus-value"
+  title={`Frais de notaire et plus-value ${YEAR} : réel ou forfait 7,5 %`}
+  h1="Frais de notaire et plus-value : ce que vos frais d’achat vous font gagner à la revente"
+  description={`Plus-value immobilière ${YEAR} : les frais de notaire majorent le prix d’achat, au réel ou au forfait de 7,5 %. Lequel choisir, justificatifs, neuf et donation.`}
+  intro="Des frais payés à l’achat qui reviennent, en partie, à la revente."
+  resume={`Les frais de notaire payés à l’achat ne sont pas perdus pour tout le monde. Quand vous revendez un bien qui n’est pas votre résidence principale, la plus-value imposable se calcule sur un prix d’acquisition majoré des frais d’acquisition : soit leur montant réel, justifié par le décompte du notaire, soit un forfait de ${pct(fp, lang, 1)} du prix d’achat, comme le rappelle service-public.fr. Le choix est libre et se fait à la revente. Pour un appartement acheté 200 000 € dans l’ancien à Paris, les frais réels estimés ici s’élèvent à ${$(anc.total)} et le forfait à ${$(xa.forfait)} : le plus élevé des deux est retenu. Dans le neuf, les frais réels de ${$(neuf.total)} rendent le forfait nettement plus avantageux. Le gain se mesure ensuite à l’impôt et aux prélèvements sociaux évités.`}
+  faqs={faqs}
+  related={[{ href: route('home', lang), name: 'Calcul des frais de notaire', description: 'Vos frais réels à l’achat.' }, { href: route('debours', lang), name: 'Débours et décompte', description: 'Le document à conserver.' }, { href: route('donation', lang), name: 'Donation', description: 'Un autre régime de frais.' }]}
+  sources={src(lang, 'sp_plus_value', 'sp_frais_notaire')}>
+  <MiniSim client:visible kind="plusvalue" lang={lang} href={route('home', lang)} />
+  <h2>Forfait ou réel : la comparaison</h2>
+  <ContentTable headers={['Achat', 'Frais réels estimés', `Forfait ${pct(fp, lang, 1)}`, 'Le plus favorable']} align={['l', 'r', 'r', 'l']} rows={[
+    ['Ancien, 200 000 €, Paris', $(anc.total), $(xa.forfait), xa.meilleur === 'forfait' ? 'forfait' : 'réel'],
+    ['Neuf, 200 000 €', $(neuf.total), $(xn.forfait), xn.meilleur === 'forfait' ? 'forfait' : 'réel'],
+    ...[[150000, '36'], [400000, '06'], [400000, '75']].map(([p, d]) => { const f = F(p as number, d as string); const x = fraisAcquisitionPlusValue(p as number, f.total); return [`Ancien, ${$(p as number)}, ${f.dep.fr}`, $(f.total), $(x.forfait), x.meilleur === 'forfait' ? 'forfait' : 'réel']; }),
+  ]} caption="Frais réels hors frais de garantie du prêt et commission d’agence, qui peuvent s’y ajouter." />
+  <p>Dans l’ancien, la comparaison se joue à quelques centaines d’euros près, parce que les frais d’un achat dans un département à 5 % tournent autour de 7,5 à 8 % du prix. Les frais de garantie du prêt, s’ils ont été payés, et la commission d’agence réglée par l’acheteur s’ajoutent aux frais réels et font souvent pencher la balance de leur côté. Dans le neuf, le forfait l’emporte presque toujours.</p>
+  <h2>Comment se calcule la plus-value</h2>
+  <p>La plus-value brute est la différence entre le prix de cession, diminué des frais de vente, et le prix d’acquisition, augmenté des frais d’acquisition et des travaux. On lui applique ensuite des abattements pour durée de détention, distincts pour l’impôt sur le revenu et pour les prélèvements sociaux : selon service-public.fr, l’exonération d’impôt est acquise après 22 ans de détention, celle des prélèvements sociaux après 30 ans. Chaque euro ajouté au prix d’acquisition réduit la plus-value avant abattement, donc l’impôt et les prélèvements.</p>
+  <h2>Les pièces à garder dès l’achat</h2>
+  <p>Le décompte définitif du notaire est la pièce maîtresse : il ventile précisément les droits, les émoluments, les formalités, la contribution de sécurité immobilière et les débours. Gardez aussi l’acte de vente, la facture de l’agence si vous avez payé la commission, l’acte de prêt et le décompte des frais de garantie. Ces documents doivent survivre au bien lui-même : à la revente, dix ou vingt ans plus tard, c’est le notaire du vendeur qui calcule la plus-value, et il ne peut retenir que ce que vous justifiez.</p>
+  <h2>Un exemple sur vingt ans</h2>
+  <p>Prenons un appartement acheté 200 000 € à Paris et revendu 320 000 € vingt ans plus tard, sans travaux. Avec le forfait, le prix d’acquisition retenu serait de 215 000 € ; avec les frais réels du tableau, il atteint un peu plus, parce que ceux-ci dépassent le forfait d’un peu plus de mille euros. La plus-value brute baisse d’autant, avant les abattements pour durée de détention. L’écart d’impôt paraît modeste, mais il s’obtient sans effort, à condition d’avoir conservé le décompte du notaire pendant vingt ans.</p>
+  <h2>Ce que le calcul ne change pas</h2>
+  <p>Les frais d’acquisition n’ouvrent droit à aucune déduction l’année de l’achat pour une résidence principale. Pour un investissement locatif, leur traitement pendant la détention dépend du régime fiscal choisi, et il peut se répercuter sur le calcul de la plus-value à la revente : les amortissements déduits en location meublée non professionnelle sont, par exemple, réintégrés dans le calcul pour les ventes réalisées depuis le 15 février 2025. Ce site ne calcule pas l’impôt sur la plus-value lui-même.</p>
+</GuideLayout>

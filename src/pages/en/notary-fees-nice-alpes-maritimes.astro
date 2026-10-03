@@ -1,0 +1,33 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import NotaireCalculator from '../../components/calc/NotaireCalculator';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, F, tauxGlobalAncien } from '../../lib/tables';
+import { comparer } from '../../lib/engine/notaire';
+import { src } from '../../lib/sources';
+const lang = 'en';
+const n = F(380000, '06'), v = F(380000, '83'), c = comparer(380000, '83', '06');
+const faqs = [
+  { q: 'Did Alpes-Maritimes raise its transfer tax?', a: `No. As of 1 June 2026, the DGFiP table shows no 5% rate voted for Alpes-Maritimes: the département still applies 4.50%, or ${pct(tauxGlobalAncien(4.5), lang, 3)} in total. For a €380,000 resale flat in Nice, fees come to ${$(n.total, lang)}, including the notary’s emoluments and the land registry contribution.` },
+  { q: 'How much do I save compared with Var?', a: `Var voted 5%. For the same €380,000 price, fees there reach ${$(v.total, lang)}, ${$(c.ecart, lang)} more than in Alpes-Maritimes. The gap disappears for a first-time buyer purchasing a main home, who pays 4.50% in both départements, because the 5% rate never applies to a first main home.` },
+  { q: 'Does a holiday home on the Riviera pay more transfer tax?', a: 'No extra transfer tax: the département’s rate applies to every resale, main home or second home. The difference lies elsewhere, in the council tax on second homes (taxe d’habitation sur les résidences secondaires) and any local surcharge, which are not part of notary fees.' },
+];
+---
+<GuideLayout lang={lang} id="nice" breadcrumbLabel="Nice and Alpes-Maritimes"
+  title={`Notary fees in Nice ${YEAR}: Alpes-Maritimes still at 4.50%`}
+  h1={`Notary fees in Nice and Alpes-Maritimes in ${YEAR}: the big market still at 4.50%`}
+  description={`Notary fees in Nice ${YEAR}: Alpes-Maritimes did not vote the 5% rise. Transfer tax, the gap with Var, calculator for Nice, Cannes, Antibes, Menton and Grasse.`}
+  intro="The most populous of the départements that refused the increase."
+  resume={`Alpes-Maritimes is one of the eleven French départements that did not raise transfer tax to 5%. As of 1 June ${YEAR}, according to the DGFiP table, its départemental rate remains 4.50%, or ${pct(tauxGlobalAncien(4.5), lang, 3)} with the municipal surcharge and the collection fee, against ${pct(tauxGlobalAncien(5), lang, 3)} in neighbouring Var and almost everywhere else. On a high-priced market the advantage shows: for a €380,000 resale flat in Nice, Cannes or Antibes, notary fees come to ${$(n.total, lang)}, ${$(c.ecart, lang)} less than for the same property in Toulon or Fréjus. First-time buyer status brings no extra gain here, since the rate is already 4.50%. The calculator below is set to Alpes-Maritimes. The rate is the same throughout the département, on the coast and in the hinterland alike.`}
+  faqs={faqs}
+  related={[{ href: route('taux450', lang), name: 'Départements at 4.50%', description: 'The other ten.' }, { href: route('comparer', lang), name: 'Compare two départements', description: 'Alpes-Maritimes against Var, in euros.' }, { href: route('hausse', lang), name: 'The rise to 5%', description: 'What the others voted.' }]}
+  sources={src(lang, 'dgfip_dmto', 'impots_droits')}>
+  <div slot="tool" data-outil><NotaireCalculator client:load lang={lang} defaultDep="06" defaultPrix={380000} methodHref={route('method', lang)} /></div>
+  <h2>Alpes-Maritimes and Var, price by price</h2>
+  <ContentTable headers={['Price', 'Alpes-Maritimes (4.50%)', 'Var (5%)', 'Gap']} align={['r', 'r', 'r', 'r']} rows={[250000, 380000, 500000, 750000, 1200000].map((x) => { const k = comparer(x, '83', '06'); return [$(x, lang), $(k.b.total, lang), $(k.a.total, lang), $(k.ecart, lang)]; })} caption="Resale, standard case, disbursements estimated at €500." />
+  <h2>A rate that may still change</h2>
+  <p>The départemental council keeps the option of voting the 5% rate until 31 March 2028. Such a decision would take effect on the date it sets, and this site would apply it once the monthly DGFiP table is published. For a purchase signed far in the future, check the update date shown at the top of the page.</p>
+  <p>Monaco, enclosed within the département, has its own property taxation and is not concerned. In the hinterland as on the coast, the rate is the same throughout the département: only the price and type of property make fees vary.</p>
+</GuideLayout>

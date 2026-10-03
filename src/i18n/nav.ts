@@ -1,0 +1,21 @@
+import { route, AMOUNTS, type Locale } from './routes';
+export interface NavLink { href: string; label: string } export interface NavCategory { label: string; links: NavLink[] }
+const L: Record<Locale, Record<string, string>> = {
+  fr: { home: 'Calcul des frais de notaire', departements: 'Frais par département', comparer: 'Comparer deux départements', tableau: 'Tableau des frais par prix', neuf: 'Frais de notaire dans le neuf', terrain: 'Achat d’un terrain', donation: 'Donation', garage: 'Garage et parking', paris: 'Paris', lyon: 'Lyon et le Rhône', nice: 'Nice et les Alpes-Maritimes', indre: 'Indre (3,80 %)', savoie: 'Savoie', taux450: 'Départements restés à 4,50 %', outremer: 'Outre-mer', ancien: 'Logement ancien', vefa: 'VEFA (sur plan)', dmto: 'Droits de mutation', hausse: 'Hausse à 5 %', primo: 'Primo-accédant', emoluments: 'Émoluments du notaire', remise: 'Remise sur les émoluments', csi: 'Contribution de sécurité immobilière', debours: 'Débours et formalités', mobilier: 'Déduire les meubles', agence: 'Frais d’agence', quipaie: 'Qui paie les frais ?', pret: 'Financer les frais avec le prêt', reduire: 'Réduire ses frais', plusvalue: 'Frais et plus-value', method: 'Méthodologie', faq: 'FAQ', glossary: 'Glossaire', widget: 'Intégrer le calculateur', about: 'À propos', contact: 'Contact', editorial: 'Charte éditoriale', legal: 'Mentions légales', privacy: 'Confidentialité', cookies: 'Cookies' },
+  en: { home: 'Notary fees calculator', departements: 'Fees by département', comparer: 'Compare two départements', tableau: 'Fees table by price', neuf: 'New-build purchase', terrain: 'Buying land', donation: 'Gift (donation)', garage: 'Garage and parking space', paris: 'Paris', lyon: 'Lyon and the Rhône', nice: 'Nice and Alpes-Maritimes', indre: 'Indre (3.80%)', savoie: 'Savoie', taux450: 'Départements still at 4.50%', outremer: 'Overseas France', ancien: 'Resale property', vefa: 'Off-plan (VEFA)', dmto: 'Transfer tax', hausse: 'The rise to 5%', primo: 'First-time buyers', emoluments: 'Notary emoluments', remise: 'Discount on emoluments', csi: 'Land registry contribution (CSI)', debours: 'Disbursements and formalities', mobilier: 'Deducting furniture', agence: 'Agency fees', quipaie: 'Who pays the fees?', pret: 'Financing fees with the mortgage', reduire: 'Reducing your fees', plusvalue: 'Fees and capital gains', method: 'Methodology', faq: 'FAQ', glossary: 'Glossary', widget: 'Embed the calculator', about: 'About', contact: 'Contact', editorial: 'Editorial policy', legal: 'Legal notice', privacy: 'Privacy', cookies: 'Cookies' },
+};
+export const label = (id: string, lang: Locale) => L[lang][id] ?? id;
+const link = (id: string, lang: Locale): NavLink => ({ href: route(id, lang), label: label(id, lang) });
+export const amountLabel = (a: number, lang: Locale) => lang === 'fr' ? `Achat à ${a.toLocaleString('fr-FR')} €` : `€${a.toLocaleString('en-GB')} purchase`;
+export function navCategories(lang: Locale): NavCategory[] {
+  const fr = lang === 'fr';
+  return [
+    { label: fr ? 'Calculateurs' : 'Calculators', links: ['home', 'departements', 'comparer', 'tableau', 'neuf', 'terrain', 'donation', 'garage'].map((i) => link(i, lang)) },
+    { label: fr ? 'Départements' : 'Départements', links: ['paris', 'lyon', 'nice', 'indre', 'savoie', 'taux450', 'outremer'].map((i) => link(i, lang)) },
+    { label: fr ? 'Guides' : 'Guides', links: ['ancien', 'vefa', 'dmto', 'hausse', 'primo', 'emoluments', 'remise', 'csi', 'debours', 'mobilier', 'agence', 'quipaie', 'pret', 'reduire', 'plusvalue'].map((i) => link(i, lang)) },
+    { label: fr ? 'Par prix' : 'By price', links: AMOUNTS.map((a) => ({ href: route(`amount-${a}`, lang), label: amountLabel(a, lang) })) },
+  ];
+}
+export const navDirect = (lang: Locale): NavLink[] => [link('faq', lang), link('method', lang)];
+export const footerColumns = (lang: Locale): NavCategory[] => [...navCategories(lang).slice(0, 3), { label: lang === 'fr' ? 'Le site' : 'Site', links: ['about', 'method', 'faq', 'glossary', 'widget', 'contact', 'editorial', 'legal', 'privacy', 'cookies'].map((i) => link(i, lang)) }];
+export const popularLinks = (lang: Locale): NavLink[] => AMOUNTS.map((a) => ({ href: route(`amount-${a}`, lang), label: amountLabel(a, lang) }));

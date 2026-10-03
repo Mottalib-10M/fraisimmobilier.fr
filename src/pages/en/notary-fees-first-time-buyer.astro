@@ -1,0 +1,44 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { F, $, pct, P, COUNT, tauxGlobalAncien } from '../../lib/tables';
+import { src } from '../../lib/sources';
+const lang = 'en';
+const s = F(220000, '31'), p = F(220000, '31', 'ancien', 'primo');
+const sav = F(220000, '73'), savP = F(220000, '73', 'ancien', 'premiere');
+const faqs = [
+  { q: 'Who counts as a first-time buyer for French notary fees?', a: 'A buyer who has not owned their main home in the two years before the purchase and is buying the property to make it their main home. There is no income or price ceiling. Having owned a holiday home or a buy-to-let does not cost you first-time buyer status; having owned the home you lived in last year does.' },
+  { q: 'How much does a first-time buyer save in France?', a: `The difference between a 5% and a 4.50% départemental tax, collection fee included: about 0.51% of the price. On €220,000 in Haute-Garonne, the tax falls from ${$(s.droits, lang)} to ${$(p.droits, lang)}, ${$(s.droits - p.droits, lang)} less. In a département still at 4.50% or in Indre there is nothing to gain: the rate is already the lowest possible.` },
+  { q: 'Do first-time buyers pay lower fees on a new build?', a: 'No, because a VAT-able new-build sale already enjoys a reduced tax, the same for every buyer. A first-time buyer’s advantage on new builds comes through other schemes, such as the zero-interest loan (PTZ), whose definition of a first-time buyer is the one the transfer tax rule borrows.' },
+  { q: 'What happens if I let the property after buying it?', a: 'The reduced rate is granted because the home becomes your main residence. If you let it or sell it quickly, the tax office can claim the difference in tax, plus late-payment interest. In Savoie, the extra reduction explicitly requires five years of occupation. An unforeseen job transfer may be a circumstance worth arguing.' },
+  { q: 'How do I prove I am a first-time buyer?', a: 'By a statement included in the deed of sale, drafted by the notary and signed by you. The tax office may check it later, for example against your property tax and income tax records. Keep evidence of where you lived over the last two years: leases, rent receipts, or a certificate if you lived with family.' },
+  { q: 'What is the Savoie “first property” reduction?', a: `A reduction voted by the départemental council under article 1594 F septies of the General Tax Code: the départemental rate drops to 4.00% for a property that is the buyer’s first property, provided it is lived in as a main home for at least five years. On €220,000 the tax falls from ${$(sav.droits, lang)} to ${$(savP.droits, lang)}.` },
+];
+---
+<GuideLayout lang={lang} id="primo" breadcrumbLabel="First-time buyers"
+  title={`Notary fees for first-time buyers in France ${YEAR}: 4.50%`}
+  h1={`French notary fees for first-time buyers in ${YEAR}: the 5% increase does not apply to you`}
+  description={`French notary fees for first-time buyers ${YEAR}: transfer tax at 4.50% instead of 5% on a main home, 4.00% in Savoie. Conditions, proof, the saving in euros.`}
+  intro="Two years without owning your main home is enough: there is no income test."
+  resume={`A first-time buyer purchasing a resale main home in France does not pay the transfer tax increase to 5% voted since April 2025. They stay at the 4.50% départemental rate, which brings the overall transfer tax back to ${pct(tauxGlobalAncien(4.5), lang, 3)} instead of ${pct(tauxGlobalAncien(5), lang, 3)}. The rule, from article 116 of the 2025 Finance Act, applies in the ${COUNT.zones5} tax areas that raised their rate. A first-time buyer (primo-accédant) is someone who has not owned their main home in the two years before the purchase, regardless of income or nationality. On a €220,000 house in Toulouse, the saving reaches ${$(s.droits - p.droits, lang)}. Savoie goes further: 4.00% for a first property lived in for five years. Expats renting in France before buying usually qualify. The mini-calculator below shows your own saving.`}
+  faqs={faqs}
+  related={[{ href: route('home', lang), name: 'Notary fees calculator', description: 'Choose “first-time buyer” in the form.' }, { href: route('savoie', lang), name: 'Savoie: 4.00%', description: 'The best treatment for a first property.' }, { href: route('pret', lang), name: 'Financing the fees', description: 'Deposit, loan, PTZ.' }]}
+  sources={src(lang, 'dgfip_dmto', 'notaires_frais', 'sp_ptz')}>
+  <MiniSim client:visible kind="primo" lang={lang} href={route('home', lang)} />
+  <h2>The three conditions</h2>
+  <p>The first concerns your past: you must not have owned your main home during the two years before the purchase. What matters is the home you lived in, not your wealth: a studio let to a tenant or a holiday cottage does not count. The second concerns use: the property you buy must become your main home, the one you live in at least eight months a year. The third concerns the type of purchase: buying a resale property in a département that voted the 5% rate. Elsewhere the rule has no effect.</p>
+  <p>No income, price or size limit applies. That is the main difference with the zero-interest loan, which uses the same first-time buyer definition but imposes income ceilings and geographic zones. It also means that a foreign national moving to France, who rented before buying, qualifies on exactly the same terms as a French buyer.</p>
+  <h2>The saving by price</h2>
+  <ContentTable headers={['Price', 'Tax, standard case (5%)', 'Tax, first-time buyer (4.50%)', 'Saving']} align={['r', 'r', 'r', 'r']} rows={[150000, 200000, 250000, 300000, 400000].map((x) => { const a = F(x, '75'), b = F(x, '75', 'ancien', 'primo'); return [$(x, lang), $(a.droits, lang), $(b.droits, lang), $(a.droits - b.droits, lang)]; })} caption="5% département. Emoluments, CSI and disbursements are the same in both cases." />
+  <p>The saving depends only on the price and the département: it is nil in the eleven départements still at 4.50% and in Indre, where the 3.80% rate is already lower than what a first-time buyer pays elsewhere. It affects only the tax: the notary’s emoluments, the land registry contribution and disbursements stay the same.</p>
+  <h2>Savoie, one notch lower</h2>
+  <p>Article 1594 F septies of the General Tax Code gives départements a further option: to reduce or even abolish the tax on a property that is the buyer’s first property, provided they live in it continuously as a main home for at least five years. As of 1 June {YEAR}, only one département uses it according to the DGFiP table: Savoie, at 4.00%. The calculator applies it when you choose “first property” and a property in Savoie; elsewhere that choice gives the first-time buyer rate.</p>
+  <p>Mind the difference in wording: “first property” is not the same as “first-time buyer”. The text targets the property that is the buyer’s first property, a notion distinct from the two-year rule; have the notary confirm your situation before counting on the 4.00%. The five-year undertaking is written into the deed, and breaking it without an accepted reason exposes you to a tax recovery.</p>
+  <h2>Common mistakes</h2>
+  <p>The most common is thinking first-time buyer status is assessed over a lifetime. A former owner who sold their home three years ago and has rented since becomes a first-time buyer again for transfer tax. Conversely, a buyer who sold their main home six months ago is not one, even if they rent today. The second mistake is forgetting to tell the notary: the statement must appear in the deed, and the notary cannot guess it. The third is assuming the advantage applies to new builds, where the reduced tax already applies to everyone.</p>
+  <h2>And financing</h2>
+  <p>A first-time buyer’s fees remain close to 7% of the price on a resale. As banks often want them covered by the deposit, they are frequently the first hurdle for a first purchase. The guide to <a href={route('pret', lang)}>financing notary fees</a> works out the deposit needed and the cases where a bank agrees to finance part of the fees.</p>
+</GuideLayout>

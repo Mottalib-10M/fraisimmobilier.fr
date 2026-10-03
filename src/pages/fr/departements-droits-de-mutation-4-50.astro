@@ -1,0 +1,32 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import NotaireCalculator from '../../components/calc/NotaireCalculator';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, F, COUNT, tauxGlobalAncien } from '../../lib/tables';
+import { src } from '../../lib/sources';
+const lang = 'fr';
+const ref = F(250000, '75');
+const faqs = [
+  { q: 'Quels départements sont restés à 4,50 % en 2026 ?', a: `Au 1er juin 2026, selon le tableau de la DGFiP : ${COUNT.a450.map((d) => d.fr).join(', ')}. Ils n’ont pas utilisé la faculté de porter leur taux à 5 % ouverte par la loi de finances pour 2025. L’Indre, à 3,80 %, est encore plus bas.` },
+  { q: 'Le primo-accédant gagne-t-il quelque chose dans ces départements ?', a: 'Non. L’avantage du primo-accédant consiste à échapper à la hausse à 5 % ; là où elle n’a pas été votée, tout le monde paie déjà 4,50 %. Un primo-accédant y paie donc exactement les mêmes droits qu’un autre acheteur, et autant que dans un département à 5 % où il bénéficierait de l’exemption.' },
+  { q: 'Ces départements peuvent-ils passer à 5 % ?', a: 'Oui, jusqu’au 31 mars 2028, par une délibération du conseil départemental. La hausse s’appliquerait alors aux actes signés à partir de la date d’entrée en vigueur fixée. Ce site reprend le tableau de la DGFiP à chaque mise à jour ; vérifiez la date affichée en haut de page si votre signature est lointaine.' },
+];
+---
+<GuideLayout lang={lang} id="taux450" breadcrumbLabel="Départements à 4,50 %"
+  title={`Droits de mutation 4,50 % en ${YEAR} : les 11 départements`}
+  h1={`Les départements restés à 4,50 % de droits de mutation en ${YEAR}`}
+  description={`Droits de mutation à 4,50 % en ${YEAR} : les onze départements qui n’ont pas voté la hausse à 5 %. Frais de notaire de chacun, économie, calculateur gratuit.`}
+  intro="Onze départements sur 101 n’ont pas voté la hausse."
+  resume={`Depuis avril 2025, les départements peuvent porter leur taux de droits de mutation de 4,50 % à 5 %. Au 1er juin ${YEAR}, le tableau de la DGFiP montre que onze ne l’ont pas fait : les Hautes-Alpes, les Alpes-Maritimes, l’Ardèche, la Charente, la Drôme, la Lozère, l’Oise, les Hautes-Pyrénées, la Saône-et-Loire, la Guadeloupe et Mayotte. Le taux global des droits y reste de ${pct(tauxGlobalAncien(4.5), lang, 3)}, contre ${pct(tauxGlobalAncien(5), lang, 3)} ailleurs, soit une économie d’environ 0,51 % du prix pour un acheteur qui n’est pas primo-accédant. Pour un logement ancien de 250 000 €, les frais y sont inférieurs de ${$(ref.total - F(250000, '06').total)} à ceux d’un département à 5 %. Le tableau ci-dessous donne les frais de chacun ; l’outre-mer y figure avec son barème d’émoluments propre.`}
+  faqs={faqs}
+  related={[{ href: route('nice', lang), name: 'Nice et les Alpes-Maritimes', description: 'Le plus grand marché à 4,50 %.' }, { href: route('indre', lang), name: 'Indre, 3,80 %', description: 'Encore plus bas.' }, { href: route('hausse', lang), name: 'Hausse à 5 %', description: 'Ce que les autres ont voté.' }]}
+  sources={src(lang, 'dgfip_dmto', 'impots_droits')}>
+  <div slot="tool" data-outil><NotaireCalculator client:load lang={lang} defaultDep="26" defaultPrix={250000} methodHref={route('method', lang)} /></div>
+  <h2>Les onze départements et leurs frais</h2>
+  <ContentTable headers={['Code', 'Département', 'Frais sur 250 000 €', 'Économie face à un département à 5 %']} align={['l', 'l', 'r', 'r']} rows={COUNT.a450.map((d) => { const f = F(250000, d.id); return [d.code, d.fr, $(f.total), $(ref.total - f.total)]; })} caption="Ancien, cas général, débours estimés à 500 €. Outre-mer : barème d’émoluments propre et TVA réduite ou nulle." />
+  <h2>Des profils très différents</h2>
+  <p>La liste mêle des départements alpins et touristiques, des territoires ruraux et des marchés périurbains. Les Alpes-Maritimes, le plus peuplé du groupe, offrent l’écart le plus visible en valeur parce que les prix y sont élevés. L’Oise, limitrophe du Val-d’Oise, offre un taux plus bas à quelques kilomètres de l’Île-de-France, entièrement passée à 5 %. En Guadeloupe et à Mayotte, l’avantage sur les droits se combine avec un barème d’émoluments plus élevé que celui de la métropole, si bien que les frais totaux restent supérieurs à ceux d’un département métropolitain au même taux.</p>
+  <p>Les Hautes-Pyrénées ont en outre voté un taux de 3,80 % pour les ventes par lots assorties d’un droit de préemption du locataire, un cas propre aux immeubles mis en copropriété par un bailleur. Le calculateur applique le taux de droit commun de 4,50 %, celui de la quasi-totalité des ventes.</p>
+</GuideLayout>

@@ -1,0 +1,50 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, F, P } from '../../lib/tables';
+import { fraisAcquisitionPlusValue } from '../../lib/engine/notaire';
+import { src } from '../../lib/sources';
+const lang = 'en';
+const fp = P.plus_value.forfait_frais_acquisition;
+const anc = F(200000, '75'), neuf = F(200000, '75', 'neuf');
+const xa = fraisAcquisitionPlusValue(200000, anc.total), xn = fraisAcquisitionPlusValue(200000, neuf.total);
+const faqs = [
+  { q: 'Do notary fees reduce French capital gains tax?', a: `Yes. When you sell a property other than your main home, the taxable gain is the sale price minus an increased purchase price. Acquisition costs are part of that increase: either their actual documented amount or a flat ${pct(fp, lang, 1)} of the purchase price, whichever is more favourable. They therefore reduce the gain that is taxed.` },
+  { q: 'Should I use actual costs or the 7.5% flat rate?', a: `Almost always the flat rate for a recent new-build purchase, where actual costs are around 2 to 3%. For a resale purchase the comparison is close: on €200,000 in Paris, the actual costs calculated here reach ${$(anc.total, lang)}, against ${$(xa.forfait, lang)} for the flat rate. Loan guarantee costs and an agency commission paid by the buyer can tip the balance towards actual costs.` },
+  { q: 'Which documents should I keep to claim actual costs?', a: 'The notary’s final statement, which itemises the tax, emoluments, disbursements and land registry contribution, and the agency’s invoice if you paid the commission. These must be producible years later, on resale: keep them with the title deed. Without proof, only the flat rate can be used.' },
+  { q: 'Does this apply to my main home?', a: 'No. A gain on the sale of your main home is exempt from income tax and social charges in France, so the question of acquisition costs does not arise. It concerns second homes, rental properties, land and properties received by gift or inheritance, for which the rules differ. Non-residents selling French property are also taxed on the gain, under specific rules.' },
+  { q: 'Does the 7.5% flat rate apply to a property received as a gift?', a: 'No. For a property received for free, the purchase price is the value declared in the gift deed or inheritance return, and only costs actually paid at that time, gift or inheritance tax and deed costs, can be added, with proof. The flat rate is reserved for purchases for consideration.' },
+  { q: 'Do renovation works follow the same logic?', a: `Yes, with another flat rate: ${pct(P.plus_value.forfait_travaux, lang, 0)} of the purchase price for construction, extension or improvement works, if the property has been held for more than ${P.plus_value.forfait_travaux_detention_min_ans} years, instead of actual invoices. Acquisition costs and works add up to increase the purchase price, each at actual cost or the flat rate.` },
+];
+---
+<GuideLayout lang={lang} id="plusvalue" breadcrumbLabel="Fees and capital gains"
+  title={`Notary fees and French capital gains ${YEAR}: actual or 7.5%`}
+  h1="Notary fees and French capital gains tax: what your purchase costs give back on resale"
+  description={`French capital gains on property ${YEAR}: notary fees increase the purchase price, at actual cost or a flat ${pct(P.plus_value.forfait_frais_acquisition, 'en', 1)}. Which to choose, proof, new builds and gifts.`}
+  intro="Costs paid on purchase that come back, in part, when you sell."
+  resume={`French notary fees paid on purchase are not lost for everyone. When you sell a property that is not your main home, the taxable capital gain is calculated on a purchase price increased by acquisition costs: either their actual amount, proved by the notary’s statement, or a flat ${pct(fp, lang, 1)} of the purchase price, as service-public.fr explains. The choice is free and made on resale. For a flat bought for €200,000 on the Paris resale market, the actual costs estimated here come to ${$(anc.total, lang)} and the flat rate to ${$(xa.forfait, lang)}: the higher of the two is used. On a new build, actual costs of ${$(neuf.total, lang)} make the flat rate far more attractive. The benefit then shows in the income tax and social charges avoided, which matters to anyone keeping a French second home.`}
+  faqs={faqs}
+  related={[{ href: route('home', lang), name: 'Notary fees calculator', description: 'Your actual costs on purchase.' }, { href: route('debours', lang), name: 'Disbursements and statement', description: 'The document to keep.' }, { href: route('donation', lang), name: 'Gifts', description: 'Another fee regime.' }]}
+  sources={src(lang, 'sp_plus_value', 'sp_frais_notaire')}>
+  <MiniSim client:visible kind="plusvalue" lang={lang} href={route('home', lang)} />
+  <h2>Flat rate or actual costs: the comparison</h2>
+  <ContentTable headers={['Purchase', 'Estimated actual costs', `Flat rate ${pct(fp, lang, 1)}`, 'More favourable']} align={['l', 'r', 'r', 'l']} rows={[
+    ['Resale, €200,000, Paris', $(anc.total, lang), $(xa.forfait, lang), xa.meilleur === 'forfait' ? 'flat rate' : 'actual'],
+    ['New build, €200,000', $(neuf.total, lang), $(xn.forfait, lang), xn.meilleur === 'forfait' ? 'flat rate' : 'actual'],
+    ...[[150000, '36'], [400000, '06'], [400000, '75']].map(([p, d]) => { const f = F(p as number, d as string); const x = fraisAcquisitionPlusValue(p as number, f.total); return [`Resale, ${$(p as number, lang)}, ${f.dep.en}`, $(f.total, lang), $(x.forfait, lang), x.meilleur === 'forfait' ? 'flat rate' : 'actual']; }),
+  ]} caption="Actual costs exclude loan guarantee costs and agency commission, which can be added." />
+  <p>On resale homes, the comparison is decided by a few hundred euros, because fees on a purchase in a 5% département are around 7.5 to 8% of the price. Loan guarantee costs, if paid, and an agency commission paid by the buyer are added to actual costs and often tip the balance their way. On new builds, the flat rate almost always wins.</p>
+  <h2>How the capital gain is calculated</h2>
+  <p>The gross gain is the difference between the sale price, less selling costs, and the purchase price, plus acquisition costs and works. Allowances for length of ownership are then applied, separately for income tax and for social charges: according to service-public.fr, the gain is fully exempt from income tax after 22 years of ownership and from social charges after 30 years. Every euro added to the purchase price reduces the gain before allowances, and therefore the tax and charges.</p>
+  <h2>Documents to keep from the purchase</h2>
+  <p>The notary’s final statement is the key document: it breaks down precisely the tax, emoluments, formalities, land registry contribution and disbursements. Also keep the deed of sale, the agency invoice if you paid the commission, the loan deed and the guarantee cost statement. These documents must outlive your memory of the purchase: on resale, ten or twenty years later, it is the seller’s notary who calculates the gain, and only what you can prove can be taken into account.</p>
+  <h2>A twenty-year example</h2>
+  <p>Take a flat bought for €200,000 in Paris and sold for €320,000 twenty years later, with no works. With the flat rate, the purchase price used would be €215,000; with the actual costs in the table, it is slightly higher, because they exceed the flat rate by a little over a thousand euros. The gross gain falls by as much, before allowances for length of ownership. The tax difference looks modest, but it is obtained with no effort, provided you kept the notary’s statement for twenty years.</p>
+  <h2>Non-residents selling French property</h2>
+  <p>A non-resident who sells a French second home is also taxed in France on the capital gain, under specific rates and with social charges that depend on the country of residence. The calculation of the gain itself follows the same logic: purchase price increased by acquisition costs, actual or flat rate, then allowances for length of ownership. The French notary handling the sale calculates and withholds the tax from the price. Keeping the purchase statement is therefore just as useful when you live abroad.</p>
+  <h2>What the calculation does not change</h2>
+  <p>Acquisition costs give no deduction in the year of purchase for a main home. For a rental investment, their treatment while you own the property depends on the tax regime chosen, and it can affect the capital gain on resale: depreciation deducted on furnished lettings by non-professional landlords (LMNP), for example, is added back for sales made since 15 February 2025. This site does not calculate the capital gains tax itself.</p>
+</GuideLayout>

@@ -1,0 +1,37 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import CompareCalculator from '../../components/calc/CompareCalculator';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, F } from '../../lib/tables';
+import { comparer } from '../../lib/engine/notaire';
+import { src } from '../../lib/sources';
+const lang = 'fr';
+const c = comparer(300000, '75', '36');
+const pairs: Array<[string, string, string]> = [['06', '83', 'Nice ou Toulon'], ['60', '95', 'Oise ou Val-d’Oise'], ['26', '38', 'Drôme ou Isère'], ['71', '21', 'Saône-et-Loire ou Côte-d’Or'], ['16', '17', 'Charente ou Charente-Maritime'], ['36', '37', 'Indre ou Indre-et-Loire']];
+const faqs = [
+  { q: 'Combien peut-on économiser en achetant dans le département voisin ?', a: `Jusqu’à 1,23 % du prix entre un département à 5 % et l’Indre, environ 0,51 % entre un département à 5 % et un département resté à 4,50 %. Sur 300 000 €, l’écart entre Paris et l’Indre atteint ${$(c.ecart)}. Entre deux départements qui appliquent le même taux, il est nul : seuls les débours peuvent varier.` },
+  { q: 'Le comparateur tient-il compte du statut de primo-accédant ?', a: 'Oui. Choisissez « primo-accédant » : dans un département à 5 %, le taux tombe à 4,50 %, et l’écart avec un département resté à 4,50 % disparaît. Seule l’Indre, à 3,80 %, reste alors moins chère. Cela change la lecture : pour un primo-accédant, la carte des taux est presque uniforme.' },
+  { q: 'Les frais de notaire suffisent-ils à choisir un département ?', a: 'Non. L’écart de frais se paie une fois, à l’achat ; le prix au mètre carré, la taxe foncière, les transports et l’emploi pèsent bien plus sur la durée. L’écart de droits est un élément de comparaison entre deux biens proches de part et d’autre d’une limite départementale, pas un critère de choix de vie.' },
+  { q: 'Pourquoi deux départements à 5 % donnent-ils parfois des frais différents ?', a: 'Dans le comparateur, ils donnent les mêmes frais pour le même prix, sauf outre-mer, où le barème des émoluments et la TVA diffèrent. Dans la réalité, les débours peuvent varier d’un dossier à l’autre, et le Calvados applique un abattement sur certaines acquisitions, que le comparateur signale sans le calculer.' },
+];
+---
+<GuideLayout lang={lang} id="comparer" breadcrumbLabel="Comparer deux départements"
+  title={`Comparer les frais de notaire de deux départements ${YEAR}`}
+  h1="Comparer les frais de notaire de deux départements pour le même achat"
+  description={`Comparez les frais de notaire de deux départements en ${YEAR} : même prix, deux taux de droits de mutation, l’écart en euros. Primo-accédant, outre-mer, voisins.`}
+  intro="Deux biens de part et d’autre d’une limite départementale ne coûtent pas les mêmes frais."
+  resume={`Les frais de notaire d’un même achat changent d’un département à l’autre, parce que chaque conseil départemental vote son taux de droits de mutation. Le comparateur calcule les frais complets dans deux départements pour le prix que vous indiquez et affiche l’écart en euros. Entre Paris, à 5 %, et l’Indre, seul département à 3,80 %, il atteint ${$(c.ecart)} sur un logement ancien de 300 000 €. Entre un département à 5 % et l’un des onze restés à 4,50 %, il est d’environ 0,51 % du prix. Les paires voisines aux taux différents sont rares mais réelles : Alpes-Maritimes et Var, Oise et Val-d’Oise, Drôme et Isère, Charente et Charente-Maritime. Pour un primo-accédant, la plupart des écarts disparaissent.`}
+  faqs={faqs}
+  related={[{ href: route('departements', lang), name: 'Les 101 départements', description: 'Le tableau complet.' }, { href: route('nice', lang), name: 'Nice et les Alpes-Maritimes', description: 'Le grand marché resté à 4,50 %.' }, { href: route('indre', lang), name: 'Indre', description: 'Le seul taux à 3,80 %.' }]}
+  sources={src(lang, 'dgfip_dmto', 'impots_droits')}>
+  <div slot="tool" data-outil><CompareCalculator client:load lang={lang} /></div>
+  <h2>Des voisins qui n’ont pas voté le même taux</h2>
+  <ContentTable headers={['Paire', 'Taux', 'Frais sur 300 000 €', 'Écart']} align={['l', 'l', 'l', 'r']} rows={pairs.map(([a, b, label]) => { const x = comparer(300000, a, b); return [label, `${pct(x.a.tauxDep)} / ${pct(x.b.tauxDep)}`, `${$(x.a.total)} / ${$(x.b.total)}`, $(Math.abs(x.ecart))]; })} caption="Ancien, cas général, débours estimés à 500 €." />
+  <h2>Quand la comparaison a un sens</h2>
+  <p>L’écart de frais compte surtout pour un acheteur qui cherche dans une zone à cheval sur deux départements : la vallée du Rhône entre Drôme et Isère, l’arrière-pays entre Alpes-Maritimes et Var, le nord francilien entre Oise et Val-d’Oise. À prix égal, le bien situé du côté du département resté à 4,50 % coûte quelques milliers d’euros de moins à l’achat. Pour le reste du territoire, presque tout entier à 5 %, le département ne départage plus grand-chose.</p>
+  <p>La comparaison se lit aussi à l’envers : un vendeur dans un département resté à 4,50 % peut faire valoir à ses acheteurs des frais plus faibles qu’à quelques kilomètres. Et l’écart se réduit à rien pour un primo-accédant, qui paie 4,50 % partout où le taux de 5 % a été voté.</p>
+  <h2>Ce que le comparateur suppose</h2>
+  <p>Une vente dans l’ancien, au même prix dans les deux départements, avec des débours identiques. Il n’intègre ni les différences de prix immobiliers, ni la taxe foncière, ni les frais de garantie du prêt. Pour un achat dans le neuf, inutile de comparer : la taxe réduite est la même partout en France.</p>
+</GuideLayout>

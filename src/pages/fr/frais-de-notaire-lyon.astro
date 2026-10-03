@@ -1,0 +1,32 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import NotaireCalculator from '../../components/calc/NotaireCalculator';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, F, tauxGlobalAncien } from '../../lib/tables';
+import { src } from '../../lib/sources';
+const lang = 'fr';
+const m = F(290000, '69m'), r = F(290000, '69r'), n = F(290000, '69m', 'neuf');
+const faqs = [
+  { q: 'Les frais de notaire sont-ils différents à Lyon et dans le reste du Rhône ?', a: `Pas aujourd’hui. La métropole de Lyon et le département du Rhône votent chacun leur taux, mais tous deux appliquent 5 % au 1er juin 2026 selon la DGFiP. Pour un appartement ancien de 290 000 €, les frais sont donc de ${$(m.total)} à Villeurbanne comme à Villefranche-sur-Saône.` },
+  { q: 'Pourquoi la métropole de Lyon vote-t-elle son propre taux ?', a: 'Depuis 2015, la métropole de Lyon exerce sur son territoire les compétences d’un département, dont la perception des droits de mutation. Le reste du Rhône garde un conseil départemental distinct. Les deux collectivités délibèrent séparément, et le tableau de la DGFiP leur consacre deux lignes : elles pourraient appliquer des taux différents.' },
+  { q: 'Acheter dans le neuf à Lyon change-t-il beaucoup les frais ?', a: `Oui, comme partout : pour 290 000 €, les frais tombent à ${$(n.total)} dans une vente soumise à la TVA, contre ${$(m.total)} dans l’ancien. Le taux réduit ne dépend pas de la collectivité, et l’écart représente environ cinq points et demi du prix.` },
+];
+---
+<GuideLayout lang={lang} id="lyon" breadcrumbLabel="Lyon et le Rhône"
+  title={`Frais de notaire Lyon ${YEAR} : métropole et Rhône à 5 %`}
+  h1={`Frais de notaire à Lyon en ${YEAR} : une métropole, un département, deux délibérations`}
+  description={`Frais de notaire à Lyon et dans le Rhône ${YEAR} : la métropole et le département votent chacun leur taux, tous deux à 5 %. Calcul pour l’ancien ou le neuf.`}
+  intro="Le seul département coupé en deux pour les droits de mutation."
+  resume={`Le Rhône est un cas unique dans le tableau des droits de mutation : depuis 2015, la métropole de Lyon exerce les compétences d’un département sur son territoire, dont la fixation et la perception des droits de mutation, tandis que le reste du territoire relève du conseil départemental du Rhône. Les deux collectivités délibèrent séparément. Au 1er juin ${YEAR}, selon la DGFiP, elles appliquent toutes deux le taux de 5 %, avec 4,50 % pour les primo-accédants : le taux global atteint ${pct(tauxGlobalAncien(5), lang, 3)} des deux côtés. Pour un appartement ancien de 290 000 €, les frais s’élèvent à ${$(m.total)} à Lyon comme dans le Beaujolais. Le calculateur distingue les deux lignes pour suivre toute future divergence, et applique au primo-accédant le taux de 4,50 % de part et d’autre.`}
+  faqs={faqs}
+  related={[{ href: route('agence', lang), name: 'Frais d’agence', description: 'Un exemple chiffré à Lyon.' }, { href: route('departements', lang), name: 'Tous les départements', description: 'Les 102 lignes du tableau.' }, { href: route('vefa', lang), name: 'VEFA', description: 'Le neuf, très présent dans la métropole.' }]}
+  sources={src(lang, 'dgfip_dmto', 'impots_droits')}>
+  <div slot="tool" data-outil><NotaireCalculator client:load lang={lang} defaultDep="69m" defaultPrix={290000} methodHref={route('method', lang)} /></div>
+  <h2>Métropole de Lyon et Rhône côte à côte</h2>
+  <ContentTable headers={['Prix', 'Métropole de Lyon', 'Rhône hors métropole', 'Neuf (les deux)']} align={['r', 'r', 'r', 'r']} rows={[180000, 290000, 400000, 600000].map((x) => [$(x), $(F(x, '69m').total), $(F(x, '69r').total), $(F(x, '69m', 'neuf').total)])} caption="Ancien, cas général, débours estimés à 500 €." />
+  <h2>Pourquoi suivre les deux lignes</h2>
+  <p>Les deux collectivités ont aujourd’hui le même taux, mais rien ne les y oblige. Si l’une revenait à 4,50 % avant la fin de la période de hausse, le 31 mars 2028, un acheteur hésitant entre une commune de la métropole et une commune voisine du Rhône verrait apparaître un écart d’environ 0,51 % du prix. Ce site reprend chaque mise à jour du tableau de la DGFiP et affiche la date de vérification.</p>
+  <p>Le marché lyonnais compte une forte part de logements neufs et de ventes en l’état futur d’achèvement. Pour ces achats, la question de la collectivité ne se pose pas : la taxe réduite est la même partout. Le guide <a href={route('vefa', lang)}>VEFA</a> détaille le calendrier des paiements.</p>
+</GuideLayout>

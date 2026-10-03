@@ -1,0 +1,38 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { webPageSchema, breadcrumbSchema } from '../../lib/seo';
+import { pct, $, P, tauxGlobalAncien, tauxGlobalNeuf } from '../../lib/tables';
+const lang = 'fr';
+const title = `Glossaire des frais de notaire ${YEAR} : les mots du décompte`;
+const description = `Glossaire des frais de notaire ${YEAR} : DMTO, émoluments, débours, CSI, assiette, primo-accédant, VEFA, provision. Des définitions courtes, chiffres à jour.`;
+const path = route('glossary', lang);
+const jsonLd = [webPageSchema({ name: title, description, path, lang }), breadcrumbSchema([{ name: 'Accueil', path: route('home', lang) }, { name: 'Glossaire', path }])];
+const T: Array<[string, string, string?]> = [
+  ['Acte authentique', 'Acte de vente signé devant le notaire, qui opère le transfert de propriété et rend les frais exigibles.'],
+  ['Assiette', 'Montant sur lequel un taux est appliqué : le prix stipulé, diminué des meubles listés et de la commission d’agence à la charge de l’acquéreur.', 'mobilier'],
+  ['Compromis de vente', 'Avant-contrat qui engage vendeur et acheteur ; aucun frais d’acquisition n’est dû à ce stade, hors dépôt de garantie.'],
+  ['Contribution de sécurité immobilière (CSI)', `Taxe de ${pct(P.csi.taux)} du prix, au minimum ${$(P.csi.minimum)}, perçue par l’État pour la publication de la vente.`, 'csi'],
+  ['Débours', 'Sommes avancées par le notaire pour votre compte à des tiers et refacturées sans marge.', 'debours'],
+  ['Droits de mutation à titre onéreux (DMTO)', `Impôt sur la vente : taxe départementale, taxe communale et frais d’assiette, ${pct(tauxGlobalAncien(5), lang, 3)} du prix dans un département à 5 %.`, 'dmto'],
+  ['Émoluments', 'Rémunération réglementée du notaire pour un acte tarifé, identique dans toutes les études.', 'emoluments'],
+  ['Frais d’assiette et de recouvrement', `Prélèvement de l’État égal à ${pct(P.dmto.frais_assiette_droit_commun)} de la taxe départementale (${pct(P.dmto.frais_assiette_taux_reduit)} au taux réduit).`],
+  ['Honoraires', 'Rémunération libre du notaire pour une prestation non tarifée, fixée par convention.'],
+  ['Primo-accédant', 'Acheteur non propriétaire de sa résidence principale depuis deux ans, qui échappe à la hausse des droits à 5 %.', 'primo'],
+  ['Provision sur frais', 'Somme versée au notaire avant la signature, ajustée au compte définitif.'],
+  ['Publicité foncière', 'Inscription de la vente au fichier immobilier, qui la rend opposable à tous.'],
+  ['Remise', `Réduction facultative d’au plus ${pct(P.emoluments.remise_max, lang, 0)} sur la part des émoluments calculée au-delà de ${$(P.emoluments.remise_seuil)}.`, 'remise'],
+  ['Taux réduit', `Taxe de publicité foncière des ventes soumises à la TVA : ${pct(tauxGlobalNeuf(), lang, 3)} du prix, frais d’assiette compris.`, 'neuf'],
+  ['VEFA', 'Vente en l’état futur d’achèvement : achat sur plan auprès d’un promoteur, soumis à la TVA et au taux réduit.', 'vefa'],
+];
+---
+<PageLayout title={title} description={description} lang={lang} jsonLd={jsonLd} breadcrumbs={[{ label: 'Glossaire' }]}>
+  <div class="prose prose-slate max-w-none">
+    <h1>Glossaire des frais de notaire</h1>
+    <p>Les termes qui figurent sur un décompte de notaire ou dans les guides du site, avec les chiffres en vigueur. Les définitions renvoient au guide qui développe chaque notion.</p>
+    <dl>
+      {T.map(([t, d, id]) => <><dt><strong>{t}</strong></dt><dd>{d}{id && <> <a href={route(id, lang)}>Lire le guide</a>.</>}</dd></>)}
+    </dl>
+  </div>
+</PageLayout>

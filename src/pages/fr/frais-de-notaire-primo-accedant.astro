@@ -1,0 +1,44 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { F, $, pct, P, COUNT, tauxGlobalAncien } from '../../lib/tables';
+import { src } from '../../lib/sources';
+const lang = 'fr';
+const s = F(220000, '31'), p = F(220000, '31', 'ancien', 'primo');
+const sav = F(220000, '73'), savP = F(220000, '73', 'ancien', 'premiere');
+const faqs = [
+  { q: 'Qui est primo-accédant pour les frais de notaire ?', a: 'L’acheteur qui n’a pas été propriétaire de sa résidence principale au cours des deux années précédant l’achat, et qui achète le logement pour en faire sa résidence principale. Il n’y a ni plafond de revenus, ni plafond de prix. Avoir possédé une résidence secondaire ou un investissement locatif ne fait pas perdre la qualité de primo-accédant ; avoir été propriétaire de son logement l’année dernière, si.' },
+  { q: 'Combien économise un primo-accédant ?', a: `La différence entre 5 % et 4,50 % de taxe départementale, frais d’assiette compris : environ 0,51 % du prix. Sur 220 000 € en Haute-Garonne, les droits passent de ${$(s.droits)} à ${$(p.droits)}, soit ${$(s.droits - p.droits)} de moins. Dans un département resté à 4,50 % ou dans l’Indre, il n’y a rien à gagner : le taux est déjà le plus bas possible.` },
+  { q: 'Le primo-accédant paie-t-il moins de frais dans le neuf ?', a: `Non, parce que le neuf soumis à la TVA bénéficie déjà d’une taxe réduite, identique pour tous les acheteurs. L’avantage du primo-accédant dans le neuf passe par d’autres dispositifs, comme le prêt à taux zéro, dont la définition de primo-accédant est d’ailleurs celle que reprend la règle des droits de mutation.` },
+  { q: 'Que se passe-t-il si je loue le logement après l’achat ?', a: 'Le taux réduit est accordé parce que le logement devient votre résidence principale. Si vous le louez ou le revendez rapidement, l’administration peut réclamer la différence de droits, majorée d’intérêts de retard. En Savoie, la réduction supplémentaire est explicitement conditionnée à une occupation de cinq ans. Une mutation professionnelle imprévue peut être une circonstance à faire valoir.' },
+  { q: 'Comment prouver que je suis primo-accédant ?', a: 'Par une déclaration insérée dans l’acte de vente, que le notaire rédige et que vous signez. L’administration peut ensuite contrôler, par exemple à partir de vos déclarations de taxe foncière et de revenus. Gardez les justificatifs de vos deux dernières années de logement : baux, quittances, attestation d’hébergement si vous viviez chez vos parents.' },
+  { q: 'Qu’est-ce que la réduction « première propriété » de la Savoie ?', a: `Une réduction votée par le conseil départemental sur le fondement de l’article 1594 F septies du code général des impôts : le taux départemental tombe à 4,00 % pour un bien qui constitue la première propriété de l’acheteur, à condition de l’occuper comme résidence principale pendant cinq ans. Sur 220 000 €, les droits passent de ${$(sav.droits)} à ${$(savP.droits)}.` },
+];
+---
+<GuideLayout lang={lang} id="primo" breadcrumbLabel="Primo-accédant"
+  title={`Frais de notaire primo-accédant ${YEAR} : taux 4,50 % et Savoie`}
+  h1={`Frais de notaire du primo-accédant en ${YEAR} : la hausse à 5 % ne vous concerne pas`}
+  description={`Frais de notaire primo-accédant ${YEAR} : droits à 4,50 % au lieu de 5 % pour une résidence principale, 4,00 % en Savoie. Conditions, preuve, économie chiffrée.`}
+  intro="Deux ans sans être propriétaire de sa résidence principale suffisent : pas de condition de revenus."
+  resume={`Un primo-accédant qui achète sa résidence principale dans l’ancien ne paie pas la hausse des droits de mutation à 5 % votée depuis avril 2025. Il reste au taux départemental de 4,50 %, ce qui ramène le taux global des droits à ${pct(tauxGlobalAncien(4.5), lang, 3)} au lieu de ${pct(tauxGlobalAncien(5), lang, 3)}. La règle, issue de l’article 116 de la loi de finances pour 2025, vaut dans les ${COUNT.zones5} zones qui ont relevé leur taux. Est primo-accédant celui qui n’a pas été propriétaire de sa résidence principale au cours des deux années précédant l’achat, sans condition de ressources. Sur une maison de 220 000 € à Toulouse, l’économie atteint ${$(s.droits - p.droits)}. La Savoie va plus loin : 4,00 % pour une première propriété occupée cinq ans.`}
+  faqs={faqs}
+  related={[{ href: route('home', lang), name: 'Calcul des frais de notaire', description: 'Choisissez « primo-accédant » dans le formulaire.' }, { href: route('savoie', lang), name: 'Savoie : 4,00 %', description: 'La première propriété la mieux traitée de France.' }, { href: route('pret', lang), name: 'Financer les frais', description: 'Apport, prêt, PTZ.' }]}
+  sources={src(lang, 'dgfip_dmto', 'notaires_frais', 'sp_ptz')}>
+  <MiniSim client:visible kind="primo" lang={lang} href={route('home', lang)} />
+  <h2>Les trois conditions</h2>
+  <p>La première porte sur votre passé : ne pas avoir été propriétaire de votre résidence principale au cours des deux années qui précèdent l’achat. On regarde le logement que vous occupiez, pas votre patrimoine : un studio loué à un tiers ou une maison de vacances ne comptent pas. La deuxième porte sur l’usage : le bien acheté doit devenir votre résidence principale, celle que vous occupez au moins huit mois par an. La troisième porte sur la nature de l’achat : une acquisition à titre onéreux dans l’ancien, dans un département qui a voté le taux de 5 %. Dans les autres, la règle n’a pas d’objet.</p>
+  <p>Aucune limite de revenus, de prix ou de surface ne s’ajoute. C’est la principale différence avec le prêt à taux zéro, qui reprend la même définition du primo-accédant mais impose des plafonds de ressources et des zones géographiques.</p>
+  <h2>L’économie, département par département</h2>
+  <ContentTable headers={['Prix', 'Droits, cas général (5 %)', 'Droits, primo-accédant (4,50 %)', 'Économie']} align={['r', 'r', 'r', 'r']} rows={[150000, 200000, 250000, 300000, 400000].map((x) => { const a = F(x, '75'), b = F(x, '75', 'ancien', 'primo'); return [$(x), $(a.droits), $(b.droits), $(a.droits - b.droits)]; })} caption="Département à 5 %. Les émoluments, la CSI et les débours sont identiques dans les deux cas." />
+  <p>L’économie ne dépend que du prix et du département : elle est nulle dans les onze départements restés à 4,50 % et dans l’Indre, où le taux de 3,80 % est déjà plus bas que celui du primo-accédant ailleurs. Elle ne touche que la part fiscale : les émoluments du notaire, la contribution de sécurité immobilière et les débours restent les mêmes.</p>
+  <h2>La Savoie, un cran plus bas</h2>
+  <p>L’article 1594 F septies du code général des impôts ouvre aux départements une possibilité supplémentaire : réduire, voire supprimer, les droits sur l’acquisition d’un bien qui constitue la première propriété de l’acheteur, à condition qu’il l’occupe à titre de résidence principale de façon continue pendant au moins cinq ans. Au 1er juin {YEAR}, un seul département l’utilise selon le tableau de la DGFiP : la Savoie, avec un taux de 4,00 %. Le calculateur l’applique lorsque vous choisissez « première propriété » et un bien situé en Savoie ; ailleurs, ce choix donne le taux du primo-accédant.</p>
+  <p>Attention à la différence de vocabulaire : « première propriété » n’est pas « primo-accédant ». Le texte vise le bien qui constitue la première propriété de l’acheteur, une notion distincte de la règle des deux ans ; faites confirmer votre situation par le notaire avant de compter sur les 4,00 %. Et l’engagement de cinq ans est écrit dans l’acte : le rompre sans motif reconnu expose au rappel des droits.</p>
+  <h2>Les erreurs fréquentes</h2>
+  <p>La plus courante est de croire que la qualité de primo-accédant s’apprécie sur toute une vie. Un ancien propriétaire qui a vendu son logement il y a trois ans et loue depuis redevient primo-accédant pour les droits de mutation. À l’inverse, un acheteur qui a vendu sa résidence principale six mois plus tôt ne l’est pas, même s’il est locataire aujourd’hui. La deuxième erreur est d’oublier de le dire au notaire : la mention doit figurer dans l’acte, le notaire ne peut pas la deviner. La troisième est de croire que l’avantage joue dans le neuf, où la taxe réduite s’applique déjà à tous.</p>
+  <h2>Et pour le financement</h2>
+  <p>Les frais d’un primo-accédant restent proches de 7 % du prix dans l’ancien. Les banques demandant souvent qu’ils soient couverts par l’apport, c’est souvent le premier obstacle d’un premier achat. Le guide <a href={route('pret', lang)}>financer les frais de notaire</a> chiffre l’apport nécessaire et les cas où la banque accepte de financer une partie des frais.</p>
+</GuideLayout>

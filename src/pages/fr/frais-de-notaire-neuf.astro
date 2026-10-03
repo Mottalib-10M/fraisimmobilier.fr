@@ -1,0 +1,34 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import NotaireCalculator from '../../components/calc/NotaireCalculator';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, F, P, tauxGlobalNeuf } from '../../lib/tables';
+import { src } from '../../lib/sources';
+const lang = 'fr';
+const n = F(280000, '75', 'neuf'), a = F(280000, '75');
+const faqs = [
+  { q: 'Quels frais de notaire pour un logement neuf ?', a: `Entre 2 et 3 % du prix, contre 7 à 8 % dans l’ancien. Pour un appartement neuf de 280 000 €, le calculateur donne ${$(n.total)} : ${$(n.droits)} de taxe de publicité foncière au taux réduit de ${pct(tauxGlobalNeuf(), lang, 3)}, ${$(n.emoluments.ttc)} d’émoluments TTC, le forfait de formalités, la contribution de sécurité immobilière et les débours.` },
+  { q: 'Un logement de moins de cinq ans est-il toujours « neuf » pour les frais ?', a: 'Non. Le taux réduit dépend de la TVA, et donc du vendeur. Un logement achevé depuis moins de cinq ans, revendu par un professionnel assujetti, reste soumis à la TVA et au taux réduit. Le même logement revendu par un particulier qui l’habitait n’est pas soumis à la TVA : son acheteur paie les droits de droit commun, comme dans l’ancien.' },
+  { q: 'Le département change-t-il les frais dans le neuf ?', a: `Pour la taxe, non : le taux réduit de ${pct(P.dmto.taux_reduit_neuf)} et ses frais d’assiette sont identiques dans les 101 départements, puisque le département ne peut pas le moduler. Seul l’outre-mer diffère, par son barème d’émoluments et sa TVA. C’est pourquoi le calculateur de cette page ignore le statut de primo-accédant, sans effet dans le neuf.` },
+  { q: 'Les frais de notaire dans le neuf incluent-ils la TVA immobilière ?', a: 'Non. La TVA immobilière, en général de 20 %, est comprise dans le prix de vente affiché par le promoteur. Les frais de notaire s’ajoutent à ce prix TTC. Seuls les émoluments et les formalités du notaire supportent une TVA propre, la même que dans l’ancien.' },
+];
+---
+<GuideLayout lang={lang} id="neuf" breadcrumbLabel="Frais dans le neuf"
+  title={`Frais de notaire neuf ${YEAR} : le calcul au taux réduit`}
+  h1={`Frais de notaire dans le neuf en ${YEAR} : le calculateur du taux réduit`}
+  description={`Frais de notaire dans le neuf ${YEAR} : taxe réduite de 0,715 % au lieu des droits de mutation, 2 à 3 % du prix. Calcul, conditions de la TVA, écart avec l’ancien.`}
+  intro="Le même notaire, le même barème, mais une taxe divisée par neuf."
+  resume={`Dans le neuf, les frais de notaire tombent à 2 ou 3 % du prix parce que la vente est soumise à la TVA immobilière : elle ne paie pas les droits de mutation de droit commun, mais une taxe de publicité foncière de ${pct(P.dmto.taux_reduit_neuf)}, augmentée de ${pct(P.dmto.frais_assiette_taux_reduit)} de frais d’assiette, soit ${pct(tauxGlobalNeuf(), lang, 3)} du prix, dans tous les départements. Les émoluments du notaire, le forfait de formalités, la contribution de sécurité immobilière et les débours restent ceux d’une vente classique. Pour un appartement neuf de 280 000 €, les frais s’élèvent à ${$(n.total)}, contre ${$(a.total)} pour un bien ancien au même prix dans un département à 5 %. Le calculateur ci-dessous est réglé sur ce régime ; il concerne les logements vendus par un promoteur, les VEFA et les reventes par un professionnel dans les cinq ans de l’achèvement.`}
+  faqs={faqs}
+  related={[{ href: route('vefa', lang), name: 'VEFA', description: 'Appels de fonds et calendrier.' }, { href: route('terrain', lang), name: 'Terrain à bâtir', description: 'Promoteur ou particulier.' }, { href: route('ancien', lang), name: 'Frais dans l’ancien', description: 'Le taux plein et ses variations.' }]}
+  sources={src(lang, 'notaires_frais', 'sp_frais_notaire')}>
+  <div slot="tool" data-outil><NotaireCalculator client:load lang={lang} defaultType="neuf" lockType defaultPrix={280000} methodHref={route('method', lang)} /></div>
+  <h2>Neuf et ancien au même prix</h2>
+  <ContentTable headers={['Prix', 'Neuf', 'Ancien (5 %)', 'Écart']} align={['r', 'r', 'r', 'r']} rows={[150000, 200000, 280000, 350000, 500000].map((x) => { const a1 = F(x, '75', 'neuf'), b1 = F(x, '75'); return [$(x), $(a1.total), $(b1.total), $(b1.total - a1.total)]; })} />
+  <h2>Ce qui fait un achat « neuf » pour le fisc</h2>
+  <p>Trois cas relèvent du taux réduit : l’achat d’un logement neuf auprès d’un promoteur, une fois l’immeuble achevé ; la vente en l’état futur d’achèvement, sur plan ; la revente par un professionnel assujetti à la TVA d’un immeuble achevé depuis moins de cinq ans. S’y ajoute le terrain à bâtir acheté à un assujetti, comme un lotisseur. Un particulier qui revend sa maison de trois ans, lui, n’est pas assujetti : la vente est taxée comme dans l’ancien. C’est le vendeur qui fait le régime, pas l’âge du bien.</p>
+  <h2>Ce que le neuf ne change pas</h2>
+  <p>Le notaire applique le même barème d’émoluments : sur 280 000 €, {$(n.emoluments.ttc)} TTC dans le neuf comme dans l’ancien. La contribution de sécurité immobilière reste de {pct(P.csi.taux)} du prix. Les frais de garantie du prêt s’ajoutent dans les mêmes conditions. Dans une vente soumise à la TVA, la rémunération du notaire devient ainsi le premier poste des frais, devant la taxe : l’inverse exact de l’ancien.</p>
+</GuideLayout>

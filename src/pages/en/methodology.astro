@@ -1,0 +1,56 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import Sources from '../../components/Sources.astro';
+import { YEAR, LAST_UPDATED } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { webPageSchema, breadcrumbSchema } from '../../lib/seo';
+import { $, pct, P, COUNT, tauxGlobalAncien, tauxGlobalNeuf, emolumentsBruts } from '../../lib/tables';
+import { displayDate } from '../../lib/format';
+const lang = 'en';
+const title = `Notary fees calculation in France ${YEAR}: method, sources`;
+const description = `How this site calculates French notary fees ${YEAR}: DGFiP table of 1 June, scale A444-91, overseas scales, CSI, tests on official examples, known limits.`;
+const path = route('method', lang);
+const jsonLd = [webPageSchema({ name: title, description, path, lang }), breadcrumbSchema([{ name: 'Home', path: route('home', lang) }, { name: 'Methodology', path }])];
+---
+<PageLayout title={title} description={description} lang={lang} jsonLd={jsonLd} breadcrumbs={[{ label: 'Methodology' }]}>
+  <div class="prose prose-slate max-w-none">
+    <h1>Methodology: how notary fees are calculated here</h1>
+    <p>This page describes the formula the calculator applies, the data it uses, how we check it and what it cannot do. The parameters were checked against their sources on {displayDate(P.retrieved_at, 'en-GB')}. All calculations run in your browser; nothing you enter is sent anywhere.</p>
+    <h2>The formula</h2>
+    <p>Fees = transfer tax + proportional emoluments incl. VAT + flat formalities fee incl. VAT + land registry contribution + disbursements. The price entered is the net seller price; the value of any listed furniture is deducted from it before anything else.</p>
+    <ul>
+      <li><strong>Transfer tax, resale.</strong> Base × (départemental rate + municipal surcharge of {pct(P.dmto.taxe_communale, lang)} + départemental rate × {pct(P.dmto.frais_assiette_droit_commun, lang)}). Départemental rate: the one in the DGFiP table of 1 June {YEAR}; 4.50% for a first-time buyer in a 5% département; 4.00% in Savoie for a first property.</li>
+      <li><strong>Tax on a VAT-able sale.</strong> Base × {pct(P.dmto.taux_reduit_neuf, lang)} × (1 + {pct(P.dmto.frais_assiette_taux_reduit, lang)}) = {pct(tauxGlobalNeuf(), lang, 5)}.</li>
+      <li><strong>Emoluments.</strong> Bracket scale of article A444-91 of the Commercial Code, with the specific scales for Guadeloupe, Martinique, French Guiana, Réunion and Mayotte; minimum {$(P.emoluments.minimum_ht, lang)} excluding VAT, cap at {pct(P.emoluments.plafond_pourcentage_valeur, lang, 0)} of the price; optional discount of up to {pct(P.emoluments.remise_max, lang, 0)} on the part calculated above {$(P.emoluments.remise_seuil, lang)}; VAT of the zone.</li>
+      <li><strong>Formalities.</strong> Flat fee of {$(P.emoluments.formalites_forfait_ht, lang, 2)} excluding VAT (article A444-171, no. 194), VAT of the zone.</li>
+      <li><strong>Land registry contribution.</strong> {pct(P.csi.taux, lang)} of the base, minimum {$(P.csi.minimum, lang)}.</li>
+      <li><strong>Disbursements.</strong> Entered by the user, {$(P.debours_defaut, lang)} by default: a working assumption, not an official figure.</li>
+    </ul>
+    <h2>The data</h2>
+    <ContentTable headers={['Data', 'Source', 'Version']} align={['l', 'l', 'l']} rows={[
+      ['Départemental rates (101 départements, Lyon and Rhône separate)', 'DGFiP, registration duties table', '1 June 2026'],
+      ['Municipal surcharge, collection fee, reduced rate, CSI, formalities, discounts', 'Notaires de France, acquisition costs', `checked ${P.retrieved_at}`],
+      ['Emolument scales, mainland and overseas', 'Service-Public.fr, page F17701', 'checked 5 August 2026'],
+      ['Gift tax and gift emoluments', 'Service-Public.fr, pages F14203 and F1404', 'checked 13 May 2026'],
+      ['Capital gains flat rates', 'Service-Public.fr, page F10864', 'checked 15 April 2026'],
+    ]} />
+    <p>The DGFiP table of 1 June {YEAR} lists {COUNT.zones5} tax areas at 5% ({pct(tauxGlobalAncien(5), lang, 4)} in total), {COUNT.a450.length} départements at 4.50% ({pct(tauxGlobalAncien(4.5), lang, 5)}) and Indre at 3.80% ({pct(tauxGlobalAncien(3.8), lang, 5)}). The data lives in the site’s <code>params-2026.json</code> and <code>departements.json</code> files, never in the text of pages: every figure shown is recalculated from those files.</p>
+    <h2>Checks</h2>
+    <p>A set of automated tests replays the examples published by official sources every time the engine changes: emoluments of €1,995.25 excluding VAT on a €200,000 sale in mainland France, the Martinique, French Guiana, Réunion and Mayotte examples, the overall rates of 6.3185% and 5.80665% given by Notaires de France, and the nine gift tax examples on service-public.fr. They also check the count of départements in the DGFiP table.</p>
+    <p>While re-reading the service-public.fr page, we found an error in its Guadeloupe example: the total of {$(2426.58, lang, 2)} excluding VAT counts {$(1348.2, lang, 2)} for the last bracket instead of €140,000 × {pct(P.emoluments.zones.gp.taux[3], lang, 3)} = {$(140000 * P.emoluments.zones.gp.taux[3] / 100, lang, 2)}. The site applies the page’s rates, giving {$(emolumentsBruts(200000, 'gp').total, lang, 2)} excluding VAT, and documents the gap in its tests.</p>
+    <h2>Two points of interpretation</h2>
+    <p>The discount on emoluments: the service-public.fr page still mentions it “if the service exceeds €150,000”, whereas Notaires de France gives the €100,000 threshold and the maximum 20% of article R444-10 of the Commercial Code. The calculator applies the latter rule, only on the part of the emoluments above the threshold. Minimum and cap: for a tiny sale where the 10% cap falls below the €90 minimum, the calculator uses the cap, described by Notaires de France as the protection for small sales.</p>
+    <h2>What the calculator does not do</h2>
+    <ul>
+      <li>Loan guarantee costs (mortgage, lender’s lien, guarantee).</li>
+      <li>The €46,000 allowance voted by Calvados on certain purchases, and the 3.80% rate on block sales in Hautes-Pyrénées: flagged, not applied.</li>
+      <li>The reduced municipal surcharge in Lamentin (Guadeloupe) and Tsingoni (Mayotte).</li>
+      <li>The overseas formalities fee, counted at the mainland rate in the absence of a separately published scale.</li>
+      <li>Exemptions reserved for social housing bodies and special operations, partition duty, share transfers, viager sales.</li>
+      <li>Saint-Martin, Saint-Barthélemy and Saint-Pierre-et-Miquelon.</li>
+    </ul>
+    <p>The result is an estimate: only your notary’s statement is binding. Errors can be reported via the <a href={route('contact', lang)}>contact page</a>; the correction procedure is set out in the <a href={route('editorial', lang)}>editorial policy</a>. Last updated: {displayDate(LAST_UPDATED, 'en-GB')}.</p>
+    <Sources lang={lang} />
+  </div>
+</PageLayout>

@@ -1,0 +1,14 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import { CONTACT_EMAIL, LAST_UPDATED } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { displayDate } from '../../lib/format';
+const lang = 'en';
+---
+<PageLayout title="Cookies – French notary fees calculator" description="This site sets no audience measurement or advertising cookies. The calculator works without cookies. What would change if audience measurement were ever added." lang={lang} noindex={true} breadcrumbs={[{ label: 'Cookies' }]} showAuthor={false}>
+  <div class="prose prose-slate max-w-none">
+    <h1>Cookies</h1>
+    <p>As of the update date of this page, the site sets <strong>no cookies</strong>: no audience measurement, no advertising, no social networks. The calculator runs entirely in your browser and does not need them.</p>
+    <p>If audience measurement or advertising were added, it would only be activated after your consent, collected through a banner letting you accept or refuse just as easily, in line with the recommendations of the CNIL, the French data protection authority; this page would then list each cookie and its duration. See also the <a href={route('privacy', lang)}>privacy policy</a>. Questions: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. Last updated: {displayDate(LAST_UPDATED, 'en-GB')}.</p>
+  </div>
+</PageLayout>

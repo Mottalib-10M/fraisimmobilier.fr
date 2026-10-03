@@ -1,0 +1,47 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { F, $, pct, P, tauxGlobalNeuf } from '../../lib/tables';
+import { src } from '../../lib/sources';
+const lang = 'en';
+const v = F(300000, '33', 'neuf'), a = F(300000, '33');
+const faqs = [
+  { q: 'How much are notary fees on an off-plan (VEFA) purchase in France?', a: `About 2 to 3% of the price. On a €300,000 flat bought off-plan in Bordeaux, the calculator gives ${$(v.total, lang)}: ${$(v.droits, lang)} of land publicity tax at the reduced rate, ${$(v.emoluments.ttc, lang)} of emoluments including VAT, the flat formalities fee, ${$(v.csi, lang)} of land registry contribution and the disbursements. The same price on a resale would cost ${$(a.total, lang)}.` },
+  { q: 'Are VEFA notary fees calculated on the price including VAT?', a: 'The price of a VEFA is quoted including VAT, and that is the price you enter in the calculator. The reduced land publicity tax and the emoluments are applied to the price stated in the deed. For a calculation to the cent, the notary works from the breakdown of the price written into the deed of sale.' },
+  { q: 'When do I pay notary fees on an off-plan purchase?', a: 'When the VEFA deed is signed before the notary, as for an ordinary sale, even though the home exists only on plan. The price itself is paid in stages as construction progresses. The fees are not spread out: plan for them in your deposit from the start.' },
+  { q: 'Can the developer offer to pay the notary fees?', a: 'Yes, it is a common sales pitch in France (“frais de notaire offerts”). The fees do not disappear: the developer pays them for you and usually builds them into the price. Check that the offer covers the tax, the emoluments and the disbursements, not just part of them, and compare the price per square metre with nearby schemes that make no such offer.' },
+  { q: 'Is a deposit required when reserving an off-plan home?', a: 'Yes, under the reservation contract. The Construction Code caps it: 5% of the price if the sale is to be signed within a year, 2% if within two years, nothing beyond that. It is held in an escrow account, credited against the price and refunded if the sale does not go ahead for one of the reasons set by law.' },
+  { q: 'If I resell an off-plan home within five years, what do my buyers pay?', a: 'It depends on the seller. If you resell it as a private individual, the sale is not subject to VAT and your buyer pays standard transfer tax, about 7 to 8% in fees. If the seller is a VAT-registered professional, a resale within five years of completion stays within VAT and the buyer benefits from the reduced rate.' },
+];
+---
+<GuideLayout lang={lang} id="vefa" breadcrumbLabel="Off-plan (VEFA)"
+  title={`Notary fees on off-plan VEFA in France ${YEAR}: 2 to 3%`}
+  h1={`Notary fees on an off-plan (VEFA) purchase in France in ${YEAR}: reduced rate, stage payments, pitfalls`}
+  description={`French off-plan (VEFA) notary fees ${YEAR}: reduced tax of 0.715%, emoluments, CSI. Example on €300,000, stage payment schedule, developer-paid fees offers.`}
+  intro="Buying off-plan cuts the fees by two thirds. The rest of the budget is spread over the build."
+  resume={`A VEFA sale (vente en l’état futur d’achèvement, the French off-plan purchase) is subject to French property VAT. It therefore does not bear standard transfer tax but a reduced land publicity tax of 0.70%, or ${pct(tauxGlobalNeuf(), lang, 3)} with the collection fee, identical in every département. Notary fees thus fall to between 2 and 3% of the price. On a €300,000 flat bought off-plan in Gironde, they come to ${$(v.total, lang)}, against ${$(a.total, lang)} for a resale at the same price. The notary’s emoluments do not change: ${$(v.emoluments.ttc, lang)} including VAT. The fees are paid in one go when the deed is signed, whereas the price is paid in stage payments as construction progresses. For an expat buying from abroad, a power of attorney lets the notary sign on your behalf.`}
+  faqs={faqs}
+  related={[{ href: route('neuf', lang), name: 'New-build fees', description: 'The reduced-rate calculator.' }, { href: route('terrain', lang), name: 'Buying land', description: 'Private seller or developer: two regimes.' }, { href: route('pret', lang), name: 'Financing the fees', description: 'Deposit and loan.' }]}
+  sources={src(lang, 'notaires_frais', 'sp_frais_notaire', 'dgfip_dmto')}>
+  <MiniSim client:visible kind="vefa" lang={lang} href={route('neuf', lang)} />
+  <h2>Why off-plan pays so little tax</h2>
+  <p>A VEFA is sold by a developer registered for VAT: the sale bears VAT, usually at 20%, included in the advertised price. To avoid double taxation, the General Tax Code replaces registration duties with land publicity tax at the reduced rate of {pct(P.dmto.taux_reduit_neuf, lang)}, plus a {pct(P.dmto.frais_assiette_taux_reduit, lang)} collection fee. The département cannot change this rate: it is the same in Paris, Lozère and Réunion.</p>
+  <ContentTable headers={['Item', 'Off-plan, €300,000', 'Resale, €300,000']} align={['l', 'r', 'r']} rows={[
+    ['Tax on the sale', $(v.droits, lang), $(a.droits, lang)],
+    ['Emoluments incl. VAT', $(v.emoluments.ttc, lang), $(a.emoluments.ttc, lang)],
+    ['Formalities incl. VAT', $(v.formalitesTTC, lang), $(a.formalitesTTC, lang)],
+    ['Land registry contribution', $(v.csi, lang), $(a.csi, lang)],
+    ['Estimated disbursements', $(v.debours, lang), $(a.debours, lang)],
+    ['Total', $(v.total, lang), $(a.total, lang)],
+  ]} caption="Gironde, 5% département." />
+  <h2>The timeline: reservation, deed, stage payments</h2>
+  <p>An off-plan purchase happens in three stages. The reservation contract sets the provisional price, the description of the home and the expected signing date; it comes with a deposit capped at 5% of the price. The final deed is signed before the notary a few months later: that is when you pay the notary fees and the first stage payment. The price is then paid in instalments regulated by the Construction Code: at most 35% when the foundations are completed, 70% when the building is weatherproof, 95% on completion, and the balance when the keys are handed over, unless defects are noted.</p>
+  <p>This has a practical consequence: your loan is released as the stage payments fall due, and you pay interim interest on the sums already drawn during construction. The notary fees, by contrast, are due in full at the start. Include them in your deposit or have them covered by the first drawdown.</p>
+  <h2>Extra costs on an off-plan purchase</h2>
+  <p>Loan guarantee costs still apply, as on a resale. Developers often pass on a share of the cost of drawing up the co-ownership rules and the division schedule in the deed. Connection to utility networks may be invoiced separately: read the technical specification (notice descriptive). And if you let the home under a tax scheme, the acquisition costs follow that scheme’s rules.</p>
+  <h2>Off-plan, completed new build, resale: who gets the reduced rate</h2>
+  <p>The reduced rate is tied to VAT, not to the age of the home. A flat completed three years ago and resold by its first private owner is not subject to VAT: its buyer pays standard transfer tax. The same flat sold by a developer that had not yet found a buyer stays within VAT, and so within the reduced rate. The notary checks the seller’s status and the completion date; the calculator lets you choose between “resale” and “new / VAT” to reproduce both cases.</p>
+</GuideLayout>

@@ -1,0 +1,22 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import { SITE_URL } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { breadcrumbSchema } from '../../lib/seo';
+const lang = 'en';
+const code = `<iframe src="${SITE_URL}/embed/en/" title="French notary fees calculator by département" width="100%" height="820" style="border:0;max-width:1100px" loading="lazy"></iframe>`;
+---
+<PageLayout title="Embed the French notary fees calculator on your site" description="Embed the French notary fees calculator by département on your site for free: one line of code, no sign-up, no tracking, DGFiP rates updated automatically." lang={lang} noindex={true} jsonLd={[breadcrumbSchema([{ name: 'Home', path: route('home', lang) }, { name: 'Widget', path: route('widget', lang) }])]} breadcrumbs={[{ label: 'Widget' }]} showAuthor={false}>
+  <header class="mb-6">
+    <h1 class="text-3xl font-bold text-navy-900 md:text-4xl">Embed the calculator on your site</h1>
+    <p class="mt-3 text-lg text-navy-600">Agencies, relocation services, expat forums, property blogs: the full calculator, with the rates of all 101 départements, in one line of code.</p>
+  </header>
+  <div class="prose prose-slate max-w-none">
+    <p>Paste this code where you want it. A height of 820 px suits desktop screens; allow 1,100 px for a narrow column.</p>
+    <pre class="overflow-x-auto rounded-lg bg-navy-900 p-4 text-sm text-white"><code>{code}</code></pre>
+    <p>Terms: the credit link shown under the calculator stays visible; the widget is free, provided without any availability guarantee, and may not be modified. Rates are updated on this site, so your embed benefits without any action on your part. No data about your visitors reaches us. French version: replace <code>/embed/en/</code> with <code>/embed/fr/</code>.</p>
+  </div>
+  <div class="mt-8 overflow-hidden rounded-xl border border-navy-200">
+    <iframe src="/embed/en/" title="French notary fees calculator by département" width="100%" height="820" style="border:0" loading="lazy"></iframe>
+  </div>
+</PageLayout>

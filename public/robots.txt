@@ -1,6 +1,6 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://fraisdenotaire-calcul.fr/sitemap-index.xml
-
 Disallow: /*?*
+
+Sitemap: https://fraisdenotaire-calcul.fr/sitemap-index.xml

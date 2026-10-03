@@ -1,0 +1,33 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import NotaireCalculator from '../../components/calc/NotaireCalculator';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, F, P, tauxGlobalAncien } from '../../lib/tables';
+import { comparer } from '../../lib/engine/notaire';
+import { src } from '../../lib/sources';
+const lang = 'en';
+const i = F(140000, '36'), c = comparer(140000, '37', '36');
+const faqs = [
+  { q: 'Why are notary fees lower in Indre?', a: `Because Indre is the only département still applying the 3.80% reference rate in article 1594 D of the General Tax Code. It voted neither the move to 4.50% allowed since 2014 nor the 2025 increase to 5%. Its overall transfer tax rate is ${pct(tauxGlobalAncien(3.8), lang, 3)}, against ${pct(tauxGlobalAncien(5), lang, 3)} in most départements.` },
+  { q: 'What do fees cost on a €140,000 house in Châteauroux?', a: `${$(i.total, lang)} according to the calculator, ${pct(i.pourcentage, lang)} of the price, including ${$(i.droits, lang)} of transfer tax. The same house in neighbouring Indre-et-Loire would cost ${$(c.a.total, lang)} in fees, ${$(c.ecart, lang)} more. The notary’s emoluments are identical in both départements; only the transfer tax differs.` },
+  { q: 'Does a first-time buyer pay even less in Indre?', a: 'No. The first-time buyer exemption only removes the 5% increase; in Indre the rate is already below what a first-time buyer would pay elsewhere. Every buyer there pays 3.80%, whatever their situation, which makes Indre the cheapest département in France for a resale purchase.' },
+];
+---
+<GuideLayout lang={lang} id="indre" breadcrumbLabel="Indre"
+  title={`Notary fees in Indre ${YEAR}: the only département at 3.80%`}
+  h1={`Notary fees in Indre in ${YEAR}: the lowest rate in France`}
+  description={`Notary fees in Indre ${YEAR}: transfer tax at 3.80%, the only département with no rise since 2014. Calculator for Châteauroux, Issoudun and the neighbours.`}
+  intro="The only département still at the 3.80% reference rate."
+  resume={`Indre is an exception in the French transfer tax table: it is the only département still applying the 3.80% reference rate set by article 1594 D of the General Tax Code. It raised its rate neither to 4.50%, as almost all départements did from 2014, nor to 5% after the 2025 Finance Act. With the ${pct(P.dmto.taxe_communale, lang)} municipal surcharge and the collection fee, transfer tax reaches ${pct(tauxGlobalAncien(3.8), lang, 3)} of the price, against ${pct(tauxGlobalAncien(5), lang, 3)} in neighbouring Indre-et-Loire or Cher. For a €140,000 resale house in Châteauroux, notary fees come to ${$(i.total, lang)}, ${$(c.ecart, lang)} less than in Tours at the same price. Every buyer benefits, first-time or not. Indre lies in the Centre-Val de Loire region, south of the Loire valley. The calculator below is set to Indre and lets you compare it with any other département.`}
+  faqs={faqs}
+  related={[{ href: route('comparer', lang), name: 'Compare two départements', description: 'Indre against its neighbours.' }, { href: route('departements', lang), name: 'All départements', description: 'Where each rate stands.' }, { href: route('dmto', lang), name: 'Transfer tax', description: 'The reference rate and its increases.' }]}
+  sources={src(lang, 'dgfip_dmto', 'notaires_frais')}>
+  <div slot="tool" data-outil><NotaireCalculator client:load lang={lang} defaultDep="36" defaultPrix={140000} methodHref={route('method', lang)} /></div>
+  <h2>Indre and its neighbours</h2>
+  <ContentTable headers={['Département', 'Rate', 'Fees on €140,000', 'Gap with Indre']} align={['l', 'r', 'r', 'r']} rows={['36', '37', '18', '23', '86', '41'].map((d) => { const f = F(140000, d); return [f.dep.en, pct(f.tauxDep, lang), $(f.total, lang), d === '36' ? '—' : $(f.total - i.total, lang)]; })} caption="Resale, standard case, disbursements estimated at €500." />
+  <h2>What the exception is really worth</h2>
+  <p>The gap with a 5% département is 1.23% of the price. At Indre’s prices, often below the national average, that means a few hundred to a little over two thousand euros: enough to matter in a tight budget, not enough on its own to justify choosing where to live. The advantage does combine with low prices, though: fees on a purchase in Indre are among the lowest in France in absolute terms.</p>
+  <p>The département keeps the option of raising its rate, to 4.50% permanently and to 5% until 31 March 2028. This site follows the monthly DGFiP table and will update Indre if a vote changes the picture.</p>
+</GuideLayout>

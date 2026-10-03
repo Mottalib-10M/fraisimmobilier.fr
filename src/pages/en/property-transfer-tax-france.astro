@@ -1,0 +1,50 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { F, $, pct, P, COUNT, tauxGlobalAncien, tauxGlobalNeuf } from '../../lib/tables';
+import { src } from '../../lib/sources';
+const lang = 'en';
+const t5 = tauxGlobalAncien(5), t45 = tauxGlobalAncien(4.5), t38 = tauxGlobalAncien(3.8);
+const f = F(300000, '13');
+const faqs = [
+  { q: 'Is French transfer tax the same thing as notary fees?', a: `No. Transfer tax (droits de mutation) is a tax, and the biggest part of what people call notary fees. On a €300,000 resale purchase in Bouches-du-Rhône, it accounts for ${$(f.droits, lang)} out of ${$(f.total, lang)} in total fees. The rest pays the notary (emoluments and formalities), funds the land registry (CSI) and reimburses disbursements.` },
+  { q: 'Who sets the transfer tax rate in France?', a: 'Each départemental council, within limits set by the General Tax Code: the reference rate in article 1594 D is 3.80%, départements may raise it to 4.50% and, for deeds signed from 1 April 2025 to 31 March 2028, up to 5%. The 1.20% municipal surcharge and the State collection fee come on top, and the département cannot change them.' },
+  { q: 'Is transfer tax charged on the price including the agency fee?', a: 'It is charged on the price stated in the deed plus any charges that increase it. If the agency commission is payable by the buyer and shown separately in the mandate and the deed, it is outside the taxable base. If it is built into a price “agency fees included” paid to the seller, it bears the tax. The difference runs to hundreds of euros on an average purchase.' },
+  { q: 'Why is the overall rate not a round number?', a: `Because the collection fee is calculated on the départemental tax only: ${pct(P.dmto.frais_assiette_droit_commun, lang)} of 5% is 0.1185 points. Added to the 5% and the municipality’s ${pct(P.dmto.taxe_communale, lang)}, it gives ${pct(t5, lang, 4)}. At 4.50% the total is ${pct(t45, lang, 5)}; at 3.80%, ${pct(t38, lang, 5)}.` },
+  { q: 'Does a new-build home pay transfer tax?', a: `Not at the standard rate. A sale subject to French property VAT bears land publicity tax of 0.70%, plus a ${pct(P.dmto.frais_assiette_taux_reduit, lang)} collection fee, ${pct(tauxGlobalNeuf(), lang, 3)} of the price in all. That is what explains the fee gap between new and resale homes: the notary’s emoluments are the same.` },
+  { q: 'Can transfer tax be paid in instalments?', a: 'No. The notary collects it on signing day as part of the fee deposit, then pays it to the tax office. The instalment or deferred payment options in the tax code concern other duties, notably inheritance tax, not property purchases. It must therefore be funded from your deposit or your loan.' },
+];
+---
+<GuideLayout lang={lang} id="dmto" breadcrumbLabel="Transfer tax"
+  title={`Property transfer tax France ${YEAR}: rates and calculation`}
+  h1={`French property transfer tax in ${YEAR}: rates, calculation and share of notary fees`}
+  description={`French property transfer tax (droits de mutation) ${YEAR}: départemental tax at 5%, 4.50% or 3.80%, municipal tax, collection fee. Worked out on your price.`}
+  intro="The tax behind most of your notary fees, and the only item that changes from one département to another."
+  resume={`Transfer tax, droits de mutation à titre onéreux (DMTO) in French, makes up about 80% of notary fees on a resale purchase. It combines three charges: the départemental tax, whose rate each département votes (5% in ${COUNT.zones5} tax areas as of 1 June ${YEAR}, 4.50% in ${COUNT.a450.length} départements, 3.80% in Indre); the municipal surcharge, fixed at ${pct(P.dmto.taxe_communale, lang)}; and the State’s collection fee, equal to ${pct(P.dmto.frais_assiette_droit_commun, lang)} of the départemental tax. The overall rate thus reaches ${pct(t5, lang, 3)} in a 5% département. On a €300,000 resale flat in Marseille, that is ${$(f.droits, lang)} of tax. Sales subject to VAT, on new builds, pay a reduced tax of ${pct(tauxGlobalNeuf(), lang, 3)} instead. For an English speaker, the key point is that this is a regional tax, not a national one.`}
+  faqs={faqs}
+  related={[{ href: route('home', lang), name: 'Notary fees calculator', description: 'Every item, your département.' }, { href: route('hausse', lang), name: 'The rise to 5%', description: 'Who voted it, until when.' }, { href: route('departements', lang), name: 'Rates by département', description: 'The table of all 101.' }]}
+  sources={src(lang, 'dgfip_dmto', 'notaires_frais', 'impots_droits')}>
+  <MiniSim client:visible kind="droits" lang={lang} href={route('home', lang)} />
+  <h2>Three taxes in one figure</h2>
+  <p>On the notary’s statement, transfer tax often appears as a single line. It actually goes to three beneficiaries. The département takes the main share: it is one of its key revenue sources, which is why its income tracks the number of property sales in its area. The municipality (commune) receives the {pct(P.dmto.taxe_communale, lang)} surcharge, with very rare local exceptions: as of 1 June {YEAR}, only Lamentin in Guadeloupe and Tsingoni in Mayotte had cut their rate. The State takes a collection fee for the work of its services.</p>
+  <ContentTable headers={['Component', 'Goes to', 'Rate', 'On €300,000 (Bouches-du-Rhône)']} align={['l', 'l', 'r', 'r']} rows={[
+    ['Départemental tax', 'Département', pct(f.tauxDep, lang), $(f.droitsDepartement, lang)],
+    ['Municipal surcharge', 'Municipality', pct(P.dmto.taxe_communale, lang), $(f.droitsCommune, lang)],
+    ['Collection fee', 'State', `${pct(P.dmto.frais_assiette_droit_commun, lang)} of the départemental tax`, $(f.droitsAssiette, lang)],
+    ['Total transfer tax', '', pct(f.tauxDroits, lang, 4), $(f.droits, lang)],
+  ]} />
+  <h2>What is in the taxable base, and what is not</h2>
+  <p>The tax is calculated on the price stated in the deed, plus any charges the buyer takes on that benefit the seller. Several items can come out of it if they are presented correctly. Furniture sold with the home, first: a removable kitchen, appliances and furniture, listed and valued at their real worth, are not real estate and do not bear the property tax. The agency commission, second, when the mandate makes it payable by the buyer: it pays for a service to the buyer, not for the property. The guides to <a href={route('agence', lang)}>agency fees</a> and <a href={route('mobilier', lang)}>furniture</a> put figures on both and on their limits.</p>
+  <p>Conversely, some amounts are added to the price: a capitalised life annuity in a viager sale, a seller’s debt taken over by the buyer, or work the buyer agrees to pay for on the seller’s behalf. The notary identifies them when drafting the deed; they are rare in an ordinary sale between private individuals.</p>
+  <h2>A political choice by each département</h2>
+  <p>Every year, départemental councils vote on their rate. The French tax administration (DGFiP) then publishes the table of applicable rates, updated monthly on impots.gouv.fr, which notaries apply on the date the final deed is signed. That date is what matters, not the date of the preliminary contract (compromis): a sale agreed in March and signed in June bears the June rate. The calculator on this site uses the table of 1 June {YEAR}.</p>
+  <p>The 3.80% reference rate, which départements could already raise to 4.50%, can be lifted to 5% for deeds signed between 1 April 2025 and 31 March 2028. This option, created by article 116 of the 2025 Finance Act, has been used by almost every département. It has one big exception: it does not apply to a first-time buyer purchasing a main home, who stays at 4.50%. See the guides to <a href={route('hausse', lang)}>the rise to 5%</a> and to <a href={route('primo', lang)}>first-time buyers</a>.</p>
+  <h2>Overall rates by département</h2>
+  <ContentTable headers={['Départemental rate', 'Overall rate', 'Tax on €200,000', 'Tax on €400,000']} align={['r', 'r', 'r', 'r']} rows={[5, 4.5, 3.8].map((x) => [pct(x, lang), pct(tauxGlobalAncien(x), lang, 3), $(200000 * tauxGlobalAncien(x) / 100, lang), $(400000 * tauxGlobalAncien(x) / 100, lang)])} />
+  <h2>When is the tax reduced?</h2>
+  <p>Outside new builds, several schemes lower the tax. Purchases of homes by social housing bodies, buy-backs of flats in distressed co-ownerships and certain overseas operations enjoy exemptions that each département chooses to apply or not; the DGFiP table lists them for each one. For a private buyer, the useful cases are simpler: first-time buyer, first property in Savoie, block sales with a tenant’s right of first refusal in Hautes-Pyrénées, and an allowance voted by Calvados on certain purchases. The calculator applies the first three; for the Calvados allowance, whose scope is limited, it invites you to ask the notary.</p>
+  <p>Buying out a partner’s share after a divorce, buying shares in a property company (SCI) or a viager sale follow separate rules that the calculator does not cover: the notary then works out a partition duty or a share transfer duty.</p>
+</GuideLayout>

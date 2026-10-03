@@ -1,0 +1,21 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import { CONTACT_EMAIL, REVIEW_CYCLE_MONTHS, LAST_UPDATED } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { displayDate } from '../../lib/format';
+const lang = 'en';
+---
+<PageLayout title="Editorial policy – French notary fees calculator" description="How the rates and scales on this site are checked, how often, how an error is corrected and what we never do. An independent publisher with no link to notaries." lang={lang} noindex={true} breadcrumbs={[{ label: 'Editorial policy' }]} showAuthor={false}>
+  <div class="prose prose-slate max-w-none">
+    <h1>Editorial policy</h1>
+    <h2>Sources</h2>
+    <p>We only use official sources: texts and tables from the French tax administration (impots.gouv.fr, BOFiP), service-public.fr pages, and Notaires de France publications for the tariff. A press or blog article is never a source for a figure. Every page cites the sources it uses.</p>
+    <h2>Checks and updates</h2>
+    <p>Départemental rates are checked at each monthly publication of the DGFiP table; the notary tariff at each revision by ministerial order. A full review of the parameters takes place at least every {REVIEW_CYCLE_MONTHS} months. The update date shown at the top and bottom of each page is that of the latest check.</p>
+    <h2>Corrections</h2>
+    <p>Any error reported to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> is checked against the source; if confirmed, the parameter is corrected, the tests are extended and the update date changes. An error found in an official source is documented on the <a href={route('method', lang)}>methodology</a> page.</p>
+    <h2>Independence</h2>
+    <p>The site is not linked to any notary’s office, bank, broker or agency. It does not collect contacts to sell them. Any advertising is labelled as such and never placed above the calculator.</p>
+    <p class="text-sm text-navy-500">Last updated: {displayDate(LAST_UPDATED, 'en-GB')}.</p>
+  </div>
+</PageLayout>

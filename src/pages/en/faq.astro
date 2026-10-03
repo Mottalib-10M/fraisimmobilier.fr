@@ -1,0 +1,32 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { faqSchema, breadcrumbSchema, webPageSchema } from '../../lib/seo';
+import { $, F, P } from '../../lib/tables';
+const lang = 'en';
+const title = `Notary fees in France ${YEAR}: frequently asked questions`;
+const description = `French notary fees ${YEAR} in questions: deposit, refund timing, preliminary contract, signing from abroad, failed sales, SCI, viager. Answers with figures.`;
+const path = route('faq', lang);
+const f = F(230000, '33');
+const faqs = [
+  { q: 'Are notary fees refunded if the bank refuses my loan?', a: 'If the sale does not go ahead because the loan is refused within the period of the condition in the preliminary contract, the final deed is not signed and transfer tax is never due. Your deposit is returned. Only disbursements the notary has already incurred to prepare the file may be charged to you.' },
+  { q: 'How long does it take to get back the surplus of the deposit?', a: 'The notary draws up the final account once the sale is registered at the land registry and all disbursement invoices are in. The timing depends on the registry and the file: usually several weeks, sometimes a few months. The balance is then paid back to you by bank transfer, with a detailed statement to keep.' },
+  { q: 'Are notary fees due at the preliminary contract or at the deed?', a: 'At the final deed. At the preliminary contract you pay a deposit, often 5 to 10% of the price, later credited against the price. If the preliminary contract is registered with the tax office, a fixed €125 charge may be due. Transfer tax, emoluments and the land registry contribution are only paid at the final signing.' },
+  { q: 'Can I sign the deed without travelling to France?', a: 'Yes. Most notaries accept a power of attorney (procuration) allowing a member of their office to sign on your behalf. It is drawn up by the notary and signed in advance, sometimes before a local notary or consulate depending on the country. Remote electronic signing is also used by many offices. Ask your notary early, as the paperwork takes time.' },
+  { q: 'Are notary fees the same for a viager purchase?', a: 'No, the calculation differs: tax is charged on the value of the lump sum plus the capitalised annuity, and the deed has its own clauses. The calculator on this site does not cover viager sales. Ask the notary for a provisional statement based on the annuity value used in the deed.' },
+  { q: 'What fees apply when buying shares in an SCI?', a: 'Selling shares in a property company (SCI) is not a sale of real estate: it bears a registration duty specific to share transfers, calculated on the value of the shares, not property transfer tax or sale emoluments. This regime is not modelled here; the notary or lawyer drafting the transfer calculates it.' },
+  { q: 'Do notary fees differ between a house and a flat?', a: `No, at the same price. For €230,000 in Gironde, the calculated fees are ${$(f.total, lang)} in both cases. Only disbursements may differ: co-ownership documents for a flat, boundary marking or a septic system report for a house. These differences amount to tens or hundreds of euros.` },
+  { q: 'Is the calculator up to date?', a: `Yes, as of the date shown at the top of each page. Départemental rates come from the table published by the DGFiP as of 1 June ${YEAR}, the emolument scale from service-public.fr and the other parameters from Notaires de France, checked on ${P.retrieved_at}. Updates follow the DGFiP’s monthly publications and every revision of the tariff.` },
+];
+const jsonLd = [webPageSchema({ name: title, description, path, lang }), faqSchema(faqs, lang), breadcrumbSchema([{ name: 'Home', path: route('home', lang) }, { name: 'FAQ', path }])];
+---
+<PageLayout title={title} description={description} lang={lang} jsonLd={jsonLd} faqs={faqs} breadcrumbs={[{ label: 'FAQ' }]}
+  related={[{ href: route('home', lang), name: 'Notary fees calculator', description: 'Your case, in detail.' }, { href: route('method', lang), name: 'Methodology', description: 'Formula, sources, limits.' }, { href: route('glossary', lang), name: 'Glossary', description: 'The words on the statement.' }]}>
+  <div class="prose prose-slate max-w-none">
+    <h1>Frequently asked questions about French notary fees</h1>
+    <p>The questions that come up most often and do not fit into a single guide. Each guide on the site has its own questions: first-time buyers, new builds, gifts, emoluments, départements. For a figure, the mini-calculator below gives your resale fees in two entries.</p>
+  </div>
+  <MiniSim client:visible kind="ancien" lang={lang} href={route('home', lang)} />
+</PageLayout>

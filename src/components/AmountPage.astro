@@ -1,0 +1,28 @@
+---
+/** Page « par prix » (RECETTE §6.2) : calculateur réglé sur le montant, angle propre, tableau généré, voisines. */
+import GuideLayout from './GuideLayout.astro';
+import NotaireCalculator from './calc/NotaireCalculator';
+import ContentTable from './ContentTable.astro';
+import { route, AMOUNTS, type Locale } from '../i18n/routes';
+import { amountLabel } from '../i18n/nav';
+import { angle } from '../lib/amount-angles';
+import { F, $, pct } from '../lib/tables';
+import { src } from '../lib/sources';
+interface Props { lang: Locale; amount: number }
+const { lang, amount } = Astro.props;
+const fr = lang === 'fr';
+const A = angle(amount, lang);
+const DEPS: Array<[string, string, string]> = [['75', 'Paris (5 %)', 'Paris (5%)'], ['06', 'Alpes-Maritimes (4,50 %)', 'Alpes-Maritimes (4.50%)'], ['36', 'Indre (3,80 %)', 'Indre (3.80%)'], ['974', 'La Réunion (5 %, barème DOM)', 'Réunion (5%, overseas scale)']];
+const rows = DEPS.map(([d, f, e]) => { const a = F(amount, d), p = F(amount, d, 'ancien', 'primo'), n = F(amount, d, 'neuf'); return [fr ? f : e, $(a.total, lang), $(p.total, lang), $(n.total, lang), pct(a.pourcentage, lang)]; });
+const i = AMOUNTS.indexOf(amount as typeof AMOUNTS[number]);
+const neighbours = [AMOUNTS[i - 1], AMOUNTS[i + 1]].filter(Boolean) as number[];
+---
+<GuideLayout lang={lang} id={`amount-${amount}`} breadcrumbLabel={amountLabel(amount, lang)} title={A.title} h1={A.h1} description={A.description} intro={A.intro} resume={A.resume} faqs={A.faqs}
+  related={[{ href: route('home', lang), name: fr ? 'Calcul des frais de notaire' : 'Notary fees calculator', description: fr ? 'Tous les prix, tous les départements.' : 'Any price, any département.' }, { href: route('tableau', lang), name: fr ? 'Tableau des frais par prix' : 'Fees table by price', description: fr ? 'Quinze prix côte à côte.' : 'Fifteen prices side by side.' }, ...neighbours.map((n) => ({ href: route(`amount-${n}`, lang), name: amountLabel(n, lang), description: fr ? 'Le prix voisin, son propre seuil.' : 'The neighbouring price, its own threshold.' }))]}
+  sources={src(lang, 'dgfip_dmto', 'sp_frais_notaire', 'notaires_frais')}>
+  <div slot="tool" data-outil><NotaireCalculator client:load lang={lang} defaultPrix={amount} methodHref={route('method', lang)} /></div>
+  {A.sections.map((s) => (<><h2>{s.h2}</h2>{s.p.map((p) => <p>{p}</p>)}</>))}
+  <h2>{fr ? `Frais pour ${$(amount, lang)} selon le département et la situation` : `Fees on ${$(amount, lang)} by département and situation`}</h2>
+  <ContentTable headers={fr ? ['Département', 'Ancien', 'Primo-accédant', 'Neuf', 'Part du prix (ancien)'] : ['Département', 'Resale', 'First-time buyer', 'New build', 'Share of price (resale)']} align={['l', 'r', 'r', 'r', 'r']} rows={rows} caption={fr ? 'Débours estimés à 500 €. Primo-accédant : résidence principale, pas propriétaire depuis deux ans.' : 'Disbursements estimated at €500. First-time buyer: main home, no home ownership in the past two years.'} />
+  <p>{fr ? <>Les autres prix : {AMOUNTS.filter((x) => x !== amount).map((x, k) => <>{k > 0 && ' · '}<a href={route(`amount-${x}`, lang)}>{amountLabel(x, lang)}</a></>)}.</> : <>Other prices: {AMOUNTS.filter((x) => x !== amount).map((x, k) => <>{k > 0 && ' · '}<a href={route(`amount-${x}`, lang)}>{amountLabel(x, lang)}</a></>)}.</>}</p>
+</GuideLayout>

@@ -1,0 +1,46 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, F, P, tranchesRows, emolumentsBruts } from '../../lib/tables';
+import { src } from '../../lib/sources';
+const lang = 'en';
+const DOM = ['971', '972', '973', '974', '976'];
+const r = F(220000, '974'), m = F(220000, '75');
+const gpSp = 309.4 + 206.11 + 562.87 + 1348.2;
+const gp = emolumentsBruts(200000, 'gp').total;
+const faqs = [
+  { q: 'Are notary fees higher in overseas France?', a: `Yes, because of the emoluments. The scale in the five overseas départements is higher than in mainland France: up to ${pct(P.emoluments.zones.re.taux[0], lang, 3)} on the first bracket in Réunion and Mayotte, against ${pct(P.emoluments.zones.metro.taux[0], lang, 3)}. On €220,000 in Réunion, emoluments including VAT reach ${$(r.emoluments.ttc, lang)} against ${$(m.emoluments.ttc, lang)} in Paris, despite a lower VAT rate.` },
+  { q: 'What VAT applies to notary emoluments overseas?', a: `${pct(P.emoluments.zones.gp.tva, lang, 1)} in Guadeloupe, Martinique and Réunion, none in French Guiana and Mayotte, against ${pct(P.emoluments.zones.metro.tva, lang, 0)} in mainland France. VAT applies to the emoluments and the formalities. Transfer tax, the land registry contribution and disbursements bear no VAT, overseas as anywhere else.` },
+  { q: 'Is transfer tax different in the overseas départements?', a: 'The mechanism is the same as in mainland France, but each authority votes its own rate. As of 1 June 2026, Martinique, French Guiana and Réunion apply 5%, Guadeloupe and Mayotte stayed at 4.50%. Two municipalities have cut their surcharge: Lamentin in Guadeloupe, to 0.70%, and Tsingoni in Mayotte, to 0.50%.' },
+  { q: 'Does the calculator apply the Lamentin and Tsingoni rates?', a: 'No: it applies the standard municipal surcharge of 1.20% everywhere. For a property in Lamentin or Tsingoni, the actual tax is therefore slightly lower than the result shown, by 0.50 or 0.70 points of the price depending on the municipality. The notary applies the rate of the municipality where the property is located.' },
+  { q: 'Why does the service-public.fr example for Guadeloupe not add up?', a: `The official page gives ${$(2426.58, lang, 2)} excluding VAT in emoluments for a €200,000 sale in Guadeloupe, but its last line counts ${$(1348.2, lang, 2)} for the bracket above €60,000, whereas €140,000 at ${pct(P.emoluments.zones.gp.taux[3], lang, 3)} is ${$(140000 * P.emoluments.zones.gp.taux[3] / 100, lang, 2)}. The scale itself is consistent: this site uses ${$(gp, lang, 2)} excluding VAT.` },
+  { q: 'Are Saint-Martin, Saint-Barthélemy and Saint-Pierre-et-Miquelon covered?', a: 'No. These territories have their own property taxation, which is not in the table of départements published by the DGFiP. The calculator covers only the five overseas départements and regions: Guadeloupe, Martinique, French Guiana, Réunion and Mayotte. For the other territories, ask a local notary directly.' },
+];
+---
+<GuideLayout lang={lang} id="outremer" breadcrumbLabel="Overseas France"
+  title={`Notary fees in overseas France ${YEAR}: DOM scales and VAT`}
+  h1={`Notary fees in overseas France in ${YEAR}: Guadeloupe, Martinique, French Guiana, Réunion, Mayotte`}
+  description={`Notary fees in overseas France ${YEAR}: higher emolument scale, VAT at ${pct(P.emoluments.zones.gp.tva, 'en', 1)} or none, transfer tax at 5% or 4.50%. Calculator for all five overseas départements.`}
+  intro="A scale of its own, a different VAT, locally voted tax rates."
+  resume={`Buying in Guadeloupe, Martinique, French Guiana, Réunion or Mayotte does not cost the same fees as in mainland France. The notary’s emolument scale is higher there, with rates applicable since 1 March 2024 published by service-public.fr: from ${pct(P.emoluments.zones.gf.taux[0], lang, 3)} in French Guiana to ${pct(P.emoluments.zones.re.taux[0], lang, 3)} in Réunion and Mayotte on the first bracket. VAT on these emoluments is ${pct(P.emoluments.zones.gp.tva, lang, 1)} in the French Caribbean and Réunion, nil in French Guiana and Mayotte. Transfer tax follows the rate voted by each authority: 5% in Martinique, French Guiana and Réunion, 4.50% in Guadeloupe and Mayotte. For a €220,000 house in Réunion, the total reaches ${$(r.total, lang)}, against ${$(m.total, lang)} in Paris. The calculator applies these scales automatically when you choose an overseas département. The table below compares all five overseas départements with Paris for the same purchase.`}
+  faqs={faqs}
+  related={[{ href: route('emoluments', lang), name: 'Mainland emoluments', description: 'The reference scale.' }, { href: route('departements', lang), name: 'All départements', description: 'All 101, overseas included.' }, { href: route('home', lang), name: 'Notary fees calculator', description: 'Choose your overseas département.' }]}
+  sources={src(lang, 'sp_frais_notaire', 'dgfip_dmto')}>
+  <MiniSim client:visible kind="outremer" lang={lang} href={route('home', lang)} />
+  <h2>Emolument scales by département</h2>
+  <ContentTable headers={['Bracket', 'Mainland', 'Guadeloupe', 'Martinique', 'French Guiana', 'Réunion and Mayotte']} align={['l', 'r', 'r', 'r', 'r', 'r']} rows={tranchesRows(lang).map((row, i) => [row[0], row[1], pct(P.emoluments.zones.gp.taux[i], lang, 3), pct(P.emoluments.zones.mq.taux[i], lang, 3), pct(P.emoluments.zones.gf.taux[i], lang, 3), pct(P.emoluments.zones.re.taux[i], lang, 3)])} caption="Rates excluding VAT, applicable since 1 March 2024 (service-public.fr, page F17701)." />
+  <h2>Full fees for the same purchase</h2>
+  <ContentTable headers={['Département', 'Tax rate', 'Transfer tax', 'Emoluments incl. VAT', 'Total fees']} align={['l', 'r', 'r', 'r', 'r']} rows={[...DOM.map((c) => F(220000, c)), m].map((f) => [f.dep.en, pct(f.tauxDep, lang), $(f.droits, lang), $(f.emoluments.ttc, lang), $(f.total, lang)])} caption="€220,000 resale purchase, standard case, disbursements estimated at €500." />
+  <p>The table shows that the gap with mainland France comes mostly from the emoluments. In Réunion, despite VAT reduced to {pct(P.emoluments.zones.re.tva, lang, 1)}, they far exceed those in Paris. In French Guiana and Mayotte, the absence of VAT partly offsets the higher scale. On transfer tax, Guadeloupe and Mayotte, still at 4.50%, are cheaper than Martinique, French Guiana and Réunion, which moved to 5%.</p>
+  <h2>Buying overseas from mainland France or abroad</h2>
+  <p>The legal framework of a purchase in the overseas départements is French law: same notary system, same preliminary contract and final deed, same transfer tax mechanism. What changes is the local market and the tariff. A buyer living in mainland France or abroad can sign through a power of attorney, and the notary’s office will usually send the documents by email before the appointment. Remember that the higher emolument scale applies to all the notary’s proportional fees, including for a gift or an inheritance declaration on an overseas property.</p>
+  <h2>What the calculator uses for overseas France</h2>
+  <p>It applies each département’s scale and VAT, the départemental rate from the DGFiP table of 1 June {YEAR}, the standard municipal surcharge and the land registry contribution. Two approximations are flagged on the result: the formalities fee is the mainland one, as service-public.fr publishes no overseas scale for it, and the reduced surcharge in Lamentin and Tsingoni is not modelled. First-time buyers get the same advantage as in mainland France where the 5% rate was voted: in Martinique, French Guiana and Réunion.</p>
+  <h2>Gifts and inheritances overseas</h2>
+  <p>The overseas scales are not limited to sales. All the notary’s proportional emoluments are raised in the same way, including those on a gift or an inheritance declaration involving a property in one of the five overseas départements. The gift tax and inheritance tax scales themselves, on the other hand, are national: allowances and rates are the same as in mainland France. If you are planning to pass on a house in Réunion or Martinique, the <a href={route('donation', lang)}>gift calculator</a> gives the tax; ask the local notary for the emoluments, which this site calculates only at the mainland gift scale.</p>
+  <h2>A note on the official Guadeloupe example</h2>
+  <p>While checking the scales, we found a calculation error in the example on the service-public.fr page: for €200,000 in Guadeloupe it gives {$(gpSp, lang, 2)} excluding VAT, counting {$(1348.2, lang, 2)} for the last bracket instead of {$(140000 * P.emoluments.zones.gp.taux[3] / 100, lang, 2)}. The rates shown on the same page are consistent with those of the other départements, all raised in the same proportion compared with mainland France. This site applies the rates and obtains {$(gp, lang, 2)} excluding VAT; its tests reproduce the Martinique, French Guiana, Réunion and Mayotte examples exactly.</p>
+</GuideLayout>

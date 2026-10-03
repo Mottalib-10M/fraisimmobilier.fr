@@ -1,0 +1,42 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, F, P, tranchesRows, emolumentsBruts } from '../../lib/tables';
+import { src } from '../../lib/sources';
+const lang = 'fr';
+const DOM: Array<[string, string, string]> = [['971', 'gp', 'Guadeloupe'], ['972', 'mq', 'Martinique'], ['973', 'gf', 'Guyane'], ['974', 're', 'La Réunion'], ['976', 'yt', 'Mayotte']];
+const r = F(220000, '974'), m = F(220000, '75');
+const gpSp = 309.4 + 206.11 + 562.87 + 1348.2;
+const gp = emolumentsBruts(200000, 'gp').total;
+const faqs = [
+  { q: 'Les frais de notaire sont-ils plus chers en outre-mer ?', a: `Oui, à cause des émoluments. Le barème des cinq départements d’outre-mer est majoré par rapport à celui de la métropole : jusqu’à ${pct(P.emoluments.zones.re.taux[0], lang, 3)} sur la première tranche à La Réunion et à Mayotte, contre ${pct(P.emoluments.zones.metro.taux[0], lang, 3)}. Sur 220 000 € à La Réunion, les émoluments TTC atteignent ${$(r.emoluments.ttc)} contre ${$(m.emoluments.ttc)} à Paris, malgré une TVA plus basse.` },
+  { q: 'Quelle TVA s’applique aux émoluments outre-mer ?', a: `${pct(P.emoluments.zones.gp.tva, lang, 1)} en Guadeloupe, en Martinique et à La Réunion, aucune en Guyane et à Mayotte, contre ${pct(P.emoluments.zones.metro.tva, lang, 0)} en métropole. La TVA porte sur les émoluments et les formalités. Les droits de mutation, la contribution de sécurité immobilière et les débours n’en supportent pas, en outre-mer comme ailleurs.` },
+  { q: 'Les droits de mutation sont-ils différents dans les DOM ?', a: 'Le mécanisme est le même qu’en métropole, mais chaque collectivité vote son taux. Au 1er juin 2026, la Martinique, la Guyane et La Réunion appliquent 5 %, la Guadeloupe et Mayotte sont restées à 4,50 %. Deux communes ont réduit leur taxe additionnelle : Lamentin en Guadeloupe, à 0,70 %, et Tsingoni à Mayotte, à 0,50 %.' },
+  { q: 'Le calculateur applique-t-il les taux de Lamentin et de Tsingoni ?', a: 'Non : il applique la taxe communale de droit commun, 1,20 %, dans toutes les communes. Pour un bien situé à Lamentin ou à Tsingoni, les droits réels sont donc un peu plus faibles que le résultat affiché, de 0,50 ou 0,70 point du prix selon la commune. Le notaire applique le taux de la commune où se trouve le bien.' },
+  { q: 'Pourquoi l’exemple de service-public.fr pour la Guadeloupe ne tombe-t-il pas juste ?', a: `La fiche officielle annonce ${$(2426.58, lang, 2)} HT d’émoluments pour une vente de 200 000 € en Guadeloupe, mais sa dernière ligne compte ${$(1348.2, lang, 2)} pour la tranche au-delà de 60 000 €, alors que 140 000 € au taux de ${pct(P.emoluments.zones.gp.taux[3], lang, 3)} font ${$(140000 * P.emoluments.zones.gp.taux[3] / 100, lang, 2)}. Le barème lui-même est cohérent : ce site retient ${$(gp, lang, 2)} HT.` },
+  { q: 'Saint-Martin, Saint-Barthélemy et Saint-Pierre-et-Miquelon sont-ils couverts ?', a: 'Non. Ces collectivités ont leur propre fiscalité immobilière, qui ne figure pas dans le tableau des départements publié par la DGFiP. Le calculateur ne couvre que les cinq départements et régions d’outre-mer : Guadeloupe, Martinique, Guyane, La Réunion et Mayotte. Pour les autres territoires, interrogez directement un notaire local.' },
+];
+---
+<GuideLayout lang={lang} id="outremer" breadcrumbLabel="Outre-mer"
+  title={`Frais de notaire outre-mer ${YEAR} : barèmes DOM et TVA`}
+  h1={`Frais de notaire en outre-mer en ${YEAR} : Guadeloupe, Martinique, Guyane, La Réunion, Mayotte`}
+  description={`Frais de notaire outre-mer ${YEAR} : barème d’émoluments majoré, TVA à 8,5 % ou nulle, droits de mutation à 5 % ou 4,50 %. Calcul pour les cinq DOM, en ligne.`}
+  intro="Un barème d’émoluments propre, une TVA différente, des taux votés localement."
+  resume={`Acheter en Guadeloupe, en Martinique, en Guyane, à La Réunion ou à Mayotte ne coûte pas les mêmes frais qu’en métropole. Le barème des émoluments du notaire y est majoré, avec des taux applicables depuis le 1er mars 2024 publiés par service-public.fr : de ${pct(P.emoluments.zones.gf.taux[0], lang, 3)} en Guyane à ${pct(P.emoluments.zones.re.taux[0], lang, 3)} à La Réunion et à Mayotte sur la première tranche. La TVA sur ces émoluments est de ${pct(P.emoluments.zones.gp.tva, lang, 1)} aux Antilles et à La Réunion, nulle en Guyane et à Mayotte. Les droits de mutation suivent le taux voté par chaque collectivité : 5 % en Martinique, en Guyane et à La Réunion, 4,50 % en Guadeloupe et à Mayotte. Pour une maison de 220 000 € à La Réunion, le total atteint ${$(r.total)}, contre ${$(m.total)} à Paris.`}
+  faqs={faqs}
+  related={[{ href: route('emoluments', lang), name: 'Émoluments en métropole', description: 'Le barème de référence.' }, { href: route('departements', lang), name: 'Tous les départements', description: 'Les 101, outre-mer compris.' }, { href: route('home', lang), name: 'Calcul des frais de notaire', description: 'Choisissez votre DOM dans la liste.' }]}
+  sources={src(lang, 'sp_frais_notaire', 'dgfip_dmto')}>
+  <MiniSim client:visible kind="outremer" lang={lang} href={route('home', lang)} />
+  <h2>Les barèmes d’émoluments, département par département</h2>
+  <ContentTable headers={['Tranche', 'Métropole', 'Guadeloupe', 'Martinique', 'Guyane', 'La Réunion et Mayotte']} align={['l', 'r', 'r', 'r', 'r', 'r']} rows={tranchesRows(lang).map((row, i) => [row[0], row[1], pct(P.emoluments.zones.gp.taux[i], lang, 3), pct(P.emoluments.zones.mq.taux[i], lang, 3), pct(P.emoluments.zones.gf.taux[i], lang, 3), pct(P.emoluments.zones.re.taux[i], lang, 3)])} caption="Taux hors taxes, applicables depuis le 1er mars 2024 (service-public.fr, fiche F17701)." />
+  <h2>Les frais complets pour un même achat</h2>
+  <ContentTable headers={['Département', 'Taux des droits', 'Droits', 'Émoluments TTC', 'Total des frais']} align={['l', 'r', 'r', 'r', 'r']} rows={[...DOM.map(([c]) => F(220000, c)), m].map((f) => [f.dep.fr, pct(f.tauxDep), $(f.droits), $(f.emoluments.ttc), $(f.total)])} caption="Achat ancien de 220 000 €, cas général, débours estimés à 500 €." />
+  <p>Le tableau montre que l’écart avec la métropole tient surtout aux émoluments. À La Réunion, malgré une TVA réduite à {pct(P.emoluments.zones.re.tva, lang, 1)}, ils dépassent largement ceux de Paris. En Guyane et à Mayotte, l’absence de TVA compense en partie la majoration du barème. Côté droits de mutation, la Guadeloupe et Mayotte, restées à 4,50 %, sont moins chères que la Martinique, la Guyane et La Réunion, passées à 5 %.</p>
+  <h2>Ce que le calculateur retient pour l’outre-mer</h2>
+  <p>Il applique le barème de chaque département et sa TVA, le taux départemental du tableau DGFiP au 1er juin {YEAR}, la taxe communale de droit commun et la contribution de sécurité immobilière. Deux approximations sont signalées sur le résultat : le forfait de formalités est celui de la métropole, faute de barème outre-mer publié pour ce forfait sur service-public.fr, et la taxe communale réduite de Lamentin et de Tsingoni n’est pas modélisée. Le primo-accédant bénéficie du même avantage qu’en métropole là où le taux de 5 % a été voté : en Martinique, en Guyane et à La Réunion.</p>
+  <h2>Un mot sur l’exemple officiel de la Guadeloupe</h2>
+  <p>En vérifiant les barèmes, nous avons relevé une erreur de calcul dans l’exemple de la fiche de service-public.fr : pour 200 000 € en Guadeloupe, elle annonce {$(gpSp, lang, 2)} HT, en comptant {$(1348.2, lang, 2)} sur la dernière tranche au lieu de {$(140000 * P.emoluments.zones.gp.taux[3] / 100, lang, 2)}. Les taux affichés par la même fiche sont cohérents avec ceux des autres départements, tous majorés dans la même proportion par rapport à la métropole. Ce site applique les taux et obtient {$(gp, lang, 2)} HT ; ses tests reproduisent sans écart les exemples de la Martinique, de la Guyane, de La Réunion et de Mayotte.</p>
+</GuideLayout>

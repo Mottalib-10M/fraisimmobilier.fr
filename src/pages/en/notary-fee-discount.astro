@@ -1,0 +1,45 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, P, emolumentsVente, F } from '../../lib/tables';
+import { src } from '../../lib/sources';
+const lang = 'en';
+const r450 = emolumentsVente(450000, 'metro', 20); const f450 = F(450000, '92');
+const e600 = emolumentsVente(600000), r600 = emolumentsVente(600000, 'metro', 20), f600 = F(600000, '92'), p600 = F(600000, '92', 'ancien', 'primo');
+const faqs = [
+  { q: 'Can French notary fees be negotiated?', a: `Only the discount on emoluments, and only above €100,000. The notary may grant up to ${pct(P.emoluments.remise_max, lang, 0)} off the part of the emoluments calculated on the fraction of the price above that threshold. Transfer tax, the land registry contribution and disbursements cannot be negotiated: they are taxes and money advanced on your behalf.` },
+  { q: 'What is a 20% discount worth on a €450,000 purchase?', a: `${$(r450.remise * 1.2, lang)} including VAT. The discount applies to the emoluments calculated on the €350,000 above €100,000, at ${pct(P.emoluments.zones.metro.taux[3], lang, 3)}, which is ${$(r450.remise / 0.2, lang)} excluding VAT; 20% of that is ${$(r450.remise, lang)} excluding VAT. Against total fees of ${$(f450.total, lang)} in Hauts-de-Seine, it is under 1%.` },
+  { q: 'Is a notary obliged to grant a discount?', a: 'No. The discount is optional. If the office offers it, it must display its discount rates by type of deed and price band and apply them in the same way to all clients: it cannot grant it to one buyer and refuse it to another in the same situation. Simply ask, before signing, whether the office applies a discount scale, and at what rate for a sale at your price.' },
+  { q: 'Does the discount also apply to gifts and estates?', a: 'Yes, the discount option covers services charged on a proportional basis: sales, gifts and inheritance declarations, once the base exceeds the threshold. For deeds involving more than €10 million, such as certain contributions of property to a company, a larger discount of up to 40% is possible on services listed in the Commercial Code.' },
+  { q: 'Why does service-public.fr mention €150,000?', a: 'The service-public.fr page on notary fees still mentions a discount possible “if the service exceeds €150,000”. Notaires de France, citing article R444-10 of the Commercial Code as currently worded, gives €100,000 and a maximum of 20%. This site applies the second rule, the more recent one, and says so in its methodology.' },
+  { q: 'Does changing notary lower the fees?', a: 'Not the emoluments on a sale, identical everywhere in mainland France except for the discount. A buyer can choose their own notary at no extra cost even if the seller has one: the two offices share the emoluments. The point of choosing lies elsewhere, in availability, advice, English-language support and knowledge of the local market.' },
+];
+---
+<GuideLayout lang={lang} id="remise" breadcrumbLabel="Notary fee discount"
+  title={`Notary fee discount France ${YEAR}: up to 20% above €100,000`}
+  h1="The discount on French notary emoluments: the only negotiable part of the fees"
+  description={`French notary fee discount ${YEAR}: up to 20% on emoluments above €100,000, displayed and equal for all clients. What it is really worth, worked out on your price.`}
+  intro="An option framed by the Commercial Code, worth less than most people think."
+  resume={`Since the reform of the notary tariff, article R444-10 of the French Commercial Code has allowed a notary to grant a discount on proportional emoluments when the price exceeds €100,000, up to ${pct(P.emoluments.remise_max, lang, 0)}. The discount applies only to the part of the emoluments calculated on the fraction of the price above €100,000, at the marginal rate of ${pct(P.emoluments.zones.metro.taux[3], lang, 3)}. On a €450,000 purchase, the maximum discount saves ${$(r450.remise * 1.2, lang)} including VAT, out of ${$(f450.total, lang)} in fees in Hauts-de-Seine. It is optional, must be displayed in the office and granted to all clients on the same terms. Transfer tax never moves, nor do the land registry contribution or the disbursements. If you are used to haggling over conveyancing fees elsewhere, this is the only room you have.`}
+  faqs={faqs}
+  related={[{ href: route('emoluments', lang), name: 'Notary emoluments', description: 'The scale the discount applies to.' }, { href: route('reduire', lang), name: 'Reducing your fees', description: 'Levers that save more.' }, { href: route('amount-500000', lang), name: '€500,000 purchase', description: 'Where the discount starts to count.' }]}
+  sources={src(lang, 'notaires_frais', 'sp_frais_notaire')}>
+  <MiniSim client:visible kind="remise" lang={lang} href={route('home', lang)} />
+  <h2>What a 20% discount is worth</h2>
+  <ContentTable headers={['Price', 'Emoluments incl. VAT, no discount', 'Maximum discount incl. VAT', 'Share of total fees']} align={['r', 'r', 'r', 'r']} rows={[100000, 200000, 300000, 450000, 600000, 1000000].map((x) => { const a = emolumentsVente(x), b = emolumentsVente(x, 'metro', 20), f = F(x, '75'); return [$(x, lang), $(a.ttc, lang), $(b.remise * 1.2, lang), pct((b.remise * 1.2 / f.total) * 100, lang, 2)]; })} caption="5% département, disbursements estimated at €500." />
+  <p>At €100,000 the discount is nil: there is no fraction above the threshold. At €200,000 it remains modest, a little over €190 including VAT. It only approaches a thousand euros around €600,000. Above all, the table shows that the discount never exceeds 2% of total fees, because it only touches the notary’s pay and not the tax, which makes up most of the bill.</p>
+  <h2>The rules of the game</h2>
+  <p>The discount is not a private negotiation. A notary who offers it sets, for each type of deed, a single rate per price band, displays it in the office and applies it to every client in the same situation. They cannot reserve the discount for a loyal client or a developer who brings in business. These rules preserve equality before a regulated tariff while allowing a little competition on large files. A discount granted in breach of them would expose the notary to disciplinary proceedings, since compliance with the tariff is part of the profession’s obligations.</p>
+  <p>For transactions over €10 million, a larger discount of up to 40% is allowed on certain listed services, such as contributions of property to a company. These are professional transactions, rarely a private purchase.</p>
+  <h2>How to ask for it</h2>
+  <p>Before signing the preliminary contract or at the first appointment, ask the office whether it applies a discount scale to sales, and which one. The calculator lets you enter the rate obtained in the advanced options: it applies it only to the part of the emoluments calculated above €100,000, not to their total. If the office offers no discount, leave the field at zero: the result then matches the regulated scale exactly.</p>
+  <h2>Why the discount stays limited</h2>
+  <p>The French notary tariff was designed so that each deed covers its average cost: large sales offset small ones, which are often loss-making for the office. The discount allows a little competition on big files without breaking that balance, since it only covers the fraction above €100,000. Each office decides freely whether to offer it; nothing obliges it to, and a refusal need not be explained. That is why the calculator applies no discount by default.</p>
+  <h2>A worked example</h2>
+  <p>Take a €600,000 house in Hauts-de-Seine. Without a discount, the emoluments come to {$(e600.ttc, lang)} including VAT. The part calculated above €100,000 is the €500,000 at the top rate, {$(r600.remise / 0.2, lang)} excluding VAT; a 20% discount takes off {$(r600.remise, lang)} excluding VAT, or {$(r600.remise * 1.2, lang)} with VAT. On total fees of {$(f600.total, lang)}, that is {pct((r600.remise * 1.2 / f600.total) * 100, lang, 1)}. The same buyer, if eligible as a first-time buyer, would save {$(f600.total - p600.total, lang)} on transfer tax, with no negotiation at all.</p>
+  <h2>More effective levers</h2>
+  <p>If the aim is to cut the bill, three levers save more: first-time buyer status, worth about 0.51% of the price in a 5% département; listing the furniture sold with the home, which takes its value out of the taxable base; and having the agency commission paid by the buyer. The guide to <a href={route('reduire', lang)}>reducing notary fees</a> compares them on your own purchase.</p>
+</GuideLayout>

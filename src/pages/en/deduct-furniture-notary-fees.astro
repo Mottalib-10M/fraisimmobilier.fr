@@ -1,0 +1,41 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, F, tauxGlobalAncien, tauxGlobalNeuf } from '../../lib/tables';
+import { economieMobilier } from '../../lib/engine/notaire';
+import { src } from '../../lib/sources';
+const lang = 'en';
+const e = economieMobilier(320000, 12000, '44');
+const faqs = [
+  { q: 'Can furniture really be deducted from French notary fees?', a: `Yes, provided the furniture is listed in the deed of sale with a realistic value. It is not real estate, so its price bears neither property transfer tax nor the notary’s proportional emoluments. On a €320,000 purchase in Loire-Atlantique with €12,000 of furniture, the saving reaches ${$(e.economie, lang)}, of which ${$(e.droitsEvites, lang)} is transfer tax.` },
+  { q: 'Which items can go on the list?', a: 'Movable items that can be taken away without damaging the home: free-standing appliances, furniture, light fittings, curtains, garden equipment, a kitchen whose units can be removed. Items built into the property, such as a bathroom, a boiler, radiators, shutters or a wooden floor, are real estate and cannot be deducted.' },
+  { q: 'What value should be given to the furniture?', a: 'Its market value on the day of the sale, meaning what it would fetch second-hand, not its price new. Keep invoices, photos and a detailed list. An overall value out of proportion with the price of the property, or a vague list, is the first signal that draws a check by the tax office.' },
+  { q: 'Is there a maximum percentage for furniture?', a: 'No text sets a ceiling. Notarial practice often mentions a modest share of the price, a few percent, but that is not a rule: what counts is that each item exists and that its value can be justified. A home sold empty has no furniture to deduct, whatever share you had in mind.' },
+  { q: 'What is the risk of overstating the furniture?', a: 'A reassessment: the tax office adds the excess back to the taxable base and claims the difference, with late-payment interest and, if the understatement is deliberate, a penalty. The tax office can act for several years after the sale. The hoped-for saving, a few hundred euros, does not justify that risk.' },
+  { q: 'Does a furniture list affect my mortgage?', a: 'It does not change the total you pay the seller, only how it is split between property and furniture. Some banks finance the whole price, others exclude the furniture from the mortgage: tell your bank about the list before the loan offer, to avoid a funding gap on signing day.' },
+];
+---
+<GuideLayout lang={lang} id="mobilier" breadcrumbLabel="Deducting furniture"
+  title={`Deduct furniture from notary fees in France: ${YEAR} saving`}
+  h1="Deducting furniture from French notary fees: what is allowed, what it saves, what is risky"
+  description={`Furniture and French notary fees ${YEAR}: a list attached to the deed takes its value out of transfer tax. What can be listed, realistic values, saving, risks.`}
+  intro="A legal lever, as long as every item exists and its value stands up."
+  resume={`Furniture sold with a home in France is not real estate: if it is listed and valued in the deed of sale, its value comes out of the base for transfer tax, the notary’s proportional emoluments and the land registry contribution. In a 5% département, every thousand euros of furniture saves about ${$(1000 * tauxGlobalAncien(5) / 100, lang)} of tax, a little more with the emoluments. On a €320,000 purchase in Nantes with €12,000 of furniture, the total saving reaches ${$(e.economie, lang)}. The mechanism has limits: only movable items count, the value must be second-hand rather than new, and an inflated list exposes you to a reassessment with interest and possibly a penalty. The calculator’s advanced options let you enter the value of the furniture and see the effect on every line.`}
+  faqs={faqs}
+  related={[{ href: route('reduire', lang), name: 'Reducing your fees', description: 'The other legal levers.' }, { href: route('agence', lang), name: 'Agency fees', description: 'Another item that leaves the taxable base.' }, { href: route('home', lang), name: 'Notary fees calculator', description: '“Furniture” option in the form.' }]}
+  sources={src(lang, 'dgfip_dmto', 'notaires_frais')}>
+  <MiniSim client:visible kind="mobilier" lang={lang} href={route('home', lang)} />
+  <h2>What a furniture list saves</h2>
+  <ContentTable headers={['Property price', 'Furniture listed', 'Total saving', 'of which transfer tax']} align={['r', 'r', 'r', 'r']} rows={[[200000, 5000], [250000, 8000], [320000, 12000], [400000, 15000], [600000, 20000]].map(([p, m]) => { const x = economieMobilier(p, m, '44'); return [$(p, lang), $(m, lang), $(x.economie, lang), $(x.droitsEvites, lang)]; })} caption="Loire-Atlantique, 5% département." />
+  <h2>Movable or not: where the line runs</h2>
+  <p>French civil law distinguishes movable property, which can be moved, from real estate, which is fixed to the ground or attached to it permanently. For the list attached to the deed, the practical question is simple: can the item leave with the seller without damaging the home? A free-standing fridge, a table, a sofa, hanging lights, a washing machine: yes. A fitted kitchen whose units are screwed to the wall and whose worktop was cut to measure: debatable, and the tax office often treats it as built-in equipment. A boiler, a bath, a wooden floor, roller shutters, fixed air-conditioning: no.</p>
+  <h2>The right value</h2>
+  <p>The value to enter is the second-hand value on the day of the sale. A kitchen bought for €15,000 ten years ago is no longer worth that; nor is a five-year-old appliance. A cautious approach is to start from the purchase price, apply a discount for age and wear, and keep invoices and dated photos. The notary may refuse to write in a value that is obviously inflated, since drafting the deed engages their liability.</p>
+  <h2>The tax check</h2>
+  <p>The tax office can challenge the split of the price between property and furniture and add the excess back to the taxable base. It is all the more likely to do so when the furniture share is large, the list is vague (“various furniture”) or the home was sold empty. The recovery covers the difference in tax plus late-payment interest, with a penalty if the understatement was deliberate. The saving, about 6% of the furniture’s value, is not worth that risk if the figures do not hold up.</p>
+  <h2>On a new build, almost nothing to gain</h2>
+  <p>On a VAT-able sale, land publicity tax is only {pct(tauxGlobalNeuf(), lang, 3)}: deducting €10,000 of furniture saves only about {$(10000 * tauxGlobalNeuf() / 100, lang)} of tax, plus a few euros of emoluments. The lever only makes sense on resale homes, and it is worth more where the départemental rate is higher: slightly more in Paris than in Châteauroux, where the départemental rate is 3.80%.</p>
+</GuideLayout>

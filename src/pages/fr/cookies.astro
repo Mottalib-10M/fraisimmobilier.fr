@@ -1,0 +1,14 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import { CONTACT_EMAIL, LAST_UPDATED } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { displayDate } from '../../lib/format';
+const lang = 'fr';
+---
+<PageLayout title="Cookies – frais de notaire calcul" description="Ce site ne dépose aucun cookie de mesure d’audience ni de publicité. Le calculateur fonctionne sans cookie. Ce qui changerait si une mesure d’audience était ajoutée." lang={lang} noindex={true} breadcrumbs={[{ label: 'Cookies' }]} showAuthor={false}>
+  <div class="prose prose-slate max-w-none">
+    <h1>Cookies</h1>
+    <p>À la date de mise à jour de cette page, le site ne dépose <strong>aucun cookie</strong> : ni mesure d’audience, ni publicité, ni réseau social. Le calculateur fonctionne entièrement dans votre navigateur sans en avoir besoin.</p>
+    <p>Si une mesure d’audience ou une publicité était ajoutée, elle ne serait activée qu’après votre accord, recueilli par un bandeau permettant d’accepter ou de refuser aussi simplement, conformément aux recommandations de la CNIL ; cette page détaillerait alors chaque cookie et sa durée. Voir aussi la <a href={route('privacy', lang)}>politique de confidentialité</a>. Questions : <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. Dernière mise à jour : {displayDate(LAST_UPDATED, 'fr-FR')}.</p>
+  </div>
+</PageLayout>

@@ -1,0 +1,19 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import LegalIdentity from '../../components/LegalIdentity.astro';
+import { CONTACT_EMAIL } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { contactPageSchema } from '../../lib/seo';
+const lang = 'en';
+const title = 'Contact – report an error in the French notary fees calculator';
+const description = 'Write to the publisher of the French notary fees calculator: report a changed départemental rate or a calculation error, or ask about embedding the widget.';
+---
+<PageLayout title={title} description={description} lang={lang} noindex={true} jsonLd={[contactPageSchema({ name: title, description, path: route('contact', lang), lang })]} breadcrumbs={[{ label: 'Contact' }]} showAuthor={false}>
+  <div class="prose prose-slate max-w-none">
+    <h1>Contact</h1>
+    <p>To report an error, a départemental rate that has changed or a question about the calculation: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. Include the page address, the price and the département you entered so we can reproduce the calculation. We read messages in English and French.</p>
+    <p>We do not give individual advice on a sale in progress: for a binding statement, contact your notary. To embed the calculator on your site, see the <a href={route('widget', lang)}>widget page</a>.</p>
+    <h2>Publisher</h2>
+    <LegalIdentity lang={lang} />
+  </div>
+</PageLayout>

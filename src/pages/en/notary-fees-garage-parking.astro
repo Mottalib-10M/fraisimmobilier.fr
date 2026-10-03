@@ -1,0 +1,33 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import NotaireCalculator from '../../components/calc/NotaireCalculator';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, F, P } from '../../lib/tables';
+import { src } from '../../lib/sources';
+const lang = 'en';
+const g = F(20000, '75'), g2 = F(20000, '75', 'ancien', 'standard', { debours: 250 });
+const faqs = [
+  { q: 'What are notary fees on a €20,000 parking space in France?', a: `About ${$(g.total, lang)} in Paris with €500 of estimated disbursements, ${pct(g.pourcentage, lang, 1)} of the price, and ${$(g2.total, lang)} if disbursements are limited to €250. Transfer tax is only ${$(g.droits, lang)}: the rest comes from the emoluments, the flat formalities fee and the disbursements, which weigh heavily on a small price.` },
+  { q: 'Is a notary required to buy a parking space in France?', a: 'Yes. A parking space or garage is real estate; its sale must be registered at the land registry, which requires a deed drawn up by a notary. The preliminary contract can be signed privately, but the transfer of ownership only becomes binding on third parties after the notarial deed and its registration.' },
+  { q: 'Can the parking space be bought in the same deed as the flat?', a: 'Yes, and it is often cheaper: the price of the parking lot is added to that of the home in a single deed. Emoluments are calculated on the total price, at a lower marginal rate, and there is only one formalities fee and one set of disbursements. Two separate deeds multiply the fixed items.' },
+];
+---
+<GuideLayout lang={lang} id="garage" breadcrumbLabel="Garage and parking"
+  title={`Notary fees on a garage or parking space in France ${YEAR}`}
+  h1="French notary fees on a garage or parking space: when small prices cost a lot"
+  description={`French notary fees on a garage or parking space ${YEAR}: €90 minimum emolument, 10% cap, flat formalities fee. Calculator for a small price, same-deed tip.`}
+  intro="On a small price, the fixed items make the bill."
+  resume={`Buying a parking space, a garage or a cellar in France follows the same rules as a flat: the département’s transfer tax, the notary’s emoluments, the flat formalities fee, the land registry contribution and disbursements. But on a price of a few thousand or a few tens of thousands of euros, the fixed items change everything. Emoluments are subject to a ${$(P.emoluments.minimum_ht, lang)} minimum excluding VAT and capped at ${pct(P.emoluments.plafond_pourcentage_valeur, lang, 0)} of the property’s value; the formalities fee, ${$(P.emoluments.formalites_forfait_ht, lang, 2)} excluding VAT, and the disbursements do not fall with the price. For a €20,000 space in Paris, fees reach ${$(g.total, lang)}, ${pct(g.pourcentage, lang, 1)} of the price, against under 8% for a flat. Buying the parking space in the same deed as the home avoids paying the fixed items twice.`}
+  faqs={faqs}
+  related={[{ href: route('emoluments', lang), name: 'Notary emoluments', description: 'Minimum and cap explained.' }, { href: route('debours', lang), name: 'Disbursements and formalities', description: 'The items that do not fall.' }, { href: route('terrain', lang), name: 'Buying land', description: 'The other common small price.' }]}
+  sources={src(lang, 'notaires_frais', 'sp_frais_notaire', 'dgfip_dmto')}>
+  <div slot="tool" data-outil><NotaireCalculator client:load lang={lang} defaultPrix={20000} methodHref={route('method', lang)} /></div>
+  <h2>The share of fees by price</h2>
+  <ContentTable headers={['Price', 'Transfer tax', 'Emoluments and formalities incl. VAT', 'Total', 'Share of price']} align={['r', 'r', 'r', 'r', 'r']} rows={[3000, 8000, 15000, 25000, 40000].map((x) => { const f = F(x, '75'); return [$(x, lang), $(f.droits, lang), $(f.emoluments.ttc + f.formalitesTTC, lang), $(f.total, lang), pct(f.pourcentage, lang, 1)]; })} caption="Paris, disbursements estimated at €500. At €3,000 the 10% cap limits the emoluments, not the other items." />
+  <h2>Minimum and cap: how they work</h2>
+  <p>The proportional scale would give barely more than €100 excluding VAT of emoluments for a €3,000 garage. The {pct(P.emoluments.plafond_pourcentage_valeur, lang, 0)} cap limits them to €300 excluding VAT, which changes nothing here, and the {$(P.emoluments.minimum_ht, lang)} minimum is not reached. For a cellar sold for €600, though, the scale would give €23 and the cap €60 excluding VAT, below the {$(P.emoluments.minimum_ht, lang)} minimum. Notaires de France presents the cap as the protection for low-value sales: the calculator applies it in this case and shows it on the emoluments line. For a sale this small, ask the notary to confirm the amount.</p>
+  <h2>Cutting the bill</h2>
+  <p>The most effective lever is bundling: a parking space bought with the flat, two lots bought together, a cellar included in the main sale. Disbursements can also be kept down on a small file: a co-ownership lot whose managing agent supplies documents quickly costs less to document. Finally, the département’s rate applies as for a home: the same space costs slightly less tax in a département still at 4.50%.</p>
+</GuideLayout>

@@ -1,0 +1,34 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import NotaireCalculator from '../../components/calc/NotaireCalculator';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, F, P, tauxGlobalAncien } from '../../lib/tables';
+import { src } from '../../lib/sources';
+const lang = 'fr';
+const s = F(320000, '75'), d = F(560000, '75'), dp = F(560000, '75', 'ancien', 'primo'), dr = F(560000, '75', 'ancien', 'standard', { remisePct: 20 });
+const faqs = [
+  { q: 'Quels frais de notaire pour un studio à Paris ?', a: `Pour un studio ancien à 320 000 €, le calculateur donne ${$(s.total)}, soit ${pct(s.pourcentage)} du prix, dont ${$(s.droits)} de droits de mutation au taux global de ${pct(tauxGlobalAncien(5), lang, 3)}. Un primo-accédant qui en fait sa résidence principale paie ${$(F(320000, '75', 'ancien', 'primo').total)}.` },
+  { q: 'Paris applique-t-il le taux de 5 % ?', a: 'Oui. Au 1er juin 2026, le tableau de la DGFiP indique un taux voté de 5 % pour Paris, avec le taux de 4,50 % maintenu pour les primo-accédants qui achètent leur résidence principale. Paris étant à la fois commune et département, la Ville perçoit la taxe départementale et la taxe communale additionnelle.' },
+  { q: 'La remise du notaire vaut-elle la peine à Paris ?', a: `Davantage qu’ailleurs, parce que les prix dépassent souvent largement 100 000 €. Sur un deux-pièces à 560 000 €, une remise de 20 % sur la part des émoluments au-delà du seuil fait économiser ${$(d.total - dr.total)}. Le statut de primo-accédant en rapporte ${$(d.total - dp.total)}. Demandez si l’étude pratique une remise avant le compromis.` },
+];
+---
+<GuideLayout lang={lang} id="paris" breadcrumbLabel="Paris"
+  title={`Frais de notaire Paris ${YEAR} : calcul au taux de 5 %`}
+  h1={`Frais de notaire à Paris en ${YEAR} : le calcul pour un studio, un deux-pièces, un familial`}
+  description={`Frais de notaire à Paris ${YEAR} : droits de mutation à 5 %, primo-accédant à 4,50 %, émoluments sur des prix élevés, remise. Studio, deux-pièces, quatre-pièces.`}
+  intro="Paris applique le taux de 5 % ; les prix élevés rendent la remise et le statut de primo-accédant plus précieux."
+  resume={`Paris a voté le taux départemental de 5 % : les droits de mutation y atteignent ${pct(tauxGlobalAncien(5), lang, 3)} du prix dans l’ancien, selon le tableau DGFiP au 1er juin ${YEAR}. Comme les prix y sont élevés, les frais de notaire se comptent vite en dizaines de milliers d’euros : ${$(s.total)} pour un studio à 320 000 €, ${$(d.total)} pour un deux-pièces à 560 000 €. Deux leviers prennent ici plus de poids qu’ailleurs. Le statut de primo-accédant, qui ramène la taxe départementale à 4,50 % pour l’achat d’une résidence principale, fait économiser ${$(d.total - dp.total)} sur le deux-pièces. La remise sur les émoluments, que le notaire peut accorder au-delà de 100 000 €, en ajoute ${$(d.total - dr.total)} à 20 %. Le calculateur ci-dessous est réglé sur Paris.`}
+  faqs={faqs}
+  related={[{ href: route('primo', lang), name: 'Primo-accédant', description: 'L’exemption de la hausse.' }, { href: route('remise', lang), name: 'Remise sur les émoluments', description: 'Au-delà de 100 000 €.' }, { href: route('amount-500000', lang), name: 'Achat à 500 000 €', description: 'Le détail d’un prix parisien.' }]}
+  sources={src(lang, 'dgfip_dmto', 'notaires_frais', 'sp_frais_notaire')}>
+  <div slot="tool" data-outil><NotaireCalculator client:load lang={lang} defaultDep="75" defaultPrix={420000} methodHref={route('method', lang)} /></div>
+  <h2>Trois achats parisiens</h2>
+  <ContentTable headers={['Bien (ancien)', 'Prix', 'Frais, cas général', 'Primo-accédant', 'Primo + remise 20 %']} align={['l', 'r', 'r', 'r', 'r']} rows={[['Studio', 320000], ['Deux-pièces', 560000], ['Quatre-pièces', 1100000]].map(([l, p]) => [l as string, $(p as number), $(F(p as number, '75').total), $(F(p as number, '75', 'ancien', 'primo').total), $(F(p as number, '75', 'ancien', 'primo', { remisePct: 20 }).total)])} caption="Débours estimés à 500 €. La remise est facultative et dépend de l’étude." />
+  <h2>Ce qui est propre à Paris</h2>
+  <p>Paris est la seule collectivité à être à la fois une commune et un département : la Ville encaisse donc la taxe départementale et la taxe communale additionnelle d’une même vente. Pour l’acheteur, le calcul ne change pas. Ce qui change, c’est l’échelle : à ces niveaux de prix, la dernière tranche du barème des émoluments, à {pct(P.emoluments.zones.metro.taux[3], lang, 3)} hors taxes, porte l’essentiel de la rémunération du notaire, et la remise de l’article R444-10 du code de commerce porte sur une assiette importante.</p>
+  <p>La copropriété est la règle à Paris : prévoyez les pièces du syndic dans les débours, et vérifiez dans le pré-état daté les travaux votés qui resteraient à votre charge. Ils ne s’ajoutent pas aux frais de notaire, mais au budget.</p>
+  <h2>Paris et la petite couronne</h2>
+  <p>Les Hauts-de-Seine, la Seine-Saint-Denis et le Val-de-Marne appliquent aussi 5 % : à prix égal, les frais sont identiques de part et d’autre du périphérique. Toute l’Île-de-France est à 5 % ; l’écart le plus proche se trouve au nord, dans l’Oise, restée à 4,50 % et limitrophe du Val-d’Oise. Le <a href={route('comparer', lang)}>comparateur</a> les chiffre.</p>
+</GuideLayout>

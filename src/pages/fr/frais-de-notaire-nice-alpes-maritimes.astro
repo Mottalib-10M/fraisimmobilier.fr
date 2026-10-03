@@ -1,0 +1,33 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import NotaireCalculator from '../../components/calc/NotaireCalculator';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, F, tauxGlobalAncien } from '../../lib/tables';
+import { comparer } from '../../lib/engine/notaire';
+import { src } from '../../lib/sources';
+const lang = 'fr';
+const n = F(380000, '06'), v = F(380000, '83'), c = comparer(380000, '83', '06');
+const faqs = [
+  { q: 'Les Alpes-Maritimes ont-elles augmenté les droits de mutation ?', a: `Non. Au 1er juin 2026, le tableau de la DGFiP n’indique aucun taux voté à 5 % pour les Alpes-Maritimes : le département applique toujours 4,50 %, soit ${pct(tauxGlobalAncien(4.5), lang, 3)} au total. Pour un appartement ancien de 380 000 € à Nice, les frais s’élèvent à ${$(n.total)}.` },
+  { q: 'Combien économise-t-on par rapport au Var ?', a: `Le Var a voté 5 %. Pour le même prix de 380 000 €, les frais y atteignent ${$(v.total)}, soit ${$(c.ecart)} de plus que dans les Alpes-Maritimes. L’écart disparaît pour un primo-accédant qui achète sa résidence principale : il paie 4,50 % dans les deux départements.` },
+  { q: 'Une résidence secondaire sur la Côte d’Azur paie-t-elle plus de droits ?', a: 'Non, pas de droits de mutation supplémentaires : le taux du département s’applique à toutes les ventes d’ancien, résidence principale ou secondaire. La différence se fait ailleurs, dans la taxe d’habitation sur les résidences secondaires et son éventuelle majoration communale, qui ne relèvent pas des frais de notaire.' },
+];
+---
+<GuideLayout lang={lang} id="nice" breadcrumbLabel="Nice et les Alpes-Maritimes"
+  title={`Frais de notaire Nice ${YEAR} : Alpes-Maritimes à 4,50 %`}
+  h1={`Frais de notaire à Nice et dans les Alpes-Maritimes en ${YEAR} : le grand marché resté à 4,50 %`}
+  description={`Frais de notaire à Nice ${YEAR} : les Alpes-Maritimes n’ont pas voté la hausse à 5 %. Droits à 5,81 %, écart avec le Var, calcul pour Nice, Cannes, Antibes.`}
+  intro="Le département le plus peuplé parmi ceux qui ont refusé la hausse."
+  resume={`Les Alpes-Maritimes font partie des onze départements qui n’ont pas relevé leur taux de droits de mutation à 5 %. Au 1er juin ${YEAR}, selon le tableau de la DGFiP, le taux départemental y reste de 4,50 %, soit ${pct(tauxGlobalAncien(4.5), lang, 3)} avec la taxe communale et les frais d’assiette, contre ${pct(tauxGlobalAncien(5), lang, 3)} dans le Var voisin et dans la quasi-totalité du pays. Sur un marché aux prix élevés, l’avantage se chiffre : pour un appartement ancien de 380 000 € à Nice, Cannes ou Antibes, les frais de notaire s’élèvent à ${$(n.total)}, soit ${$(c.ecart)} de moins que pour le même bien à Toulon ou Fréjus. Le statut de primo-accédant n’apporte ici aucun gain supplémentaire, puisque le taux est déjà de 4,50 %.`}
+  faqs={faqs}
+  related={[{ href: route('taux450', lang), name: 'Les départements à 4,50 %', description: 'Les dix autres.' }, { href: route('comparer', lang), name: 'Comparer deux départements', description: 'Alpes-Maritimes contre Var, chiffré.' }, { href: route('hausse', lang), name: 'Hausse à 5 %', description: 'Ce que les autres ont voté.' }]}
+  sources={src(lang, 'dgfip_dmto', 'impots_droits')}>
+  <div slot="tool" data-outil><NotaireCalculator client:load lang={lang} defaultDep="06" defaultPrix={380000} methodHref={route('method', lang)} /></div>
+  <h2>Alpes-Maritimes et Var, prix par prix</h2>
+  <ContentTable headers={['Prix', 'Alpes-Maritimes (4,50 %)', 'Var (5 %)', 'Écart']} align={['r', 'r', 'r', 'r']} rows={[250000, 380000, 500000, 750000, 1200000].map((x) => { const k = comparer(x, '83', '06'); return [$(x), $(k.b.total), $(k.a.total), $(k.ecart)]; })} caption="Ancien, cas général, débours estimés à 500 €." />
+  <h2>Un taux qui peut encore changer</h2>
+  <p>Le conseil départemental conserve jusqu’au 31 mars 2028 la faculté de voter le taux de 5 %. Une délibération en ce sens entrerait en vigueur à la date qu’elle fixe, et ce site la reprendrait à la publication du tableau mensuel de la DGFiP. Pour un achat dont la signature est éloignée, vérifiez la date de mise à jour affichée en haut de la page.</p>
+  <p>Monaco, enclavé dans le département, a sa propre fiscalité immobilière et n’est pas concerné. Pour les communes de l’arrière-pays comme pour le littoral, le taux est le même dans tout le département : seuls le prix et la nature du bien font varier les frais.</p>
+</GuideLayout>

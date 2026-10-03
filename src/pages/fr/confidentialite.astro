@@ -1,0 +1,25 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import LegalIdentity from '../../components/LegalIdentity.astro';
+import { CONTACT_EMAIL, LAST_UPDATED, LEGAL, SITE_URL } from '../../data/site-config';
+import { displayDate } from '../../lib/format';
+const lang = 'fr';
+---
+<PageLayout title="Politique de confidentialité – frais de notaire calcul" description="Quelles données ce site traite, sur quelle base, combien de temps, et comment exercer vos droits. Le calculateur ne transmet aucune saisie et le site ne mesure pas l’audience." lang={lang} noindex={true} breadcrumbs={[{ label: 'Confidentialité' }]} showAuthor={false}>
+  <div class="prose prose-slate max-w-none">
+    <h1>Politique de confidentialité</h1>
+    <p>Cette page décrit les traitements de données liés à l’utilisation de {SITE_URL}, conformément au règlement (UE) 2016/679 (RGPD) et à la loi n° 78-17 du 6 janvier 1978.</p>
+    <h2>Responsable du traitement</h2>
+    <LegalIdentity lang={lang} />
+    <h2>Ce que le calculateur ne fait pas</h2>
+    <p>Le calcul s’exécute dans votre navigateur. Prix, département, situation et options ne sont transmis à aucun serveur et ne sont enregistrés nulle part. Le lien de partage encode vos saisies dans l’adresse de la page : ne le transmettez qu’aux personnes de votre choix.</p>
+    <h2>Traitements réalisés</h2>
+    <p><strong>Journaux de connexion.</strong> L’hébergeur enregistre l’adresse IP, la date, la page demandée et le navigateur, pour la sécurité et le diagnostic du service (intérêt légitime, art. 6-1 f du RGPD), selon sa propre politique de conservation.</p>
+    <p><strong>Mesure d’audience et publicité.</strong> Le site ne mesure pas l’audience et n’affiche pas de publicité à la date de mise à jour de cette page. Si cela change, cette page et la page cookies seront modifiées avant toute activation, et un choix vous sera proposé.</p>
+    <p><strong>Messages.</strong> Si vous écrivez à l’adresse de contact, votre adresse et votre message sont traités pour vous répondre et conservés trois ans au plus après le dernier échange.</p>
+    <h2>Destinataires et transferts</h2>
+    <p>Aucune donnée n’est vendue ni cédée. L’hébergeur, GitHub (États-Unis), agit comme sous-traitant ; les transferts sont encadrés par les clauses contractuelles types de la Commission européenne et le cadre de protection des données UE–États-Unis.</p>
+    <h2>Vos droits</h2>
+    <p>Accès, rectification, effacement, limitation, opposition, portabilité : écrivez à <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>, réponse sous un mois. Réclamation possible auprès de la {LEGAL.supervisoryAuthority} : <a href={LEGAL.supervisoryAuthorityUrl} rel="nofollow noopener" target="_blank">{LEGAL.supervisoryAuthorityUrl}</a>. Dernière mise à jour : {displayDate(LAST_UPDATED, 'fr-FR')}.</p>
+  </div>
+</PageLayout>

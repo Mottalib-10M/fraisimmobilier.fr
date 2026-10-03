@@ -1,9 +1,21 @@
 {
-  "name": "fraisdenotaire-calcul.fr",
-  "short_name": "fraisdenotaire-calcul",
-  "start_url": "/",
-  "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#1e40af",
-  "icons": [{"src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml"}]
+ "name": "Frais de notaire calcul",
+ "short_name": "Frais de notaire",
+ "description": "Calcul des frais de notaire 2026 par département : droits de mutation, émoluments, CSI, débours, ancien, neuf, terrain, primo-accédant.",
+ "start_url": "/fr/",
+ "display": "standalone",
+ "background_color": "#ffffff",
+ "theme_color": "#1F3A5F",
+ "icons": [
+  {
+   "src": "/icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png"
+  },
+  {
+   "src": "/icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png"
+  }
+ ]
 }

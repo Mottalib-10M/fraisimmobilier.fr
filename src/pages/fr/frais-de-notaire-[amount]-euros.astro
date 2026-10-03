@@ -1,0 +1,7 @@
+---
+import AmountPage from '../../components/AmountPage.astro';
+import { AMOUNTS } from '../../i18n/routes';
+export function getStaticPaths() { return AMOUNTS.map((a) => ({ params: { amount: String(a) } })); }
+const { amount } = Astro.params;
+---
+<AmountPage lang="fr" amount={Number(amount)} />

@@ -1,0 +1,44 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, P, emolumentsVente, tranchesRows } from '../../lib/tables';
+import { src } from '../../lib/sources';
+const lang = 'en';
+const e200 = emolumentsVente(200000);
+const faqs = [
+  { q: 'How much does a French notary earn on a €200,000 sale?', a: `${$(e200.ht, lang, 2)} excluding VAT in proportional emoluments, ${$(e200.ttc, lang, 2)} with VAT, plus the ${$(P.emoluments.formalites_forfait_ht, lang, 2)} flat formalities fee. That is the official example published by service-public.fr. Out of this the notary pays staff, premises and professional insurance: it is not net profit. The transfer tax the notary collects does not belong to them.` },
+  { q: 'Are emoluments the same at every French notary?', a: 'Yes. The tariff is regulated by the Commercial Code and binds every office in mainland France. Choosing one notary rather than another does not change the emoluments on a sale. Only the optional discount can create a difference, provided it is displayed and granted to all the office’s clients in the same way.' },
+  { q: 'Who pays the emoluments, the buyer or the seller?', a: 'The buyer, unless the deed says otherwise, as with all acquisition costs. When each party has their own notary, the two share the emoluments for the deed and the buyer pays no more: the fee does not double. The seller pays only for deeds that concern them, such as releasing a mortgage.' },
+  { q: 'Is there a minimum fee for a small sale?', a: `Yes: ${$(P.emoluments.minimum_ht, lang)} excluding VAT. But emoluments may not exceed ${pct(P.emoluments.plafond_pourcentage_valeur, lang, 0)} of the property’s value, which protects very small sales such as a cellar, a farm plot or shared parts of a building. The flat formalities fee and disbursements are not capped, which makes small sales expensive in proportion.` },
+  { q: 'Until when does this scale apply?', a: 'The current rates have applied since 1 January 2021 in mainland France and since 1 March 2024 overseas. Service-public.fr lists the tariff as valid until 29 February 2028; it is revised by order of the Justice and Economy ministers after an opinion from the competition authority. This site updates its parameters at each revision.' },
+  { q: 'Is VAT charged on notary emoluments?', a: `Yes, at ${pct(P.emoluments.zones.metro.tva, lang, 0)} in mainland France. Overseas, VAT is ${pct(P.emoluments.zones.gp.tva, lang, 1)} in Guadeloupe, Martinique and Réunion, and does not apply in French Guiana or Mayotte. The same VAT applies to the formalities fee. Transfer tax, the land registry contribution and disbursements bear no VAT.` },
+];
+---
+<GuideLayout lang={lang} id="emoluments" breadcrumbLabel="Notary emoluments"
+  title={`Notary emoluments France ${YEAR}: the scale bracket by bracket`}
+  h1={`French notary emoluments in ${YEAR}: the regulated scale, bracket by bracket`}
+  description={`French notary emoluments ${YEAR}: 3.870% down to 0.799% above €60,000, €90 minimum, cap, VAT, formalities fee. A €200,000 sale worked out line by line, in euros.`}
+  intro="The only part of the fees that actually pays the notary, and you cannot shop around for it."
+  resume={`Emoluments are the notary’s pay for the deed of sale. Their amount is set by article A444-91 of the French Commercial Code and is identical at every office in mainland France: ${pct(P.emoluments.zones.metro.taux[0], lang, 3)} on the part of the price up to €6,500, ${pct(P.emoluments.zones.metro.taux[1], lang, 3)} from €6,500 to €17,000, ${pct(P.emoluments.zones.metro.taux[2], lang, 3)} from €17,000 to €60,000 and ${pct(P.emoluments.zones.metro.taux[3], lang, 3)} above, all excluding VAT. On a €200,000 sale that is ${$(e200.ht, lang, 2)} excluding VAT, or ${$(e200.ttc, lang, 2)} with 20% VAT. A flat formalities fee of ${$(P.emoluments.formalites_forfait_ht, lang, 2)} excluding VAT comes on top. All in all, the notary’s pay is only about 15% of the fees on a resale; the rest is tax. Unlike in English-speaking countries, there is no conveyancing quote to compare. The table below shows what the notary costs at six price levels.`}
+  faqs={faqs}
+  related={[{ href: route('remise', lang), name: 'Notary fee discount', description: 'Up to 20%, above €100,000.' }, { href: route('debours', lang), name: 'Disbursements and formalities', description: 'The other sums on the statement.' }, { href: route('outremer', lang), name: 'Overseas France', description: 'A higher scale, a different VAT.' }]}
+  sources={src(lang, 'sp_frais_notaire', 'notaires_frais')}>
+  <MiniSim client:visible kind="emol" lang={lang} href={route('home', lang)} />
+  <h2>The scale for a sale</h2>
+  <ContentTable headers={['Price bracket', 'Rate excl. VAT']} align={['l', 'r']} rows={tranchesRows(lang)} caption="French Commercial Code, art. A444-91. Rates apply bracket by bracket, like an income tax scale." />
+  <p>The calculation does not apply a single rate to the whole price. Each bracket is charged at its own rate, then the four amounts are added together. For €200,000: {$(6500 * P.emoluments.zones.metro.taux[0] / 100, lang, 2)} on the first bracket, {$(10500 * P.emoluments.zones.metro.taux[1] / 100, lang, 2)} on the second, {$(43000 * P.emoluments.zones.metro.taux[2] / 100, lang, 2)} on the third and {$(140000 * P.emoluments.zones.metro.taux[3] / 100, lang, 2)} on the remaining €140,000. Most of the emoluments on an ordinary purchase therefore come from the last bracket, at {pct(P.emoluments.zones.metro.taux[3], lang, 3)}, which is why the effective rate keeps falling as the price rises.</p>
+  <h2>What the notary costs by price</h2>
+  <ContentTable headers={['Price', 'Emoluments excl. VAT', 'Emoluments incl. VAT', 'Effective rate incl. VAT']} align={['r', 'r', 'r', 'r']} rows={[50000, 100000, 200000, 300000, 500000, 1000000].map((x) => { const e = emolumentsVente(x); return [$(x, lang), $(e.ht, lang, 2), $(e.ttc, lang, 2), pct((e.ttc / x) * 100, lang, 2)]; })} />
+  <p>The effective rate falls with the price and tends towards {pct(P.emoluments.zones.metro.taux[3] * 1.2, lang, 3)} including VAT, the rate of the top bracket. This is the opposite of transfer tax, which is strictly proportional: the dearer the property, the more tax weighs in the fees compared with the notary.</p>
+  <h2>Minimum, cap and small sales</h2>
+  <p>Two safeguards frame the calculation. Emoluments on a sale may not be lower than {$(P.emoluments.minimum_ht, lang)} excluding VAT, nor higher than {pct(P.emoluments.plafond_pourcentage_valeur, lang, 0)} of the property’s value. The cap protects token sales: for a plot sold for €500, the scale would give more than the minimum, but the emoluments are brought down to €50 excluding VAT. The calculator applies both rules and shows which one applied on the emoluments line. The <a href={route('garage', lang)}>garage and parking guide</a> shows their effect on a small purchase.</p>
+  <h2>Formalities emoluments</h2>
+  <p>Alongside the fee for the deed, the notary receives formalities emoluments for the steps linked to the sale: requesting documents, registration at the land registry, notifications. Part of them is a flat fee for registered deeds, {$(P.emoluments.formalites_forfait_ht, lang, 2)} excluding VAT under article A444-171 of the Commercial Code; other formalities are charged individually depending on the file. The calculator uses the flat fee; the rest is included in the disbursements, which you can adjust.</p>
+  <h2>When there are two notaries</h2>
+  <p>In France the buyer and the seller may each appoint their own notary. Many foreign buyers do so, to work with an office used to clients abroad or able to explain the deed in English. This does not double the cost: the two notaries share the emoluments of the deed according to the profession’s rules, and the buyer pays exactly what the scale gives for a single notary. The same applies to the formalities fee. The only extra cost may come from translations or powers of attorney drawn up abroad, which are not part of the regulated tariff and should be agreed in advance.</p>
+  <h2>Emoluments and fees, two different things</h2>
+  <p>Emoluments pay for regulated deeds, including property sales. Fees (honoraires) pay for services whose price is not regulated: legal advice, a commercial lease, the sale of a business, or a promise of sale signed before the notary. Their amount is agreed in writing with the client. An ordinary sale statement contains no honoraires; if yours does, ask which service they relate to.</p>
+</GuideLayout>

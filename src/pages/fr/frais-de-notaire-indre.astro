@@ -1,0 +1,33 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import NotaireCalculator from '../../components/calc/NotaireCalculator';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, F, tauxGlobalAncien } from '../../lib/tables';
+import { comparer } from '../../lib/engine/notaire';
+import { src } from '../../lib/sources';
+const lang = 'fr';
+const i = F(140000, '36'), c = comparer(140000, '37', '36');
+const faqs = [
+  { q: 'Pourquoi les frais de notaire sont-ils plus bas dans l’Indre ?', a: `Parce que l’Indre est le seul département à appliquer encore le taux de référence de 3,80 % prévu par l’article 1594 D du code général des impôts. Il n’a voté ni le passage à 4,50 % ouvert depuis 2014, ni la hausse à 5 % de 2025. Le taux global des droits y est de ${pct(tauxGlobalAncien(3.8), lang, 3)}, contre ${pct(tauxGlobalAncien(5), lang, 3)} dans la plupart des départements.` },
+  { q: 'Combien coûtent les frais pour une maison de 140 000 € à Châteauroux ?', a: `${$(i.total)} selon le calculateur, soit ${pct(i.pourcentage)} du prix, dont ${$(i.droits)} de droits de mutation. La même maison dans l’Indre-et-Loire voisine coûterait ${$(c.a.total)} de frais, soit ${$(c.ecart)} de plus. Les émoluments du notaire, eux, sont identiques dans les deux départements.` },
+  { q: 'Un primo-accédant paie-t-il encore moins dans l’Indre ?', a: 'Non. L’exemption du primo-accédant écarte seulement la hausse à 5 % ; dans l’Indre, le taux est déjà inférieur à celui qu’un primo-accédant paierait ailleurs. Tous les acheteurs y paient 3,80 %, quelle que soit leur situation, ce qui fait de l’Indre le département le moins cher de France pour un achat dans l’ancien.' },
+];
+---
+<GuideLayout lang={lang} id="indre" breadcrumbLabel="Indre"
+  title={`Frais de notaire Indre ${YEAR} : le seul département à 3,80 %`}
+  h1={`Frais de notaire dans l’Indre en ${YEAR} : le taux le plus bas de France`}
+  description={`Frais de notaire dans l’Indre ${YEAR} : droits de mutation à 3,80 %, le seul département sans hausse. Calcul pour Châteauroux, Issoudun, écart avec les voisins.`}
+  intro="Seul département resté au taux de référence de 3,80 %."
+  resume={`L’Indre est une exception dans le tableau des droits de mutation : c’est le seul département à appliquer encore le taux de référence de 3,80 % fixé par l’article 1594 D du code général des impôts. Il n’a relevé son taux ni à 4,50 %, comme presque tous les départements l’ont fait à partir de 2014, ni à 5 % après la loi de finances pour 2025. Avec la taxe communale de 1,20 % et les frais d’assiette, les droits atteignent ${pct(tauxGlobalAncien(3.8), lang, 3)} du prix, contre ${pct(tauxGlobalAncien(5), lang, 3)} dans l’Indre-et-Loire ou le Cher voisins. Pour une maison ancienne de 140 000 € à Châteauroux, les frais de notaire s’élèvent à ${$(i.total)}, soit ${$(c.ecart)} de moins qu’à Tours au même prix. Tous les acheteurs en profitent, primo-accédants ou non.`}
+  faqs={faqs}
+  related={[{ href: route('comparer', lang), name: 'Comparer deux départements', description: 'L’Indre face à ses voisins.' }, { href: route('departements', lang), name: 'Tous les départements', description: 'Où se situe chaque taux.' }, { href: route('dmto', lang), name: 'Droits de mutation', description: 'Le taux de référence et ses relèvements.' }]}
+  sources={src(lang, 'dgfip_dmto', 'notaires_frais')}>
+  <div slot="tool" data-outil><NotaireCalculator client:load lang={lang} defaultDep="36" defaultPrix={140000} methodHref={route('method', lang)} /></div>
+  <h2>L’Indre face à ses voisins</h2>
+  <ContentTable headers={['Département', 'Taux', 'Frais sur 140 000 €', 'Écart avec l’Indre']} align={['l', 'r', 'r', 'r']} rows={['36', '37', '18', '23', '86', '41'].map((d) => { const f = F(140000, d); return [f.dep.fr, pct(f.tauxDep), $(f.total), d === '36' ? '—' : $(f.total - i.total)]; })} caption="Ancien, cas général, débours estimés à 500 €." />
+  <h2>Ce que l’exception vaut vraiment</h2>
+  <p>L’écart avec un département à 5 % représente 1,23 % du prix. Sur les prix pratiqués dans l’Indre, souvent inférieurs à la moyenne nationale, cela fait quelques centaines à un peu plus de deux mille euros : assez pour compter dans un budget serré, pas assez pour justifier à lui seul un choix de lieu de vie. L’avantage se cumule en revanche avec des prix bas : les frais d’un achat dans l’Indre sont parmi les plus faibles de France en valeur absolue.</p>
+  <p>Le département garde la faculté de relever son taux, jusqu’à 4,50 % de façon permanente et jusqu’à 5 % jusqu’au 31 mars 2028. Ce site suit le tableau mensuel de la DGFiP et mettra à jour l’Indre si une délibération change la donne.</p>
+</GuideLayout>
