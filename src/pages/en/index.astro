@@ -10,6 +10,10 @@ import { amountLabel } from '../../i18n/nav';
 import { webApplicationSchema, faqSchema, breadcrumbSchema, organizationSchema, personSchema, websiteSchema } from '../../lib/seo';
 import { F, $, pct, P, COUNT, exempleRows, tranchesRows, tauxGlobalAncien, tauxGlobalNeuf, nom } from '../../lib/tables';
 import { displayDate } from '../../lib/format';
+import { ctCalc, ptzCalc, tfDistribution } from '../../lib/immo-tables';
+const ct = ctCalc({ prix: 250000, dep: '75', agenceTTC: 10000, taxeFonciereAnnuelle: 1200, jourSignature: 182 });
+const pz = ptzCalc({ zone: 'A', personnes: 2, rfr: 38000, cout: 250000, type: 'neuf_collectif' });
+const TD = tfDistribution();
 const lang = 'en';
 const title = `Notary fees France ${YEAR}: calculator by département`;
 const description = `French notary fees ${YEAR} with your département’s transfer tax rate as of 1 June: tax, emoluments, CSI, disbursements. Resale, new build, first-time buyers.`;
@@ -28,6 +32,8 @@ const faqs = [
   { q: 'Is any of my data sent anywhere?', a: 'No. The calculation runs in your browser using the rates embedded in the page: the price, département and situation you enter are not sent to any server, not stored and need no account. The shareable link encodes your inputs in the page address only if you choose to copy it.' },
 ];
 const related = [
+  { href: route('couttotal', lang), name: 'Total cost of a purchase', description: 'Notary, agency, property tax: the full budget.' },
+  { href: route('ptz', lang), name: 'PTZ 2026', description: 'The zero-interest loan by the zone of your town.' },
   { href: route('departements', lang), name: 'Fees by département', description: 'All 101 départements, rates as of 1 June 2026.' },
   { href: route('comparer', lang), name: 'Compare two départements', description: 'Same property, two rates, the gap in euros.' },
   { href: route('neuf', lang), name: 'New-build purchase', description: 'Reduced rate, off-plan, land from a developer.' },
@@ -83,6 +89,9 @@ const jsonLd = [webApplicationSchema({ name: `French notary fees calculator ${YE
     <h3>Gifts, garages, capital gains</h3>
     <p>A gift follows different rules: gift tax after an allowance, and its own emoluments. The <a href={route('donation', lang)}>gift calculator</a> applies them. For a <a href={route('garage', lang)}>garage or parking space</a>, the minimum charge changes everything. And when you sell, the fees paid on purchase are added to the acquisition price used for capital gains tax, either at their actual amount or as a flat {pct(P.plus_value.forfait_frais_acquisition, lang, 1)}: see <a href={route('plusvalue', lang)}>notary fees and capital gains</a>.</p>
     <AdSlot slot="home-2" />
+    <h2 id="all-costs">The other costs and taxes of buying property in France</h2>
+    <p>Notary fees are the largest cost, not the only one. Frais Immobilier calculates every fee and tax of a French purchase with the same care, excluding the mortgage. The <a href={route('couttotal', lang)}>total cost of a purchase</a> adds the price, notary fees, agency commission and the property tax refunded to the seller: for {$(250000, lang)} in Paris with {$(10000, lang)} of agency fees and an early-July completion, it reaches {$(ct.total, lang)}. <a href={route('agence', lang)}>Estate agency fees</a> split into fees excluding VAT and VAT, and how they are presented changes the base for transfer tax.</p>
+    <p>To fund the purchase, the <a href={route('ptz', lang)}>PTZ {YEAR} calculator</a> reads the zone of your town and applies the zero-interest loan scale: {$(pz.montant, lang)} for a couple buying a new {$(250000, lang)} flat in Nantes. Once you own the home, the <a href={route('taxefonciere', lang)}>taxe foncière</a> is calculated with the rates voted by each municipality, from {pct(TD.min, lang)} to {pct(TD.max, lang)}, and the <a href={route('taxeamenagement', lang)}>development tax</a> with those of the town and département for a new build or extension. For an investment, the <a href={route('rendement', lang)}>rental yield</a> includes real purchase costs, and <a href={route('plusvalueimmo', lang)}>capital gains tax</a> shows what the notary deducts on resale.</p>
     <h2 id="populaires">Common calculations by price</h2>
     <ul>{AMOUNTS.map((a) => <li><a href={route(`amount-${a}`, lang)}>Notary fees on a {amountLabel(a, lang)}</a></li>)}</ul>
     <h2 id="conseils">Six legal ways to pay less</h2>

@@ -1,84 +1,685 @@
 {
-  "_lisezmoi": "Tous les paramètres légaux du site vivent ici et dans departements.json — jamais en dur dans le code ni dans les pages (RECETTE-SITE.md §4, §17.4). Chaque valeur a été relue sur la source citée le jour de retrieved_at.",
-  "year": 2026,
-  "retrieved_at": "2026-10-03",
-  "valid_from": "2026-06-01",
-  "valid_to": "2028-03-31",
-  "dmto": {
-    "_source": "DGFiP, « Droits d'enregistrement et taxe de publicité foncière : taux, abattements de base et réductions de taux applicables au 1er juin 2026 » (impots.gouv.fr, dmto_2026-06.pdf) ; notaires.fr, les frais d'acquisition (taxe communale, frais d'assiette).",
-    "taxe_communale": 1.2,
-    "frais_assiette_droit_commun": 2.37,
-    "taux_reduit_neuf": 0.7,
-    "frais_assiette_taux_reduit": 2.14,
-    "hausse_debut": "2025-04-01",
-    "hausse_fin": "2028-03-31",
-    "primo_definition_annees": 2,
-    "communes_taxe_reduite": [
-      { "commune": "Lamentin", "departement": "971", "taux": 0.7, "exoneration_possible": true },
-      { "commune": "Tsingoni", "departement": "976", "taux": 0.5 }
-    ]
+ "_lisezmoi": "Tous les paramètres légaux du site vivent ici et dans departements.json — jamais en dur dans le code ni dans les pages (RECETTE-SITE.md §4, §17.4). Chaque valeur a été relue sur la source citée le jour de retrieved_at.",
+ "year": 2026,
+ "retrieved_at": "2026-10-04",
+ "valid_from": "2026-06-01",
+ "valid_to": "2028-03-31",
+ "dmto": {
+  "_source": "DGFiP, « Droits d'enregistrement et taxe de publicité foncière : taux, abattements de base et réductions de taux applicables au 1er juin 2026 » (impots.gouv.fr, dmto_2026-06.pdf) ; notaires.fr, les frais d'acquisition (taxe communale, frais d'assiette).",
+  "taxe_communale": 1.2,
+  "frais_assiette_droit_commun": 2.37,
+  "taux_reduit_neuf": 0.7,
+  "frais_assiette_taux_reduit": 2.14,
+  "hausse_debut": "2025-04-01",
+  "hausse_fin": "2028-03-31",
+  "primo_definition_annees": 2,
+  "communes_taxe_reduite": [
+   {
+    "commune": "Lamentin",
+    "departement": "971",
+    "taux": 0.7,
+    "exoneration_possible": true
+   },
+   {
+    "commune": "Tsingoni",
+    "departement": "976",
+    "taux": 0.5
+   }
+  ]
+ },
+ "emoluments": {
+  "_source": "Code de commerce, art. A444-91 (vente) ; barèmes d'outre-mer applicables depuis le 1er mars 2024, tarifs valables jusqu'au 29 février 2028 (service-public.gouv.fr, fiche F17701, vérifiée le 5 août 2026).",
+  "tranches": [
+   6500,
+   17000,
+   60000
+  ],
+  "zones": {
+   "metro": {
+    "taux": [
+     3.87,
+     1.596,
+     1.064,
+     0.799
+    ],
+    "tva": 20
+   },
+   "gp": {
+    "taux": [
+     4.76,
+     1.963,
+     1.309,
+     0.983
+    ],
+    "tva": 8.5
+   },
+   "mq": {
+    "taux": [
+     4.799,
+     1.979,
+     1.319,
+     0.991
+    ],
+    "tva": 8.5
+   },
+   "gf": {
+    "taux": [
+     4.644,
+     1.915,
+     1.277,
+     0.959
+    ],
+    "tva": 0
+   },
+   "re": {
+    "taux": [
+     5.263,
+     2.171,
+     1.447,
+     1.087
+    ],
+    "tva": 8.5
+   },
+   "yt": {
+    "taux": [
+     5.263,
+     2.171,
+     1.447,
+     1.087
+    ],
+    "tva": 0
+   }
   },
-  "emoluments": {
-    "_source": "Code de commerce, art. A444-91 (vente) ; barèmes d'outre-mer applicables depuis le 1er mars 2024, tarifs valables jusqu'au 29 février 2028 (service-public.gouv.fr, fiche F17701, vérifiée le 5 août 2026).",
-    "tranches": [6500, 17000, 60000],
-    "zones": {
-      "metro": { "taux": [3.870, 1.596, 1.064, 0.799], "tva": 20 },
-      "gp": { "taux": [4.760, 1.963, 1.309, 0.983], "tva": 8.5 },
-      "mq": { "taux": [4.799, 1.979, 1.319, 0.991], "tva": 8.5 },
-      "gf": { "taux": [4.644, 1.915, 1.277, 0.959], "tva": 0 },
-      "re": { "taux": [5.263, 2.171, 1.447, 1.087], "tva": 8.5 },
-      "yt": { "taux": [5.263, 2.171, 1.447, 1.087], "tva": 0 }
-    },
-    "minimum_ht": 90,
-    "plafond_pourcentage_valeur": 10,
-    "remise_seuil": 100000,
-    "remise_max": 20,
-    "formalites_forfait_ht": 339.58,
-    "exemple_officiel": { "prix": 200000, "emoluments_ht": 1995.25 }
-  },
-  "csi": { "_source": "notaires.fr, les frais d'acquisition", "taux": 0.1, "minimum": 15 },
-  "debours_defaut": 500,
-  "donation": {
-    "_source": "service-public.gouv.fr F14203 (vérifiée le 13 mai 2026) et F1404 (émoluments de donation).",
-    "abattements": { "enfant": 100000, "petit_enfant": 31865, "arriere_petit_enfant": 5310, "epoux": 80724, "frere_soeur": 15932, "neveu_niece": 7967, "autre": 0, "handicap": 159325 },
-    "bareme_ligne_directe": [[8072, 5], [12109, 10], [15932, 15], [552324, 20], [902838, 30], [1805677, 40], [null, 45]],
-    "bareme_epoux": [[8072, 5], [15932, 10], [31865, 15], [552324, 20], [902838, 30], [1805677, 40], [null, 45]],
-    "bareme_frere_soeur": [[24430, 35], [null, 45]],
-    "taux_neveu_niece": 55,
-    "taux_parent_4e_degre": 55,
-    "taux_autre": 60,
-    "emoluments_autres_donations": [4.837, 1.995, 1.330, 0.998],
-    "exemple_officiel": { "taxable": 100000, "droits": 18194 }
-  },
-  "plus_value": { "_source": "service-public.gouv.fr F10864 (vérifiée le 15 avril 2026)", "forfait_frais_acquisition": 7.5, "forfait_travaux": 15, "forfait_travaux_detention_min_ans": 5 },
-  "sources": {
-    "dgfip_dmto": {
-      "url": "https://www.impots.gouv.fr/sites/default/files/media/1_metier/3_partenaire/notaires/dmto/dmto_2026-06.pdf",
-      "label": {
-        "fr": "DGFiP — taux des droits d'enregistrement et de la taxe de publicité foncière applicables au 1er juin 2026, par département",
-        "en": "DGFiP — registration duty and land publicity tax rates applicable from 1 June 2026, by département"
-      }
-    },
-    "sp_frais_notaire": {
-      "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F17701",
-      "label": {
-        "fr": "Service-Public.fr — Frais de notaire : de quoi s'agit-il ? (barème des émoluments, métropole et outre-mer)",
-        "en": "Service-Public.fr — notary fees explained (emolument scale, mainland France and overseas)"
-      }
-    },
-    "notaires_frais": {
-      "url": "https://www.notaires.fr/fr/immobilier-fiscalite/financement/les-frais-dacquisition",
-      "label": {
-        "fr": "Notaires de France — les frais d'acquisition (taxe communale, frais d'assiette, CSI, remises, formalités)",
-        "en": "Notaires de France — acquisition costs (municipal tax, collection fee, CSI, discounts, formalities)"
-      }
-    },
-    "impots_droits": {
-      "url": "https://www.impots.gouv.fr/droits-denregistrement",
-      "label": {
-        "fr": "impots.gouv.fr — droits d'enregistrement : tableaux mensuels des taux départementaux",
-        "en": "impots.gouv.fr — registration duties: monthly tables of départemental rates"
-      }
-    }
+  "minimum_ht": 90,
+  "plafond_pourcentage_valeur": 10,
+  "remise_seuil": 100000,
+  "remise_max": 20,
+  "formalites_forfait_ht": 339.58,
+  "exemple_officiel": {
+   "prix": 200000,
+   "emoluments_ht": 1995.25
   }
+ },
+ "csi": {
+  "_source": "notaires.fr, les frais d'acquisition",
+  "taux": 0.1,
+  "minimum": 15
+ },
+ "debours_defaut": 500,
+ "donation": {
+  "_source": "service-public.gouv.fr F14203 (vérifiée le 13 mai 2026) et F1404 (émoluments de donation).",
+  "abattements": {
+   "enfant": 100000,
+   "petit_enfant": 31865,
+   "arriere_petit_enfant": 5310,
+   "epoux": 80724,
+   "frere_soeur": 15932,
+   "neveu_niece": 7967,
+   "autre": 0,
+   "handicap": 159325
+  },
+  "bareme_ligne_directe": [
+   [
+    8072,
+    5
+   ],
+   [
+    12109,
+    10
+   ],
+   [
+    15932,
+    15
+   ],
+   [
+    552324,
+    20
+   ],
+   [
+    902838,
+    30
+   ],
+   [
+    1805677,
+    40
+   ],
+   [
+    null,
+    45
+   ]
+  ],
+  "bareme_epoux": [
+   [
+    8072,
+    5
+   ],
+   [
+    15932,
+    10
+   ],
+   [
+    31865,
+    15
+   ],
+   [
+    552324,
+    20
+   ],
+   [
+    902838,
+    30
+   ],
+   [
+    1805677,
+    40
+   ],
+   [
+    null,
+    45
+   ]
+  ],
+  "bareme_frere_soeur": [
+   [
+    24430,
+    35
+   ],
+   [
+    null,
+    45
+   ]
+  ],
+  "taux_neveu_niece": 55,
+  "taux_parent_4e_degre": 55,
+  "taux_autre": 60,
+  "emoluments_autres_donations": [
+   4.837,
+   1.995,
+   1.33,
+   0.998
+  ],
+  "exemple_officiel": {
+   "taxable": 100000,
+   "droits": 18194
+  }
+ },
+ "plus_value": {
+  "_source": "service-public.gouv.fr F10864 (vérifiée le 15 avril 2026) ; CGI art. 150 U à 150 VH, 200 B, 1609 nonies G ; BOFiP BOI-RFPI-TPVIE-20 (barème et exemples de la taxe sur les plus-values élevées) ; service-public.gouv.fr F2329 (prélèvements sociaux, vérifiée le 30 juin 2026).",
+  "forfait_frais_acquisition": 7.5,
+  "forfait_travaux": 15,
+  "forfait_travaux_detention_min_ans": 5,
+  "taux_ir": 19,
+  "taux_ps": 17.2,
+  "abattement_ir": {
+   "de": 6,
+   "a": 21,
+   "taux": 6,
+   "annee22": 4
+  },
+  "abattement_ps": {
+   "de": 6,
+   "a": 21,
+   "taux": 1.65,
+   "annee22": 1.6,
+   "de23a30": 9
+  },
+  "exoneration_prix_max": 15000,
+  "surtaxe_seuil": 50000,
+  "surtaxe_bareme": [
+   {
+    "de": 50000,
+    "a": 60000,
+    "taux": 2,
+    "lissage": [
+     60000,
+     0.05
+    ]
+   },
+   {
+    "de": 60000,
+    "a": 100000,
+    "taux": 2
+   },
+   {
+    "de": 100000,
+    "a": 110000,
+    "taux": 3,
+    "lissage": [
+     110000,
+     0.1
+    ]
+   },
+   {
+    "de": 110000,
+    "a": 150000,
+    "taux": 3
+   },
+   {
+    "de": 150000,
+    "a": 160000,
+    "taux": 4,
+    "lissage": [
+     160000,
+     0.15
+    ]
+   },
+   {
+    "de": 160000,
+    "a": 200000,
+    "taux": 4
+   },
+   {
+    "de": 200000,
+    "a": 210000,
+    "taux": 5,
+    "lissage": [
+     210000,
+     0.2
+    ]
+   },
+   {
+    "de": 210000,
+    "a": 250000,
+    "taux": 5
+   },
+   {
+    "de": 250000,
+    "a": 260000,
+    "taux": 6,
+    "lissage": [
+     260000,
+     0.25
+    ]
+   },
+   {
+    "de": 260000,
+    "a": null,
+    "taux": 6
+   }
+  ],
+  "exemples_bofip": [
+   {
+    "pv": 103400,
+    "surtaxe": 2442
+   },
+   {
+    "pv": 52500,
+    "surtaxe": 675
+   }
+  ],
+  "non_resident_exoneration_plafond": 150000,
+  "premiere_cession_delai_remploi_ans": 2,
+  "premiere_cession_sans_propriete_ans": 4,
+  "exoneration_ir_annees": 22,
+  "exoneration_ps_annees": 30,
+  "ps_affilie_eee_suisse": 7.5,
+  "representant_fiscal_prix_max": 150000
+ },
+ "sources": {
+  "dgfip_dmto": {
+   "url": "https://www.impots.gouv.fr/sites/default/files/media/1_metier/3_partenaire/notaires/dmto/dmto_2026-06.pdf",
+   "label": {
+    "fr": "DGFiP — taux des droits d'enregistrement et de la taxe de publicité foncière applicables au 1er juin 2026, par département",
+    "en": "DGFiP — registration duty and land publicity tax rates applicable from 1 June 2026, by département"
+   }
+  },
+  "sp_frais_notaire": {
+   "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F17701",
+   "label": {
+    "fr": "Service-Public.fr — Frais de notaire : de quoi s'agit-il ? (barème des émoluments, métropole et outre-mer)",
+    "en": "Service-Public.fr — notary fees explained (emolument scale, mainland France and overseas)"
+   }
+  },
+  "notaires_frais": {
+   "url": "https://www.notaires.fr/fr/immobilier-fiscalite/financement/les-frais-dacquisition",
+   "label": {
+    "fr": "Notaires de France — les frais d'acquisition (taxe communale, frais d'assiette, CSI, remises, formalités)",
+    "en": "Notaires de France — acquisition costs (municipal tax, collection fee, CSI, discounts, formalities)"
+   }
+  },
+  "impots_droits": {
+   "url": "https://www.impots.gouv.fr/droits-denregistrement",
+   "label": {
+    "fr": "impots.gouv.fr — droits d'enregistrement : tableaux mensuels des taux départementaux",
+    "en": "impots.gouv.fr — registration duties: monthly tables of départemental rates"
+   }
+  }
+ },
+ "ptz": {
+  "_source": "service-public.gouv.fr F10871 (vérifiée le 15 septembre 2026) : offres émises à partir d'avril 2025 ; ANIL, « Le prêt à taux zéro » (différés et durées par tranche) ; ecologie.gouv.fr (quotités, plafonds). Code de la construction et de l'habitation, art. L31-10-2 s. et D31-10-2 s.",
+  "valide_jusqu_au": "2027-12-31",
+  "zones": [
+   "Abis",
+   "A",
+   "B1",
+   "B2",
+   "C"
+  ],
+  "plafond_ressources": {
+   "_ordre": "index = nombre de personnes - 1 (8 et plus = dernier) ; colonnes A bis/A, B1, B2, C",
+   "A": [
+    49000,
+    73500,
+    88200,
+    102900,
+    117600,
+    132300,
+    147000,
+    161700
+   ],
+   "B1": [
+    34500,
+    51750,
+    62100,
+    72450,
+    82800,
+    93150,
+    103500,
+    113850
+   ],
+   "B2": [
+    31500,
+    47250,
+    56700,
+    66150,
+    75600,
+    85050,
+    94500,
+    103950
+   ],
+   "C": [
+    28500,
+    42750,
+    51300,
+    59850,
+    68400,
+    76950,
+    85500,
+    94050
+   ]
+  },
+  "plafond_operation": {
+   "_ordre": "index = nombre de personnes - 1 (5 et plus = dernier)",
+   "A": [
+    150000,
+    225000,
+    270000,
+    315000,
+    360000
+   ],
+   "B1": [
+    135000,
+    202500,
+    243000,
+    283500,
+    324000
+   ],
+   "B2": [
+    110000,
+    165000,
+    198000,
+    231000,
+    264000
+   ],
+   "C": [
+    100000,
+    150000,
+    180000,
+    210000,
+    240000
+   ]
+  },
+  "coefficient_familial": [
+   1,
+   1.5,
+   1.8,
+   2.1,
+   2.4
+  ],
+  "tranches": {
+   "_ordre": "plafond (revenu ÷ coefficient familial) des tranches 1 à 4",
+   "A": [
+    25000,
+    31000,
+    37000,
+    49000
+   ],
+   "B1": [
+    21500,
+    26000,
+    30000,
+    34500
+   ],
+   "B2": [
+    18000,
+    22500,
+    27000,
+    31500
+   ],
+   "C": [
+    15000,
+    19500,
+    24000,
+    28500
+   ]
+  },
+  "quotite_collectif_ancien": [
+   50,
+   40,
+   40,
+   20
+  ],
+  "quotite_individuel_neuf": [
+   30,
+   20,
+   20,
+   10
+  ],
+  "differe_annees": [
+   10,
+   8,
+   2,
+   0
+  ],
+  "remboursement_annees": [
+   15,
+   12,
+   13,
+   10
+  ],
+  "revenu_plancher_diviseur": 9,
+  "travaux_ancien_min_pct": 25,
+  "majoration_tranche1_autres_prets": 25,
+  "primo_annees": 2
+ },
+ "taxe_fonciere": {
+  "_source": "service-public.gouv.fr F59 (vérifiée le 25 septembre 2026) ; CGI art. 1380 s., 1383 (exonération de deux ans), 1390-1391 B ter, 1518 bis (revalorisation) ; Insee, IPCH base 2015, série 001759971 (novembre 2024 : 123,36 ; novembre 2025 : 124,33) ; taux par commune : DGFiP, Fiscalité locale des particuliers, exercice 2025.",
+  "abattement_base_pct": 50,
+  "revalorisation_2026_pct": 0.8,
+  "ipch_nov_2024": 123.36,
+  "ipch_nov_2025": 124.33,
+  "exoneration_neuf_annees": 2,
+  "exoneration_neuf_min_pct": 40,
+  "degrevement_65_75": 100,
+  "plafond_rfr_2026_metro": {
+   "_ordre": "1 part puis 1,25 / 1,5 / 1,75 / 2 / 2,25 / 2,5 / 2,75 / 3 parts",
+   "valeurs": [
+    12793,
+    14501,
+    16209,
+    17917,
+    19625,
+    21333,
+    23041,
+    24749,
+    26457
+   ],
+   "demi_part_sup": 3416,
+   "quart_part_sup": 1708
+  },
+  "plafonnement_revenus_pct": 50,
+  "taux_exercice": 2025
+ },
+ "taxe_amenagement": {
+  "_source": "service-public.gouv.fr A15416 (publiée le 7 janvier 2026) et F23263 (vérifiée le 1er janvier 2026) ; CGI art. 1635 quater A s. ; taux votés : DGFiP, « Taxe d'aménagement - Éléments de taxation votés par les collectivités à partir de 2022 » (data.economie.gouv.fr).",
+  "valeur_m2": 892,
+  "valeur_m2_idf": 1011,
+  "valeur_piscine_m2": 251,
+  "valeur_stationnement": 2928,
+  "valeur_stationnement_max": 5857,
+  "abattement_pct": 50,
+  "abattement_m2": 100,
+  "surface_exoneree_max": 5,
+  "taux_communal_min": 1,
+  "taux_communal_max": 5,
+  "taux_communal_majore_max": 20,
+  "taux_departemental_max": 2.5,
+  "taux_regional_idf_max": 1,
+  "paiement_deux_fois_au_dela": 1500,
+  "icc_t3_2025": 2056,
+  "icc_t3_2024": 2143,
+  "departements_idf": [
+   "75",
+   "77",
+   "78",
+   "91",
+   "92",
+   "93",
+   "94",
+   "95"
+  ]
+ },
+ "location": {
+  "_source": "service-public.gouv.fr F1991 (micro-foncier, vérifiée le 15 avril 2026), F32744 (micro-BIC, vérifiée le 15 avril 2026), F2329 (prélèvements sociaux, vérifiée le 30 juin 2026).",
+  "micro_foncier_abattement": 30,
+  "micro_foncier_plafond": 15000,
+  "micro_bic_abattement": 50,
+  "micro_bic_plafond": 77700,
+  "ps_foncier": 17.2,
+  "ps_meuble": 18.6,
+  "tmi": [
+   0,
+   11,
+   30,
+   41,
+   45
+  ]
+ },
+ "agence": {
+  "_source": "service-public.gouv.fr F2954 (obligations de l'agent immobilier, vérifiée le 12 septembre 2025) : honoraires TTC exprimés en pourcentage du prix hors honoraires, prix affiché avec et sans honoraires quand l'acquéreur paie.",
+  "tva": 20
+ },
+ "sources_autres": {
+  "sp_ptz": {
+   "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F10871",
+   "label": {
+    "fr": "Service-Public.fr — prêt à taux zéro (PTZ) : conditions, plafonds, quotités",
+    "en": "Service-Public.fr — zero-interest loan (PTZ): conditions, ceilings, shares"
+   }
+  },
+  "anil_ptz": {
+   "url": "https://www.anil.org/votre-besoin/acheter/financement/prets-reglementes/ptz/",
+   "label": {
+    "fr": "ANIL — le prêt à taux zéro : tranches, différés et durées de remboursement",
+    "en": "ANIL — the zero-interest loan: brackets, deferral and repayment periods"
+   }
+  },
+  "eco_ptz": {
+   "url": "https://www.ecologie.gouv.fr/politiques-publiques/pret-taux-zero-ptz",
+   "label": {
+    "fr": "Ministère chargé du logement — prêt à taux zéro (quotités 2025, plafonds d'opération)",
+    "en": "Housing ministry — zero-interest loan (2025 shares, cost ceilings)"
+   }
+  },
+  "zonage_abc": {
+   "url": "https://www.data.gouv.fr/datasets/liste-des-communes-selon-le-zonage-abc",
+   "label": {
+    "fr": "data.gouv.fr — liste des communes selon le zonage A/B/C en vigueur depuis le 26 juin 2026 (ministère)",
+    "en": "data.gouv.fr — municipalities by A/B/C zone, in force since 26 June 2026 (ministry)"
+   }
+  },
+  "sp_plus_value": {
+   "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F10864",
+   "label": {
+    "fr": "Service-Public.fr — plus-value immobilière : calcul, abattements, exonérations, taux",
+    "en": "Service-Public.fr — capital gains on property: calculation, allowances, exemptions, rates"
+   }
+  },
+  "bofip_tpvie": {
+   "url": "https://bofip.impots.gouv.fr/bofip/8597-PGP.html/identifiant=BOI-RFPI-TPVIE-20-20230718",
+   "label": {
+    "fr": "BOFiP — BOI-RFPI-TPVIE-20 : barème de la taxe sur les plus-values immobilières élevées",
+    "en": "BOFiP — BOI-RFPI-TPVIE-20: scale of the surtax on large property gains"
+   }
+  },
+  "sp_ps": {
+   "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2329",
+   "label": {
+    "fr": "Service-Public.fr — prélèvements sociaux sur les revenus du patrimoine (17,2 % et 18,6 %)",
+    "en": "Service-Public.fr — social charges on investment income (17.2% and 18.6%)"
+   }
+  },
+  "sp_tf": {
+   "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F59",
+   "label": {
+    "fr": "Service-Public.fr — taxe foncière sur les propriétés bâties : calcul, exonérations, plafonnement",
+    "en": "Service-Public.fr — property tax on buildings: calculation, exemptions, cap"
+   }
+  },
+  "dgfip_flp": {
+   "url": "https://data.economie.gouv.fr/explore/dataset/fiscalite-locale-des-particuliers/",
+   "label": {
+    "fr": "DGFiP — fiscalité locale des particuliers : taux votés par commune (exercice 2025)",
+    "en": "DGFiP — local taxation of individuals: rates voted by municipality (2025)"
+   }
+  },
+  "insee_ipch": {
+   "url": "https://www.insee.fr/fr/statistiques/serie/001759971",
+   "label": {
+    "fr": "Insee — indice des prix à la consommation harmonisé (base de la revalorisation des valeurs locatives)",
+    "en": "Insee — harmonised consumer price index (basis of the rental value uprating)"
+   }
+  },
+  "sp_ta": {
+   "url": "https://entreprendre.service-public.gouv.fr/vosdroits/F23263",
+   "label": {
+    "fr": "Service-Public.fr — taxe d'aménagement : calcul, abattement, exonérations",
+    "en": "Service-Public.fr — development tax: calculation, allowance, exemptions"
+   }
+  },
+  "sp_ta_2026": {
+   "url": "https://www.service-public.gouv.fr/particuliers/actualites/A15416",
+   "label": {
+    "fr": "Service-Public.fr — taxe d'aménagement : les montants 2026 (892 € et 1 011 € le m²)",
+    "en": "Service-Public.fr — development tax: 2026 values (€892 and €1,011 per m²)"
+   }
+  },
+  "dgfip_ta": {
+   "url": "https://data.economie.gouv.fr/explore/dataset/delta_deliberation_tam_17_01_23/",
+   "label": {
+    "fr": "DGFiP — taxe d'aménagement : taux votés par les communes et les départements",
+    "en": "DGFiP — development tax: rates voted by municipalities and départements"
+   }
+  },
+  "sp_foncier": {
+   "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F1991",
+   "label": {
+    "fr": "Service-Public.fr — revenus locatifs d'une location nue (micro-foncier)",
+    "en": "Service-Public.fr — income from unfurnished lettings (micro-foncier)"
+   }
+  },
+  "sp_meuble": {
+   "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F32744",
+   "label": {
+    "fr": "Service-Public.fr — revenus d'une location meublée (micro-BIC)",
+    "en": "Service-Public.fr — income from furnished lettings (micro-BIC)"
+   }
+  },
+  "sp_agent": {
+   "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2954",
+   "label": {
+    "fr": "Service-Public.fr — obligations de l'agent immobilier (affichage des honoraires)",
+    "en": "Service-Public.fr — estate agent obligations (fee display)"
+   }
+  }
+ }
 }

@@ -1,31 +1,41 @@
 ---
 import GuideLayout from '../../components/GuideLayout.astro';
 import MiniSim from '../../components/calc/MiniSim';
+import AgenceCalculator from '../../components/calc/AgenceCalculator';
 import ContentTable from '../../components/ContentTable.astro';
 import { YEAR } from '../../data/site-config';
 import { route } from '../../i18n/routes';
 import { $, pct, F, tauxGlobalNeuf } from '../../lib/tables';
 import { src } from '../../lib/sources';
+import { agenceRows, agCalc } from '../../lib/immo-tables';
+import { P } from '../../lib/tables';
+const ag = agCalc({ prixNetVendeur: 280000, tauxTTC: 5, charge: 'acquereur', dep: '69m' });
 const lang = 'fr';
 const acq = F(280000, '69m'), vend = F(294000, '69m');
 const faqs = [
   { q: 'Les frais d’agence entrent-ils dans le calcul des frais de notaire ?', a: `Seulement s’ils sont inclus dans le prix payé au vendeur. Quand le mandat met la commission à la charge de l’acquéreur et que l’acte la mentionne à part, elle sort de l’assiette des droits de mutation et des émoluments. Pour un bien à 280 000 € net vendeur et 14 000 € de commission à Lyon, les frais de notaire passent de ${$(vend.total)} à ${$(acq.total)}.` },
   { q: 'Qui décide si la commission est à la charge de l’acheteur ?', a: 'Le mandat signé entre le vendeur et l’agence. Il indique qui paie la commission, son montant ou son taux, et cette mention doit figurer dans l’annonce. On ne peut pas changer la répartition au moment de l’acte si le mandat dit autre chose : la négociation se fait avant le compromis, avec l’agent immobilier et le vendeur.' },
   { q: 'Comment lire « prix FAI » dans une annonce ?', a: 'FAI signifie « frais d’agence inclus » : le prix affiché comprend la commission. Si celle-ci est à la charge du vendeur, tout le prix FAI supporte les droits de mutation. Si elle est à la charge de l’acquéreur, l’annonce doit afficher aussi le prix hors honoraires et le montant de la commission, et c’est le prix hors honoraires qui sert de base aux droits.' },
-  { q: 'Le calculateur tient-il compte des frais d’agence ?', a: 'Il calcule les frais sur le prix que vous saisissez. Saisissez le prix net vendeur si la commission est à votre charge et distincte dans l’acte ; saisissez le prix commission comprise si elle est incluse dans le prix payé au vendeur. Le mini-simulateur de cette page montre directement l’écart entre les deux présentations.' },
+  { q: 'Les honoraires d’agence sont-ils négociables ?', a: `Oui. Aucun barème légal ne fixe la commission d’une vente : chaque agence publie son propre barème, affiché à l’accueil et sur son site, et le mandat peut prévoir un montant inférieur. Le barème doit être exprimé toutes taxes comprises, en pourcentage du prix hors honoraires lorsque l’acquéreur paie. Sur ${$(280000)}, un point de commission représente ${$(2800)} TTC.` },
   { q: 'Peut-on financer la commission d’agence avec le prêt ?', a: 'Oui, la plupart des banques financent la commission comme une partie du coût de l’acquisition, au même titre que le prix, à condition qu’elle soit identifiée dans le plan de financement. Comme les frais de notaire, elle est parfois exclue par les banques les plus prudentes, qui demandent qu’elle soit couverte par l’apport.' },
   { q: 'La commission est-elle prise en compte dans le calcul de la plus-value à la revente ?', a: 'Une commission que vous avez payée en tant qu’acheteur fait partie de vos frais d’acquisition. À la revente, ces frais majorent le prix d’achat retenu pour calculer la plus-value, soit pour leur montant réel justifié, soit par le forfait de 7,5 % du prix d’achat. Conservez la facture de l’agence avec le décompte du notaire : le montant réel peut dépasser le forfait.' },
 ];
 ---
 <GuideLayout lang={lang} id="agence" breadcrumbLabel="Frais d’agence"
-  title={`Frais d’agence et frais de notaire ${YEAR} : qui paie, combien`}
-  h1="Frais d’agence et frais de notaire : pourquoi la ligne du mandat change la facture"
-  description={`Frais d’agence ${YEAR} : à la charge de l’acquéreur, la commission sort de l’assiette des droits de mutation. Prix FAI, net vendeur, écart chiffré sur votre achat.`}
-  intro="Deux présentations du même prix, deux montants de droits de mutation."
-  resume={`La commission de l’agence immobilière n’est jamais un frais de notaire, mais sa présentation modifie les frais de notaire. Si le mandat met la commission à la charge du vendeur, elle est comprise dans le prix payé et supporte, comme le reste, les droits de mutation, les émoluments et la contribution de sécurité immobilière. Si le mandat la met à la charge de l’acquéreur et que l’acte la mentionne à part, elle sort de l’assiette : seuls les droits sur le prix net vendeur sont dus. Pour un appartement à 280 000 € net vendeur avec 14 000 € de commission dans la métropole de Lyon, la différence atteint ${$(vend.total - acq.total)} de frais de notaire. Le choix se fait dans le mandat, avant le compromis : on ne le rattrape pas le jour de l’acte.`}
+  title={`Frais d’agence immobilière ${YEAR} : calcul, TVA et qui paie`}
+  h1={`Frais d’agence immobilière ${YEAR} : honoraires, TVA et effet sur les frais de notaire`}
+  description={`Frais d’agence immobilière ${YEAR} : honoraires TTC et hors taxes, prix FAI, net vendeur, et l’effet de la charge acquéreur sur vos frais de notaire. Calcul libre.`}
+  intro="Le montant de la commission, sa part de TVA, le prix affiché et ce que la ligne du mandat change à vos frais de notaire."
+  resume={`Les frais d’agence immobilière sont libres : chaque agence fixe son barème, affiché toutes taxes comprises, et l’applique au prix hors honoraires. Une commission de 5 % sur un bien vendu ${$(280000)} net vendeur représente ${$(ag.honorairesTTC)} TTC, dont ${$(ag.tva)} de TVA à ${P.agence.tva} %. Elle n’est jamais un frais de notaire, mais sa présentation modifie les frais de notaire. Si le mandat met la commission à la charge du vendeur, elle est comprise dans le prix payé et supporte, comme le reste, les droits de mutation, les émoluments et la contribution de sécurité immobilière. Si le mandat la met à la charge de l’acquéreur et que l’acte la mentionne à part, elle sort de l’assiette : seuls les droits sur le prix net vendeur sont dus. Pour un appartement à 280 000 € net vendeur avec 14 000 € de commission dans la métropole de Lyon, la différence atteint ${$(vend.total - acq.total)} de frais de notaire. Le choix se fait dans le mandat, avant le compromis : on ne le rattrape pas le jour de l’acte.`}
   faqs={faqs}
   related={[{ href: route('mobilier', lang), name: 'Déduire les meubles', description: 'L’autre élément qui sort de l’assiette.' }, { href: route('lyon', lang), name: 'Frais à Lyon', description: 'Métropole et Rhône, deux délibérations.' }, { href: route('reduire', lang), name: 'Réduire ses frais', description: 'Tous les leviers comparés.' }]}
-  sources={src(lang, 'notaires_frais', 'dgfip_dmto')}>
+  sources={src(lang, 'sp_agent', 'notaires_frais', 'dgfip_dmto')}>
+  <Fragment slot="tool"><div class="mb-8"><AgenceCalculator client:load lang={lang} methodHref={route('method', lang)} /></div></Fragment>
+  <MiniSim client:visible kind="agfai" lang={lang} href={route('agence', lang)} />
+  <h2>Comment se calcule une commission d’agence</h2>
+  <p>Aucun texte ne plafonne les honoraires d’une vente immobilière. L’agent immobilier les fixe librement dans son barème, qu’il doit afficher de façon visible à l’accueil de l’agence et sur son site, et qui s’exprime toutes taxes comprises. Le barème peut être un pourcentage unique, un forfait ou des tranches de prix ; dans ce dernier cas, il précise si les tranches se cumulent. Quand la commission est à la charge de l’acquéreur, l’annonce donne le prix avec et sans honoraires, le second en plus petits caractères, et le montant des honoraires en pourcentage du prix hors honoraires, comme le rappelle service-public.fr.</p>
+  <p>La commission comprend la TVA de {P.agence.tva} %, puisque l’agent est un professionnel assujetti : sur {$(ag.honorairesTTC)} TTC, {$(ag.honorairesHT)} rémunèrent l’agence et {$(ag.tva)} vont à l’État. Elle n’est due qu’après la signature de l’acte authentique chez le notaire : un compromis qui ne se réalise pas ne donne lieu à aucune commission, et un bon de visite ne vaut pas mandat.</p>
+  <ContentTable headers={['Prix net vendeur', 'Barème TTC', 'Honoraires TTC', 'Honoraires HT', 'Prix FAI', 'Frais de notaire évités (charge acquéreur)']} align={['r', 'r', 'r', 'r', 'r', 'r']} rows={agenceRows(lang)} caption="Gironde, département à 5 % ; écart entre les frais de notaire calculés sur le prix FAI et sur le prix net vendeur." />
   <MiniSim client:visible kind="agence" lang={lang} href={route('home', lang)} />
   <h2>Deux présentations, deux factures</h2>
   <ContentTable headers={['', 'Commission à la charge du vendeur', 'Commission à la charge de l’acquéreur']} align={['l', 'r', 'r']} rows={[

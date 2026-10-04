@@ -1,6 +1,6 @@
 /** Configuration centrale du site (générée par new-site.py). */
-export const SITE_URL = "https://fraisdenotaire-calcul.fr";
-export const SITE_NAMES: Record<string, string> = {"fr": "Frais de notaire calcul", "en": "French Notary Fees Calculator"};
+export const SITE_URL = "https://fraisimmobilier.fr";
+export const SITE_NAMES: Record<string, string> = {"fr": "Frais Immobilier", "en": "Frais Immobilier"};
 export const LANG_TAGS: Record<string, string> = {"fr": "fr-FR", "en": "en-FR"};
 export const OG_LOCALES: Record<string, string> = {"fr": "fr_FR", "en": "en_GB"};
 export const LOCALE_TAG = 'fr-FR';
@@ -10,15 +10,15 @@ export const CURRENCY = 'EUR';
 export const YEAR = 2026;
 /** Année de création du site — signal d'ancienneté (RECETTE §8.0). */
 export const SITE_FOUNDED = '2026';
-export const LAST_UPDATED = '2026-10-03';
+export const LAST_UPDATED = '2026-10-04';
 export const AUTHOR_NAME = 'Radif Partners';
-export const AUTHOR_ROLE: Record<string, string> = {"fr": "Éditeur de calculateurs et de guides pratiques · immobilier, droits de mutation et tarifs des notaires", "en": "Publisher of calculators and practical guides · French property purchase costs and notary tariffs"};
-export const AUTHOR_DESC: Record<string, string> = {"fr": "Radif Partners édite des calculateurs et des guides pratiques. Chaque taux de ce site vient du tableau DGFiP des droits de mutation, du tarif réglementé des notaires ou de service-public.fr, avec la source et la date de vérification sur la page.", "en": "Radif Partners publishes calculators and practical guides. Every rate on this site comes from the DGFiP transfer-tax table, the regulated notary tariff or service-public.fr, with the source and verification date on the page."};
+export const AUTHOR_ROLE: Record<string, string> = {"fr": "Éditeur de calculateurs et de guides pratiques · frais et taxes d’un achat immobilier", "en": "Publisher of calculators and practical guides · French property purchase costs and taxes"};
+export const AUTHOR_DESC: Record<string, string> = {"fr": "Radif Partners édite des calculateurs et des guides pratiques. Chaque taux de ce site vient d’une source officielle (tableau DGFiP des droits de mutation, tarif des notaires, zonage du ministère du logement, taux votés publiés par la DGFiP, service-public.fr), avec la source et la date de vérification sur la page.", "en": "Radif Partners publishes calculators and practical guides. Every rate on this site comes from an official source (the DGFiP transfer-tax table, the notary tariff, the housing ministry zoning, rates published by the DGFiP, service-public.fr), with the source and verification date on the page."};
 /** Sujets sur lesquels l'editeur est competent (schema.org knowsAbout). Ce sont les
  *  themes reellement traites par le site, pas une liste de mots-cles : un sujet
  *  declare ici sans page qui le couvre est une declaration fausse. */
-export const KNOWS_ABOUT: Record<string, string[]> = {"fr": ["Frais de notaire", "Droits de mutation à titre onéreux", "Tarif réglementé des notaires", "Achat immobilier dans le neuf et l'ancien", "Droits de donation"], "en": ["French notary fees", "French property transfer tax", "Regulated notary tariff", "Buying property in France", "French gift tax"]};
-export const CONTACT_EMAIL = "contact@fraisdenotaire-calcul.fr";
+export const KNOWS_ABOUT: Record<string, string[]> = {"fr": ["Frais de notaire", "Droits de mutation à titre onéreux", "Tarif réglementé des notaires", "Prêt à taux zéro", "Plus-value immobilière", "Taxe foncière", "Taxe d'aménagement", "Rendement locatif", "Frais d'agence immobilière", "Droits de donation"], "en": ["French notary fees", "French property transfer tax", "Regulated notary tariff", "French zero-interest loan (PTZ)", "Capital gains tax on French property", "French property tax", "French development tax", "Rental yield", "Estate agency fees", "French gift tax"]};
+export const CONTACT_EMAIL = "contact@fraisimmobilier.fr";
 export const THEME_COLOR = '#1F3A5F';
 export const LOGO_SYMBOL = '€';
 export const BING_VERIFY_CODE = '';

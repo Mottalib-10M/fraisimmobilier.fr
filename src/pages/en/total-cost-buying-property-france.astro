@@ -1,0 +1,52 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import CoutTotalCalculator from '../../components/calc/CoutTotalCalculator';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, tauxGlobalNeuf } from '../../lib/tables';
+import { coutRows, ctCalc } from '../../lib/immo-tables';
+import { jourDeLAnnee } from '../../lib/engine/immobilier';
+import { src } from '../../lib/sources';
+const lang = 'en';
+const ex = ctCalc({ prix: 280000, dep: '44', agenceTTC: 12000, travaux: 10000, taxeFonciereAnnuelle: 1300, jourSignature: jourDeLAnnee(1, 7) });
+const exV = ctCalc({ prix: 280000, dep: '44', agenceTTC: 12000, chargeAgence: 'vendeur', travaux: 10000, taxeFonciereAnnuelle: 1300, jourSignature: jourDeLAnnee(1, 7) });
+const neuf = ctCalc({ prix: 280000, dep: '44', type: 'neuf', taxeFonciereAnnuelle: 0 });
+const anc = ctCalc({ prix: 280000, dep: '44', taxeFonciereAnnuelle: 0 });
+const faqs = [
+  { q: 'How much should I budget on top of the price to buy a home in France?', a: `On a resale home, notary fees come to ${pct((anc.fraisNotaire / 280000) * 100, lang, 1)} of the price in the Loire-Atlantique, a 5% département, plus the agency commission if the buyer pays it and a refund of the year’s property tax to the seller. On ${$(280000, lang)} with ${$(12000, lang)} of agency fees and a July completion, costs and taxes reach ${$(ex.horsPrix, lang)}, or ${pct(ex.partHorsPrix, lang, 1)} of the price.` },
+  { q: 'Do I need a French bank account to complete a purchase?', a: 'You need to transfer the funds to the notary’s escrow account before completion, usually from a euro account; the notary checks where the money comes from under anti-money-laundering rules. Send funds early: international transfers can take several days and the notary cannot release the deed until the money has arrived. Currency conversion costs come on top of the total shown here.' },
+  { q: 'Is the deposit paid at the compromis an extra cost?', a: 'No. The deposit paid when signing the preliminary contract, often 5% to 10% of the price, is an advance on the price held in the notary’s escrow account. It is deducted from the balance due on completion. It costs nothing extra, but it must be available months before any mortgage is released.' },
+  { q: 'When are the different costs paid?', a: 'The price, notary fees and the property tax refund are all paid on completion day through the notary. The agency commission is due when the deed is signed, often paid by the notary out of the funds. A development tax arrives after any building works, and the first property tax notice in your name comes the following year.' },
+  { q: 'Why are purchase costs lower on a new-build home in France?', a: `Because a sale subject to VAT pays a reduced land registration tax of ${pct(tauxGlobalNeuf(), lang, 3)} instead of the standard transfer tax. At ${$(280000, lang)} in the Loire-Atlantique, costs on top of the price fall from ${$(anc.horsPrix, lang)} on a resale home to ${$(neuf.horsPrix, lang)} on a new build, before connection charges and the property tax exemption of the first two years.` },
+];
+const related = [
+  { href: route('home', lang), name: 'Notary fees calculator', description: 'The largest cost, département by département.' },
+  { href: route('agence', lang), name: 'Estate agency fees', description: 'Commission, VAT and who pays.' },
+  { href: route('taxefonciere', lang), name: 'Property tax', description: 'The refund in the year you buy, then every year.' },
+  { href: route('ptz', lang), name: 'PTZ 2026', description: 'The zero-interest loan for part of the cost.' },
+];
+---
+<GuideLayout lang={lang} id="couttotal" breadcrumbLabel="Total cost of a purchase"
+  title={`Cost of buying property in France ${YEAR}: fees and taxes`}
+  h1={`Total cost of buying property in France ${YEAR}: every fee and tax added up`}
+  description={`Cost of buying property in France ${YEAR}: price, notary fees by département, agency fees, property tax refund, works, development tax. Total before the loan.`}
+  intro="What you actually pay, excluding the loan: each item calculated with the rule that governs it, in your département."
+  resume={`Buying a home in France costs more than the advertised price. On top come the notary fees, mostly transfer tax at a rate set by each département; the estate agency commission when the buyer pays it; a refund to the seller of the share of the year’s property tax still to run; and, depending on the project, works and the development tax on a new build or extension. For a house at ${$(280000, lang)} net to the seller in the Loire-Atlantique, with ${$(12000, lang)} of commission paid by the buyer, ${$(10000, lang)} of works and a property tax of ${$(1300, lang)}, completed on 1 July, the total reaches ${$(ex.total, lang)}, including ${$(ex.fraisNotaire, lang)} of notary fees and ${$(ex.prorataTF, lang)} of property tax refunded to the seller. The calculator adds these items using this site’s engines; mortgage costs, which depend on the bank, come on top.`}
+  faqs={faqs} related={related}
+  sources={src(lang, 'dgfip_dmto', 'sp_frais_notaire', 'sp_tf', 'sp_agent')}>
+  <Fragment slot="tool"><div class="mb-8"><CoutTotalCalculator client:load lang={lang} methodHref={route('method', lang)} /></div></Fragment>
+  <MiniSim client:visible kind="ctneuf" lang={lang} href={route('couttotal', lang)} />
+  <h2>The items, in the order of the notary’s statement</h2>
+  <p>After the price, the largest item is nearly always the <a href={route('home', lang)}>notary fees</a>. The name misleads newcomers: about four fifths is <a href={route('dmto', lang)}>transfer tax</a> passed to the département, the municipality and the State, at the rate the département voted for 1 June {YEAR}. The rest pays the notary under a regulated tariff, funds the land registry and covers disbursements. The calculator includes them all, with the first-time buyer rule that keeps the rate at 4.50% in départements that moved to 5%.</p>
+  <p>Next comes the <a href={route('agence', lang)}>agency commission</a> when the listing says the buyer pays it. How it is presented matters: paid by the buyer and shown separately in the deed, it stays outside the base for transfer tax; included in a fees-included price paid to the seller, it is taxed. In our example, the same commission costs {$(exV.total - ex.total, lang)} more when it is built into the price.</p>
+  <p>Third, the <a href={route('taxefonciere', lang)}>property tax</a> refund. The seller owned the home on 1 January and will receive the year’s notice; the deed makes you refund the days left after completion. Completing in July means refunding about half the annual tax; in December, almost nothing. Finally come works in the year of purchase and, if you build or extend, the <a href={route('taxeamenagement', lang)}>development tax</a>.</p>
+  <ContentTable headers={['Département', 'Net seller price', 'Agency', 'Notary fees', 'Property tax refund', 'Total cost', 'Costs and taxes / price']} align={['l', 'r', 'r', 'r', 'r', 'r', 'r']} rows={coutRows(lang)} caption="Resale home, agency paid by the buyer, €1,200 annual property tax, completion on 1 July, no works." />
+  <h2>Why each item needs its own rule</h2>
+  <p>Calculators that quote one global percentage apply a single rule to costs that follow four. Transfer tax follows the département’s rate; the commission follows the agency’s scale; the property tax refund follows the number of days; the development tax follows the rates voted by the town and the département. Adding averages gives a total that is wrong twice: in amount, and in what you can negotiate. The table shows how much the département alone changes the bill at the same price.</p>
+  <h2>New build or resale</h2>
+  <p>On a new build, notary fees drop to about {pct((neuf.fraisNotaire / 280000) * 100, lang, 1)} of the price, against {pct((anc.fraisNotaire / 280000) * 100, lang, 1)} on a resale home in the Loire-Atlantique, because VAT-able sales pay a reduced tax. Property tax is often exempt for two years, wholly or partly depending on the town, and the <a href={route('ptz', lang)}>PTZ zero-interest loan</a> is available in every zone. New builds bring other costs instead: utility connections, development tax on a house you have built, landscaping.</p>
+  <h2>What stays outside the total</h2>
+  <p>The calculation deliberately stops at costs that do not depend on the loan. Arrangement fees, the loan guarantee, borrower insurance and any broker’s fee come on top, according to the bank’s offer. For buyers moving from abroad, add currency conversion, international transfer charges and, for a second home, the taxe d’habitation that French second homes still pay. Keep a margin: the notary’s final statement is only issued after the sale has been registered.</p>
+</GuideLayout>

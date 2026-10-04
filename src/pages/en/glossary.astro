@@ -5,8 +5,8 @@ import { route } from '../../i18n/routes';
 import { webPageSchema, breadcrumbSchema } from '../../lib/seo';
 import { pct, $, P, tauxGlobalAncien, tauxGlobalNeuf } from '../../lib/tables';
 const lang = 'en';
-const title = `Notary fees glossary France ${YEAR}: the terms explained`;
-const description = `French notary fees glossary ${YEAR}: DMTO, émoluments, débours, CSI, compromis, acte authentique, primo-accédant, VEFA. Short definitions, current figures.`;
+const title = `Property purchase glossary France ${YEAR}: terms explained`;
+const description = `French property purchase glossary ${YEAR}: DMTO, émoluments, PTZ, A/B/C zoning, taxe foncière, ownership allowance, FAI price. Short definitions, current data.`;
 const path = route('glossary', lang);
 const jsonLd = [webPageSchema({ name: title, description, path, lang }), breadcrumbSchema([{ name: 'Home', path: route('home', lang) }, { name: 'Glossary', path }])];
 const T: Array<[string, string, string?]> = [
@@ -25,12 +25,19 @@ const T: Array<[string, string, string?]> = [
   ['Publicité foncière (land registration)', 'Entry of the sale in the property register, which makes it binding on everyone.'],
   ['Remise (discount)', `An optional reduction of up to ${pct(P.emoluments.remise_max, lang, 0)} on the part of the emoluments calculated above ${$(P.emoluments.remise_seuil, lang)}.`, 'remise'],
   ['Taux réduit (reduced rate)', `Land publicity tax on VAT-able sales: ${pct(tauxGlobalNeuf(), lang, 3)} of the price, collection fee included.`, 'neuf'],
+  ['Abattement pour durée de détention (ownership allowance)', 'Reduction of a capital gain by full years of ownership: no income tax after 22 years, no social charges after 30.', 'plusvalueimmo'],
+  ['Base d’imposition (property tax base)', `Half the cadastral rental value, uprated every year (${pct(P.taxe_fonciere.revalorisation_2026_pct, lang, 1)} in ${YEAR}).`, 'taxefonciere'],
+  ['FAI price', 'Frais d’agence inclus: the advertised price includes the agency commission.', 'agence'],
+  ['PTZ', `State-backed zero-interest loan for a first-time buyer’s main home, ${P.ptz.quotite_individuel_neuf[3]}% to ${P.ptz.quotite_collectif_ancien[0]}% of the cost depending on bracket and home.`, 'ptz'],
+  ['Net rental yield', 'Rent collected minus non-recoverable charges and property tax, divided by the total cost including notary fees.', 'rendement'],
+  ['Taxe d’aménagement (development tax)', `One-off tax on building more than ${P.taxe_amenagement.surface_exoneree_max} m²: area × ${$(P.taxe_amenagement.valeur_m2, lang)} per m² in ${YEAR} × the town and département rates.`, 'taxeamenagement'],
+  ['Zonage A/B/C', 'Classification of municipalities by housing market pressure (A bis, A, B1, B2, C), which sets the PTZ ceilings among other things.', 'ptz'],
   ['VEFA (off-plan sale)', 'Vente en l’état futur d’achèvement: buying on plan from a developer, subject to VAT and the reduced rate.', 'vefa'],
 ];
 ---
 <PageLayout title={title} description={description} lang={lang} jsonLd={jsonLd} breadcrumbs={[{ label: 'Glossary' }]}>
   <div class="prose prose-slate max-w-none">
-    <h1>Glossary of French notary fees</h1>
+    <h1>Glossary of French property costs and taxes</h1>
     <p>The French terms that appear on a notary’s statement or in this site’s guides, with an English explanation and current figures. Each definition links to the guide that develops it.</p>
     <dl>
       {T.map(([t, d, id]) => <><dt><strong>{t}</strong></dt><dd>{d}{id && <> <a href={route(id, lang)}>Read the guide</a>.</>}</dd></>)}

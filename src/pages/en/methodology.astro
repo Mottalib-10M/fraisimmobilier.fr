@@ -7,15 +7,18 @@ import { route } from '../../i18n/routes';
 import { webPageSchema, breadcrumbSchema } from '../../lib/seo';
 import { $, pct, P, COUNT, tauxGlobalAncien, tauxGlobalNeuf, emolumentsBruts } from '../../lib/tables';
 import { displayDate } from '../../lib/format';
+import { STATS } from '../../lib/immo-tables';
+import { formatNumber } from '../../lib/format';
+const PZ = P.ptz, PV = P.plus_value, TF = P.taxe_fonciere, TA = P.taxe_amenagement, LO = P.location;
 const lang = 'en';
-const title = `Notary fees calculation in France ${YEAR}: method, sources`;
-const description = `How this site calculates French notary fees ${YEAR}: DGFiP table of 1 June, scale A444-91, overseas scales, CSI, tests on official examples, known limits.`;
+const title = `Property costs in France ${YEAR}: calculation method, sources`;
+const description = `Property costs in France ${YEAR}: how this site calculates notary fees, PTZ, capital gains, property and development tax. Official data, tests, known limits.`;
 const path = route('method', lang);
 const jsonLd = [webPageSchema({ name: title, description, path, lang }), breadcrumbSchema([{ name: 'Home', path: route('home', lang) }, { name: 'Methodology', path }])];
 ---
 <PageLayout title={title} description={description} lang={lang} jsonLd={jsonLd} breadcrumbs={[{ label: 'Methodology' }]}>
   <div class="prose prose-slate max-w-none">
-    <h1>Methodology: how notary fees are calculated here</h1>
+    <h1>Methodology: how French property costs and taxes are calculated here</h1>
     <p>This page describes the formula the calculator applies, the data it uses, how we check it and what it cannot do. The parameters were checked against their sources on {displayDate(P.retrieved_at, 'en-GB')}. All calculations run in your browser; nothing you enter is sent anywhere.</p>
     <h2>The formula</h2>
     <p>Fees = transfer tax + proportional emoluments incl. VAT + flat formalities fee incl. VAT + land registry contribution + disbursements. The price entered is the net seller price; the value of any listed furniture is deducted from it before anything else.</p>
@@ -36,6 +39,25 @@ const jsonLd = [webPageSchema({ name: title, description, path, lang }), breadcr
       ['Capital gains flat rates', 'Service-Public.fr, page F10864', 'checked 15 April 2026'],
     ]} />
     <p>The DGFiP table of 1 June {YEAR} lists {COUNT.zones5} tax areas at 5% ({pct(tauxGlobalAncien(5), lang, 4)} in total), {COUNT.a450.length} départements at 4.50% ({pct(tauxGlobalAncien(4.5), lang, 5)}) and Indre at 3.80% ({pct(tauxGlobalAncien(3.8), lang, 5)}). The data lives in the site’s <code>params-2026.json</code> and <code>departements.json</code> files, never in the text of pages: every figure shown is recalculated from those files.</p>
+    <h2>The other calculations: PTZ, capital gains, local taxes, yield</h2>
+    <p>Since 4 October {YEAR}, the site also calculates the other costs and taxes of a purchase on the same principles: pure functions, dated parameters in <code>params-2026.json</code>, tests on official examples, and no loan simulation.</p>
+    <ul>
+      <li><strong>PTZ.</strong> Income used = max(reference tax income N-2, cost ÷ {PZ.revenu_plancher_diviseur}); bracket from income divided by the family coefficient and the zone; amount = min(cost, ceiling for the zone and household) × share ({PZ.quotite_collectif_ancien.join('/')}% for flats and resale homes, {PZ.quotite_individuel_neuf.join('/')}% for new houses); resale homes only in zones B2 and C with {PZ.travaux_ancien_min_pct}% of works; deferral and term from ANIL. Zone read from the 26 June {YEAR} zoning ({formatNumber(STATS.communes, 0, 'en')} municipalities).</li>
+      <li><strong>Capital gains.</strong> Net sale price − (purchase price + max(actual costs, {pct(PV.forfait_frais_acquisition, lang, 1)}) + max(actual works, {pct(PV.forfait_travaux, lang, 0)} after {PV.forfait_travaux_detention_min_ans} years)); allowances of article 150 VC; {pct(PV.taux_ir, lang, 0)} income tax and {pct(PV.taux_ps, lang, 1)} social charges; surtax of article 1609 nonies G with the BOFiP smoothing. Actual costs are recalculated by the notary fees engine for the département of purchase.</li>
+      <li><strong>Property tax.</strong> Base (half the rental value) × combined rate voted by the municipality and its grouping for {TF.taux_exercice} (DGFiP); optional {pct(TF.revalorisation_2026_pct, lang, 1)} uprating (article 1518 bis, Insee HICP); new-build exemption from {TF.exoneration_neuf_min_pct}% to 100%; exemption over 75 and {$(TF.degrevement_65_75, lang)} reduction from 65 to 75 under the {YEAR} income ceilings. State management fees not included.</li>
+      <li><strong>Development tax.</strong> Area × {$(TA.valeur_m2, lang)} ({$(TA.valeur_m2_idf, lang)} in Île-de-France), optional {TA.abattement_pct}% allowance on {TA.abattement_m2} m², pool {$(TA.valeur_piscine_m2, lang)} per m², parking {$(TA.valeur_stationnement, lang)}; × (municipal + département + Île-de-France regional rates) in force on 1 January {YEAR}.</li>
+      <li><strong>Rental yield.</strong> Gross = rent ÷ price; net = (rent collected − charges − property tax − management) ÷ (price + notary fees of the département + works); net-net after micro-foncier ({LO.micro_foncier_abattement}%) or micro-BIC ({LO.micro_bic_abattement}%) and {pct(LO.ps_foncier, lang, 1)} or {pct(LO.ps_meuble, lang, 1)} social charges.</li>
+      <li><strong>Agency fees and total cost.</strong> Fees including VAT = rate × price excluding fees, {P.agence.tva}% VAT; notary fees on the net seller price or on the price including fees depending on who pays; property tax refund = tax × days remaining ÷ 365, as in the service-public.fr example.</li>
+    </ul>
+    <ContentTable headers={['Data', 'Source', 'Version']} align={['l', 'l', 'l']} rows={[
+      ['A/B/C zone by municipality', 'Housing ministry, data.gouv.fr', 'in force since 26 June 2026'],
+      ['PTZ ceilings, brackets and shares', 'Service-Public.fr F10871; ANIL (deferrals)', 'checked 15 September 2026'],
+      ['Building tax and waste tax rates by municipality', 'DGFiP, local taxation of individuals', '2025 tax year'],
+      ['Development tax rates, municipalities and départements', 'DGFiP, published deliberations', 'in force on 1 January 2026'],
+      ['Development tax flat values', 'Service-Public.fr A15416', 'published 7 January 2026'],
+      ['Capital gains allowances, rates and surtax', 'Service-Public.fr F10864; BOFiP BOI-RFPI-TPVIE-20', 'checked 15 April 2026'],
+      ['Micro-foncier, micro-BIC, social charges', 'Service-Public.fr F1991, F32744, F2329', 'checked 15 April and 30 June 2026'],
+    ]} />
     <h2>Checks</h2>
     <p>A set of automated tests replays the examples published by official sources every time the engine changes: emoluments of €1,995.25 excluding VAT on a €200,000 sale in mainland France, the Martinique, French Guiana, Réunion and Mayotte examples, the overall rates of 6.3185% and 5.80665% given by Notaires de France, and the nine gift tax examples on service-public.fr. They also check the count of départements in the DGFiP table.</p>
     <p>While re-reading the service-public.fr page, we found an error in its Guadeloupe example: the total of {$(2426.58, lang, 2)} excluding VAT counts {$(1348.2, lang, 2)} for the last bracket instead of €140,000 × {pct(P.emoluments.zones.gp.taux[3], lang, 3)} = {$(140000 * P.emoluments.zones.gp.taux[3] / 100, lang, 2)}. The site applies the page’s rates, giving {$(emolumentsBruts(200000, 'gp').total, lang, 2)} excluding VAT, and documents the gap in its tests.</p>

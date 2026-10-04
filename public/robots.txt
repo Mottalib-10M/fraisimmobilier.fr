@@ -3,4 +3,4 @@ Allow: /
 
 Disallow: /*?*
 
-Sitemap: https://fraisdenotaire-calcul.fr/sitemap-index.xml
+Sitemap: https://fraisimmobilier.fr/sitemap-index.xml

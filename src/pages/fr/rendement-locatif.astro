@@ -1,0 +1,54 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import RendementCalculator from '../../components/calc/RendementCalculator';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, P } from '../../lib/tables';
+import { rendementRows, rlCalc } from '../../lib/immo-tables';
+import { src } from '../../lib/sources';
+const lang = 'fr';
+const L = P.location;
+const ex = rlCalc({ prix: 160000, dep: '59', loyerMensuel: 750, chargesAnnuelles: 700, taxeFonciere: 900, vacanceMois: 1, tmi: 30 });
+const exM = rlCalc({ prix: 160000, dep: '59', loyerMensuel: 750, chargesAnnuelles: 700, taxeFonciere: 900, vacanceMois: 1, tmi: 30, regime: 'meuble' });
+const neuf = rlCalc({ prix: 160000, dep: '59', type: 'neuf', loyerMensuel: 750, chargesAnnuelles: 700, taxeFonciere: 900, vacanceMois: 1, tmi: 30 });
+const faqs = [
+  { q: 'Quelle est la différence entre rendement brut et rendement net ?', a: `Le rendement brut divise les loyers annuels par le seul prix d’achat : c’est le chiffre des annonces. Le net divise les loyers réellement encaissés, diminués des charges non récupérables, de la taxe foncière et de la gestion, par le coût total, frais de notaire et travaux compris. Sur notre exemple lillois, l’écart va de ${pct(ex.brut, lang)} à ${pct(ex.net, lang)}.` },
+  { q: 'Faut-il inclure les frais de notaire dans le calcul du rendement ?', a: `Oui, dans le net : ils font partie de l’argent immobilisé. Dans l’ancien, ils pèsent ${pct((ex.fraisAcquisition / 160000) * 100, lang, 1)} du prix sur notre exemple du Nord, département à 5 %, ce qui retire mécaniquement plusieurs dixièmes de point de rendement. Le calculateur les reprend du moteur des frais de notaire pour le département choisi, au lieu d’un pourcentage forfaitaire.` },
+  { q: 'Location nue ou meublée : laquelle laisse le meilleur net-net ?', a: `À loyer égal, le meublé en micro-BIC abat ${L.micro_bic_abattement} % des recettes contre ${L.micro_foncier_abattement} % en micro-foncier, mais ses prélèvements sociaux atteignent ${pct(L.ps_meuble, lang, 1)} contre ${pct(L.ps_foncier, lang, 1)}. Dans notre exemple, le net-net passe de ${pct(ex.netNet, lang)} en location nue à ${pct(exM.netNet, lang)} en meublée, avant le surcroît de loyer qu’autorise souvent le meublé.` },
+  { q: 'Quelle vacance locative prévoir dans un calcul de rentabilité ?', a: 'Un mois par an est une hypothèse prudente pour un logement bien placé, loué à l’année : c’est le temps d’un départ, de petits travaux et d’une nouvelle location. Une ville étudiante peut demander davantage, l’été restant creux pour les petites surfaces. Le calculateur retient un mois par défaut, modifiable par dixième de mois.' },
+  { q: 'Quel régime fiscal le calculateur applique-t-il ?', a: `Le micro-foncier tant que les loyers d’une location nue ne dépassent pas ${$(L.micro_foncier_plafond)} par an, le micro-BIC tant que les recettes d’un meublé de longue durée ne dépassent pas ${$(L.micro_bic_plafond)}. Au-delà, il applique un régime réel simplifié : loyers moins charges, sans intérêts d’emprunt ni amortissement, ce qui surestime l’impôt d’un investisseur à crédit.` },
+];
+const related = [
+  { href: route('home', lang), name: 'Calcul des frais de notaire', description: 'Les frais d’acquisition réels du département.' },
+  { href: route('taxefonciere', lang), name: 'Taxe foncière', description: 'Le taux de la commune, poste n° 1 des charges.' },
+  { href: route('plusvalueimmo', lang), name: 'Plus-value immobilière', description: 'L’impôt à la revente du logement loué.' },
+  { href: route('couttotal', lang), name: 'Coût total d’un achat', description: 'Tout ce qu’il faut réunir le jour de l’acte.' },
+];
+---
+<GuideLayout lang={lang} id="rendement" breadcrumbLabel="Rendement locatif"
+  title={`Rendement locatif ${YEAR} : calcul brut, net et net-net`}
+  h1={`Rendement locatif ${YEAR} : brut, net et net-net, avec les vrais frais d’achat`}
+  description={`Rendement locatif ${YEAR} : brut sur le prix, net avec les frais de notaire réels du département et la taxe foncière, net-net après micro-foncier ou micro-BIC.`}
+  intro="Le rendement d’un investissement locatif, calculé sans crédit sur ce que vous immobilisez vraiment : prix, frais de notaire réels, travaux."
+  resume={`Le rendement locatif rapporte les loyers à l’argent investi, et il se décline en trois chiffres. Le brut divise les loyers annuels par le prix d’achat : c’est le plus flatteur, celui des annonces. Le net divise les loyers encaissés, après vacance, diminués des charges non récupérables, de la taxe foncière et des frais de gestion, par le coût total de l’opération, frais de notaire et travaux compris. Le net-net retire en plus l’impôt sur le revenu et les prélèvements sociaux, ${pct(L.ps_foncier, lang, 1)} en location nue et ${pct(L.ps_meuble, lang, 1)} en meublée. Pour un appartement acheté ${$(160000)} dans le Nord et loué ${$(750)} par mois, avec ${$(700)} de charges et ${$(900)} de taxe foncière, le brut atteint ${pct(ex.brut, lang)}, le net ${pct(ex.net, lang)} une fois ajoutés ${$(ex.fraisAcquisition)} de frais de notaire, et le net-net ${pct(ex.netNet, lang)} pour un contribuable à 30 %. Le calculateur reprend les frais réels du département, pas une moyenne nationale.`}
+  faqs={faqs} related={related}
+  sources={src(lang, 'sp_foncier', 'sp_meuble', 'sp_ps', 'dgfip_dmto')}>
+  <Fragment slot="tool"><div class="mb-8"><RendementCalculator client:load lang={lang} methodHref={route('method', lang)} /></div></Fragment>
+  <MiniSim client:visible kind="rlprix" lang={lang} href={route('rendement', lang)} />
+  <h2>Trois rendements, trois questions</h2>
+  <p>Le rendement brut répond à la question de l’annonce : le loyer est-il cohérent avec le prix ? Il sert à trier vite, et il ne dit rien de ce qui restera. Le rendement net répond à celle du propriétaire : combien rapporte, chaque année, l’argent que je sors le jour de l’acte ? Il doit donc rapporter le revenu au coût complet de l’opération et non au seul prix, puisque les frais de notaire, la commission d’agence à la charge de l’acquéreur et les travaux sont décaissés de la même façon. Le rendement net-net, enfin, répond à celle du contribuable : que reste-t-il après l’impôt ?</p>
+  <p>Ce site s’arrête là, volontairement. Le cash-flow d’un investissement à crédit, l’effet de levier ou la capacité d’emprunt dépendent du taux et de l’assurance négociés avec la banque : les simuler supposerait de connaître une offre de prêt, ce que fait un courtier. Le calcul sans crédit a l’avantage de comparer deux biens sur la même base.</p>
+  <h2>Pourquoi les frais réels du département changent le net</h2>
+  <p>Beaucoup de calculateurs ajoutent un pourcentage forfaitaire de frais de notaire partout. C’est faux dans les deux sens : dans un département resté à 4,50 %, les frais sont plus bas ; dans le neuf, ils tombent à {pct((neuf.fraisAcquisition / 160000) * 100, lang, 1)} du prix sur notre exemple. Pour le même appartement à {$(160000)} loué {$(750)}, le rendement net passe de {pct(ex.net, lang)} dans l’ancien à {pct(neuf.net, lang)} s’il était acheté neuf, à loyer égal. Le calculateur reprend les frais d’acquisition du <a href={route('home', lang)}>calcul des frais de notaire</a> pour le département choisi, avec le taux des droits de mutation voté par le département au 1er juin {YEAR}.</p>
+  <p>Le même raisonnement vaut pour la taxe foncière, souvent la plus grosse charge d’un propriétaire bailleur : d’une commune à l’autre, son taux varie dans des proportions considérables. Le guide <a href={route('taxefonciere', lang)}>taxe foncière</a> donne le taux voté par chaque commune ; reportez le montant annuel dans le champ prévu.</p>
+  <ContentTable headers={['Département', 'Prix', 'Loyer mensuel', 'Brut', 'Net', 'Net-net (TMI 30 %)']} align={['l', 'r', 'r', 'r', 'r', 'r']} rows={rendementRows(lang)} caption="Location nue en micro-foncier, 700 € de charges, 900 € de taxe foncière, un mois de vacance ; frais de notaire réels du département." />
+  <h2>La fiscalité retenue pour le net-net</h2>
+  <p>En location nue, les loyers relèvent des revenus fonciers. Tant qu’ils ne dépassent pas {$(L.micro_foncier_plafond)} par an, le régime micro-foncier s’applique : un abattement forfaitaire de {L.micro_foncier_abattement} % représente toutes les charges, et le reste est soumis à l’impôt sur le revenu au taux marginal du foyer et aux prélèvements sociaux de {pct(L.ps_foncier, lang, 1)}. Au-delà, ou sur option, le régime réel déduit les charges effectives.</p>
+  <p>En location meublée de longue durée par un loueur non professionnel, les recettes relèvent des bénéfices industriels et commerciaux. Le micro-BIC s’applique jusqu’à {$(L.micro_bic_plafond)} de recettes, avec un abattement de {L.micro_bic_abattement} %, et les prélèvements sociaux atteignent {pct(L.ps_meuble, lang, 1)}, le taux des revenus du patrimoine autres que fonciers. Le régime réel permet d’amortir le bien, ce qui efface souvent l’impôt pendant des années, mais ces amortissements sont désormais réintégrés dans la plus-value à la revente : le calculateur ne les modélise pas.</p>
+  <h2>Les charges à ne pas oublier</h2>
+  <p>Les charges de copropriété récupérables sur le locataire n’entrent pas dans le calcul, puisqu’elles sont refacturées ; seules les charges non récupérables comptent : gros entretien, honoraires du syndic, fonds de travaux. Ajoutez l’assurance propriétaire non occupant, les petites réparations et, si vous déléguez, les frais de gestion d’une agence, en pourcentage des loyers encaissés. La taxe d’enlèvement des ordures ménagères, qui figure sur l’avis de taxe foncière, est récupérable : ne retenez que la taxe foncière proprement dite.</p>
+  <h2>Ce que le chiffre ne dit pas</h2>
+  <p>Un rendement est une photographie d’une année type. Il ne tient compte ni de l’évolution du loyer, encadrée dans certaines villes, ni des travaux qu’imposeront les diagnostics énergétiques, ni de la <a href={route('plusvalueimmo', lang)}>plus-value</a> réalisée ou non à la revente. Pour comparer deux biens, gardez les mêmes hypothèses de charges et de vacance, et regardez d’abord l’écart de net plutôt que le niveau absolu.</p>
+</GuideLayout>

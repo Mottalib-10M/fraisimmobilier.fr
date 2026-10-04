@@ -1,0 +1,62 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import TaxeFonciereCalculator from '../../components/calc/TaxeFonciereCalculator';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, n, P } from '../../lib/tables';
+import { formatDecimal } from '../../lib/format';
+import { villesTFRows, tfCalc, tfDistribution, STATS } from '../../lib/immo-tables';
+import { prorataTaxeFonciere, jourDeLAnnee, plafondRfrTF } from '../../lib/engine/immobilier';
+import { src } from '../../lib/sources';
+import C33 from '../../data/communes/33.json';
+import type { CommuneRow } from '../../lib/communes';
+const lang = 'en';
+const T = P.taxe_fonciere;
+const i24 = formatDecimal(T.ipch_nov_2024, 2, lang), i25 = formatDecimal(T.ipch_nov_2025, 2, lang);
+const bdx = (C33 as CommuneRow[]).find((r) => r[0] === '33063')!;
+const ex = tfCalc({ base: 2200, tauxTfb: bdx[3] ?? 0, tauxTeom: bdx[4] ?? 0, revaloriser: true });
+const D = tfDistribution();
+const pro = prorataTaxeFonciere(1500, jourDeLAnnee(21, 5));
+const nice = STATS.villes.find((x) => x.code === '06088')!;
+const tNice = tfCalc({ base: 2500, tauxTfb: nice.tfb ?? 0, tauxTeom: nice.teom ?? 0 });
+const faqs = [
+  { q: 'Do I pay taxe foncière on a French holiday home if I live abroad?', a: `Yes. The taxe foncière is owed by whoever owns the property on 1 January, resident or not, and the notice is sent in late summer to the address the tax office holds, or posted in your online space on impots.gouv.fr. Non-residents usually pay it online or by direct debit from a euro account. Second homes may also pay the separate taxe d’habitation sur les résidences secondaires, which this calculator does not cover.` },
+  { q: 'What is the base d’imposition on my taxe foncière notice?', a: `It is the cadastral rental value of the property, an administrative estimate of the rent it would fetch based on surface, category and amenities, reduced by ${pct(T.abattement_base_pct, lang, 0)}. It appears in the “base” column of the notice for each authority. Ask the seller for their latest notice before you buy: the base barely moves from year to year apart from the annual uprating.` },
+  { q: 'Why did my French property tax go up when the rate did not change?', a: `Because rental values are uprated automatically every 1 January in line with the harmonised consumer price index from November to November. For ${YEAR} the index went from ${i24} to ${i25}, so every base rose by ${pct(T.revalorisation_2026_pct, lang, 1)} before councils voted any rate. Works declared to the tax office, such as a pool or an extension, raise the base too.` },
+  { q: 'Can I pass the property tax on to my tenant in France?', a: 'Only the household waste collection tax, the TEOM printed on the same notice, is a recoverable charge you may ask the tenant to refund. The taxe foncière itself stays with the owner and is deductible from rental income under the actual-expenses regime, not under the micro-foncier flat allowance. The calculator shows the TEOM on its own line for that reason.' },
+  { q: 'Is a newly built French house exempt from taxe foncière?', a: `For ${T.exoneration_neuf_annees} years from the 1 January after completion, provided the property is declared within 90 days. The municipality may restrict the exemption to between ${T.exoneration_neuf_min_pct}% and 90% of the base; it stays total if the council voted nothing. The waste collection tax is due from the first year.` },
+];
+const related = [
+  { href: route('couttotal', lang), name: 'Total cost of a purchase', description: 'The property tax pro rata in the full budget.' },
+  { href: route('rendement', lang), name: 'Rental yield', description: 'Property tax weighs on the net yield.' },
+  { href: route('taxeamenagement', lang), name: 'Development tax', description: 'The other local tax on a new build.' },
+  { href: route('plusvalueimmo', lang), name: 'Capital gains on property', description: 'What you pay when you sell.' },
+];
+---
+<GuideLayout lang={lang} id="taxefonciere" breadcrumbLabel="Property tax"
+  title={`Taxe foncière ${YEAR}: French property tax by municipality`}
+  h1={`Taxe foncière ${YEAR}: French property tax with your town’s voted rates`}
+  description={`Taxe foncière ${YEAR}: French property tax from the rental value base and the rates voted by ${n(D.n, lang)} municipalities, ${pct(T.revalorisation_2026_pct, lang, 1)} uprating, waste tax, exemptions.`}
+  intro="Pick the town: its voted rates are loaded, waste collection tax included. Enter the base from the notice and the calculation does the rest."
+  resume={`The taxe foncière is France’s annual property tax, owed by whoever owns a building on 1 January, whether they live in France or not. It is one multiplication: the tax base, equal to ${pct(T.abattement_base_pct, lang, 0)} of the property’s cadastral rental value, times the rate voted by the municipality and its grouping of towns, plus any special levies. Rental values are uprated every year: by ${pct(T.revalorisation_2026_pct, lang, 1)} in ${YEAR}, following the harmonised price index. The same notice carries the household waste collection tax, calculated on the same base. For a Bordeaux flat with a base of ${$(2200, lang)} on the ${YEAR - 1} notice, the rate of ${pct(bdx[3] ?? 0, lang)} gives ${$(ex.tfDue, lang)} of property tax plus ${$(ex.teom, lang)} for waste collection. The calculator loads the rates voted for ${T.taux_exercice} by all ${n(D.n, lang)} municipalities, as published by the DGFiP, and applies the new-build and senior exemptions.`}
+  faqs={faqs} related={related}
+  sources={src(lang, 'sp_tf', 'dgfip_flp', 'insee_ipch')}>
+  <Fragment slot="tool"><div class="mb-8"><TaxeFonciereCalculator client:load lang={lang} initialRows={C33 as CommuneRow[]} initialDep="33" initialCode="33063" methodHref={route('method', lang)} /></div></Fragment>
+  <MiniSim client:visible kind="tfprorata" lang={lang} href={route('taxefonciere', lang)} />
+  <h2>Two numbers make the bill</h2>
+  <p>France taxes property on a notional rent, not on its market value. The tax office estimates what the home would rent for, using its surface, category and comforts on a scale that dates back to 1970 and is updated by coefficients, then takes half of it: that is the base you find in the “base” column of the notice. Two similar flats in neighbouring streets can therefore have very different bases, and an old house that has been modernised without declaring the works can carry a base far below its real standard.</p>
+  <p>The second number is the rate. Since the 2021 reform, the municipality collects the former département share and votes a single rate that includes it; the grouping of towns votes its own; syndicates, the special equipment levy and the flood-management levy may be added. The calculator adds them up from the DGFiP’s “local taxation of individuals” file and leaves the field editable, because the {YEAR} rates voted in spring may differ slightly from those of {T.taux_exercice}.</p>
+  <h2>Why the town matters more than the house</h2>
+  <p>Across France, the combined rate runs from {pct(D.min, lang)} to {pct(D.max, lang)}; the median municipality charges {pct(D.mediane, lang)}, and {n(D.plus50, lang)} municipalities exceed 50%. A villa with a base of {$(2500, lang)} in Nice, at {pct(nice.tfb ?? 0, lang)}, costs {$(tNice.tfDue, lang)} a year plus {$(tNice.teom, lang)} of waste tax. The same base in a low-rate village can cost half as much. The table shows the tax on a {$(2000, lang)} base in France’s twenty largest municipalities.</p>
+  <ContentTable headers={['Municipality', 'Département', 'Building tax rate', 'Waste tax rate', 'Building tax', 'With waste tax']} align={['l', 'l', 'r', 'r', 'r', 'r']} rows={villesTFRows(lang)} caption={`Rates voted for ${T.taux_exercice} (DGFiP); €2,000 base, excluding management fees and exemptions.`} />
+  <h2>The {YEAR} uprating</h2>
+  <p>Article 1518 bis of the French tax code uprates every residential rental value on 1 January by the change in the harmonised consumer price index published by Insee, November to November. The index moved from {i24} in November {YEAR - 2} to {i25} in November {YEAR - 1}, so {YEAR} bases are {pct(T.revalorisation_2026_pct, lang, 1)} higher. If you enter the base from a {YEAR - 1} notice, keep the option switched on to estimate the {YEAR} bill.</p>
+  <h2>Exemptions worth checking</h2>
+  <p>A newly built home is exempt for {T.exoneration_neuf_annees} years from the 1 January after completion, if declared within 90 days, though the municipality may limit the exemption to between {T.exoneration_neuf_min_pct}% and 90%. Some councils also exempt very energy-efficient new homes for five years. Owners over 75 on 1 January are exempt on their main home if their reference tax income does not exceed {$(plafondRfrTF(1), lang)} for one share, {$(plafondRfrTF(2), lang)} for two; between 65 and 75, under the same ceiling, the tax is cut by {$(T.degrevement_65_75, lang)}. These reliefs concern the main home only, so a holiday home in France never benefits, whatever the owner’s age.</p>
+  <h2>The year you buy</h2>
+  <p>The tax office ignores sales during the year: the September notice goes to the seller, who owned the property on 1 January. Almost every French deed makes the buyer refund the share of the year still to run, based on the last notice. For a sale on 21 May, {pro.joursRestants} days remain; on a {$(1500, lang)} bill the buyer refunds {$(pro.acquereur, lang)}. The amount appears on the notary’s statement next to the <a href={route('home', lang)}>notary fees</a>, and the <a href={route('couttotal', lang)}>total cost calculator</a> adds it automatically. From the following year, the notice comes to you.</p>
+  <h2>What the estimate leaves out</h2>
+  <p>The notice adds State management fees that the calculator does not include, and some towns replace the waste tax with a charge based on use. Outbuildings and land can carry their own base. A newly merged municipality may apply smoothed rates that differ between its former villages for a few years. The result is an estimate: only the notice is final.</p>
+</GuideLayout>

@@ -1,0 +1,60 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import TACalculator from '../../components/calc/TACalculator';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, n, P } from '../../lib/tables';
+import { taDepRows, taDepStats, taCas, taCalc, tfDistribution } from '../../lib/immo-tables';
+import { depName } from '../../lib/communes';
+import { src } from '../../lib/sources';
+import C33 from '../../data/communes/33.json';
+import type { CommuneRow } from '../../lib/communes';
+const lang = 'fr';
+const A = P.taxe_amenagement;
+const S = taDepStats(); const D = tfDistribution();
+const ext = taCalc({ surface: 30, abattement: true, tauxCommune: 5, tauxDep: 2.5 });
+const maison = taCalc({ surface: 120, abattement: true, tauxCommune: 5, tauxDep: 2.5 });
+const abri = taCalc({ surface: 12, tauxCommune: 5, tauxDep: 2.5 });
+const baisse = ((A.icc_t3_2024 - A.icc_t3_2025) / A.icc_t3_2024) * 100;
+const faqs = [
+  { q: 'Un abri de jardin est-il soumis à la taxe d’aménagement ?', a: `Oui dès qu’il dépasse ${A.surface_exoneree_max} m² de surface close et couverte, avec une hauteur d’au moins 1,80 m. Il ne bénéficie pas de l’abattement réservé à la résidence principale. Un abri de 12 m² dans une commune à 5 % et un département à 2,5 % coûte ${$(abri.total)} en ${YEAR}. Les communes peuvent exonérer les abris de jardin de 20 m² au plus : demandez à la mairie.` },
+  { q: 'Une terrasse ou une pergola paie-t-elle la taxe d’aménagement ?', a: 'Non. La taxe porte sur la surface de plancher close et couverte : une terrasse non couverte, une pergola ou une tonnelle ouverte n’en créent pas. Une véranda fermée, un garage ou un carport fermé sur ses côtés sont en revanche taxables. Une piscine est taxée séparément, au mètre carré de bassin, et une place de stationnement extérieure à l’unité.' },
+  { q: 'Quand faut-il payer la taxe d’aménagement ?', a: `Elle se déclare dans les 90 jours qui suivent l’achèvement des travaux, depuis l’espace « Biens immobiliers » d’impots.gouv.fr, en même temps que la déclaration foncière. L’avis arrive ensuite : au-delà de ${$(A.paiement_deux_fois_au_dela)}, le paiement se fait en deux fois, la première échéance à 90 jours et la seconde à 9 mois après l’achèvement.` },
+  { q: 'Pourquoi la taxe d’aménagement baisse-t-elle en 2026 ?', a: `Parce que la valeur forfaitaire au mètre carré suit l’indice du coût de la construction de l’Insee, passé de ${n(A.icc_t3_2024)} au troisième trimestre ${YEAR - 2} à ${n(A.icc_t3_2025)} un an plus tard, soit ${pct(baisse, lang, 1)} de moins. La valeur passe ainsi à ${$(A.valeur_m2)} le m² hors Île-de-France et ${$(A.valeur_m2_idf)} en Île-de-France pour les autorisations de ${YEAR}.` },
+  { q: 'Le taux de la taxe d’aménagement est-il le même dans toute la commune ?', a: `Pas toujours. La commune vote un taux de ${pct(A.taux_communal_min, lang, 0)} à ${pct(A.taux_communal_max, lang, 0)}, mais elle peut le porter jusqu’à ${pct(A.taux_communal_majore_max, lang, 0)} dans des secteurs où les nouvelles constructions exigent de lourds équipements publics. Le calculateur charge le taux unique de la commune quand elle en a voté un ; en secteur majoré, corrigez le taux communal avec celui indiqué par la mairie.` },
+  { q: 'L’abattement de 50 % s’applique-t-il à une extension ?', a: `Il concerne les ${A.abattement_m2} premiers mètres carrés d’une résidence principale et de ses annexes. Pour une extension, la fiche de service-public.fr ne précise pas comment la surface existante de la maison s’impute sur cette limite : le service des impôts le confirme au vu du dossier. Le calculateur laisse donc l’abattement au choix ; pour une extension de 30 m², il fait passer la taxe de ${$(taCalc({ surface: 30, tauxCommune: 5, tauxDep: 2.5 }).total)} à ${$(ext.total)}.` },
+];
+const related = [
+  { href: route('taxefonciere', lang), name: 'Taxe foncière', description: 'L’impôt annuel qui suit la construction.' },
+  { href: route('couttotal', lang), name: 'Coût total d’un achat', description: 'Terrain, notaire, taxes : tout additionner.' },
+  { href: route('terrain', lang), name: 'Frais de notaire d’un terrain', description: 'Avant la construction, l’achat du terrain.' },
+  { href: route('ptz', lang), name: 'PTZ 2026', description: 'Le prêt à taux zéro de la maison neuve.' },
+];
+---
+<GuideLayout lang={lang} id="taxeamenagement" breadcrumbLabel="Taxe d’aménagement"
+  title={`Taxe d’aménagement ${YEAR} : calcul avec les taux de la commune`}
+  h1={`Taxe d’aménagement ${YEAR} : le calcul avec les taux votés de votre commune`}
+  description={`Taxe d’aménagement ${YEAR} : ${$(A.valeur_m2)} le m² (${$(A.valeur_m2_idf)} en Île-de-France), taux communal et départemental chargés, abattement de 50 %. Abri, garage, maison, piscine.`}
+  intro="Maison, extension, abri de jardin, piscine : choisissez la commune, les taux votés par la commune et le département sont chargés."
+  resume={`La taxe d’aménagement est due une seule fois, quand vous créez de la surface de plancher close et couverte avec une autorisation d’urbanisme : maison, extension, garage, véranda, abri de jardin de plus de ${A.surface_exoneree_max} m². Elle se calcule en multipliant la surface par une valeur forfaitaire, fixée pour ${YEAR} à ${$(A.valeur_m2)} le m² hors Île-de-France et ${$(A.valeur_m2_idf)} en Île-de-France, puis par la somme des taux votés : celui de la commune (de ${pct(A.taux_communal_min, lang, 0)} à ${pct(A.taux_communal_max, lang, 0)}, jusqu’à ${pct(A.taux_communal_majore_max, lang, 0)} en secteur majoré), celui du département (${pct(A.taux_departemental_max, lang, 1)} au plus) et, en Île-de-France, celui de la région. Les ${A.abattement_m2} premiers m² d’une résidence principale ne comptent que pour moitié. Pour une maison de 120 m² dans une commune à 5 % et un département à 2,5 %, cela fait ${$(maison.total)}. Le calculateur charge les taux votés en vigueur au 1er janvier ${YEAR}, publiés par la DGFiP, pour ${n(D.taN)} communes et les ${S.nb} départements.`}
+  faqs={faqs} related={related}
+  sources={src(lang, 'sp_ta', 'sp_ta_2026', 'dgfip_ta')}>
+  <Fragment slot="tool"><div class="mb-8"><TACalculator client:load lang={lang} initialRows={C33 as CommuneRow[]} initialDep="33" initialCode="33063" methodHref={route('method', lang)} /></div></Fragment>
+  <MiniSim client:visible kind="taabri" lang={lang} href={route('taxeamenagement', lang)} />
+  <h2>Ce qui est taxé, et ce qui ne l’est pas</h2>
+  <p>La taxe d’aménagement accompagne toute opération qui exige un permis de construire, un permis d’aménager ou une déclaration préalable et qui crée de la surface taxable. Cette surface se mesure à l’intérieur des murs, sur les parties closes et couvertes dont la hauteur sous plafond atteint au moins 1,80 m ; les combles bas, les terrasses ouvertes, les pergolas et les auvents n’en font pas partie. Une construction de {A.surface_exoneree_max} m² ou moins est exonérée d’office, tout comme la reconstruction à l’identique d’un bâtiment détruit depuis moins de dix ans.</p>
+  <p>Certains aménagements sont taxés autrement qu’au mètre carré de plancher : une piscine à {$(A.valeur_piscine_m2)} le m² de bassin, une place de stationnement extérieure à {$(A.valeur_stationnement)} (jusqu’à {$(A.valeur_stationnement_max)} si la collectivité l’a décidé), des panneaux photovoltaïques au sol, une éolienne de plus de 12 m. Les places intégrées au bâti ou en sous-sol, elles, sont exonérées.</p>
+  <h2>Pourquoi la commune et le département changent tout</h2>
+  <p>La valeur forfaitaire est la même dans toute la France hors Île-de-France ; ce sont les taux qui font l’écart. Le département vote un taux unique pour tout son territoire, au plus {pct(A.taux_departemental_max, lang, 1)} : {S.max} départements sur {S.nb} appliquent ce maximum, et le plus bas descend à {pct(S.min, lang, 1)} ({S.minDeps.map((d) => depName(d, lang)).join(', ')}). {S.changes2026.length} départements ont modifié leur taux au 1er janvier {YEAR}. La commune, elle, vote un taux souvent compris entre {pct(A.taux_communal_min, lang, 0)} et {pct(A.taux_communal_max, lang, 0)} : parmi les {n(D.taN)} communes qui ont voté un taux unique, {n(D.ta5)} appliquent 5 % et {n(D.taSup5)} vont au-delà sur tout leur territoire.</p>
+  <p>Le calculateur lit ces deux taux dans les délibérations publiées par la DGFiP, en retenant pour chaque collectivité la dernière décision définitive entrée en vigueur au plus tard le 1er janvier {YEAR}. Quand une commune n’a voté que des taux par secteur, ou n’a pas institué la taxe, le champ reste à compléter avec le taux qu’indique la mairie.</p>
+  <ContentTable headers={['Code', 'Département', 'Taux départemental', 'En vigueur depuis']} align={['l', 'l', 'r', 'r']} rows={taDepRows(lang)} caption={`Part départementale de la taxe d’aménagement au 1er janvier ${YEAR} (DGFiP). En Île-de-France s’ajoute une part régionale de 1 %.`} />
+  <h2>L’abattement de la résidence principale</h2>
+  <p>Les {A.abattement_m2} premiers mètres carrés d’une résidence principale et de ses annexes sont taxés sur la moitié de la valeur forfaitaire, soit {$(A.valeur_m2 / 2)} au lieu de {$(A.valeur_m2)} le m² hors Île-de-France. Pour une maison neuve de 120 m², cela ramène la valeur taxable de {$(120 * A.valeur_m2)} à {$(maison.valeurTaxable)}. Le même abattement profite aux logements aidés, aux locaux industriels ou artisanaux, à certains entrepôts et aux parcs de stationnement couverts exploités commercialement. Les collectivités peuvent par ailleurs exonérer, en tout ou partie, les maisons financées par un prêt à taux zéro, les abris de jardin de 20 m² au plus ou certains locaux : la mairie confirme ces exonérations facultatives.</p>
+  <ContentTable headers={['Projet', 'Valeur taxable', 'Taux cumulé', 'Taxe d’aménagement']} align={['l', 'r', 'r', 'r']} rows={taCas(lang)} caption={`Exemples à taux communal de 5 % et départemental de 2,5 % ; Île-de-France avec la part régionale de 1 %. Valeurs ${YEAR}.`} />
+  <h2>Les valeurs {YEAR}, en baisse</h2>
+  <p>Les valeurs forfaitaires sont actualisées chaque 1er janvier selon le dernier indice du coût de la construction publié par l’Insee. Au 1er janvier {YEAR}, c’est celui du troisième trimestre {YEAR - 1} : {n(A.icc_t3_2025)}, contre {n(A.icc_t3_2024)} un an plus tôt. La valeur au mètre carré baisse donc, à {$(A.valeur_m2)} hors Île-de-France et {$(A.valeur_m2_idf)} en Île-de-France. Le taux appliqué est celui en vigueur à la délivrance du permis, ou à la décision de non-opposition à la déclaration préalable.</p>
+  <h2>Déclarer et payer</h2>
+  <p>Depuis le transfert de la gestion de la taxe à la DGFiP, la déclaration se fait sur impots.gouv.fr, dans l’espace « Biens immobiliers », dans les 90 jours qui suivent l’achèvement des travaux, en même temps que la déclaration foncière qui servira à la <a href={route('taxefonciere', lang)}>taxe foncière</a>. Un avis de paiement suit. Au-delà de {$(A.paiement_deux_fois_au_dela)}, le montant est divisé en deux titres, à 90 jours puis à 9 mois. Pour un projet de construction, la taxe s’ajoute au prix du terrain, aux <a href={route('terrain', lang)}>frais de notaire du terrain</a> et au coût des travaux : le <a href={route('couttotal', lang)}>calcul du coût total</a> permet de tout réunir.</p>
+</GuideLayout>

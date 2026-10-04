@@ -10,6 +10,10 @@ import { amountLabel } from '../../i18n/nav';
 import { webApplicationSchema, faqSchema, breadcrumbSchema, organizationSchema, personSchema, websiteSchema } from '../../lib/seo';
 import { F, $, pct, n, P, COUNT, exempleRows, tranchesRows, tauxGlobalAncien, tauxGlobalNeuf, getDep, nom } from '../../lib/tables';
 import { displayDate } from '../../lib/format';
+import { ctCalc, ptzCalc, tfDistribution } from '../../lib/immo-tables';
+const ct = ctCalc({ prix: 250000, dep: '75', agenceTTC: 10000, taxeFonciereAnnuelle: 1200, jourSignature: 182 });
+const pz = ptzCalc({ zone: 'A', personnes: 2, rfr: 38000, cout: 250000, type: 'neuf_collectif' });
+const TD = tfDistribution();
 const lang = 'fr';
 const title = `Frais de notaire ${YEAR} : calcul par département, ancien, neuf`;
 const description = `Frais de notaire ${YEAR} calculés avec le taux de votre département au 1er juin : droits de mutation, émoluments, CSI, débours. Ancien, neuf, primo-accédant.`;
@@ -28,6 +32,8 @@ const faqs = [
   { q: 'Mes données sont-elles envoyées quelque part ?', a: 'Non. Le calcul est exécuté par votre navigateur avec les barèmes embarqués dans la page : le prix, le département et votre situation ne sont transmis à aucun serveur, ne sont pas enregistrés et ne nécessitent aucun compte. Le lien partageable encode vos saisies dans l’adresse de la page, uniquement si vous choisissez de le copier.' },
 ];
 const related = [
+  { href: route('couttotal', lang), name: 'Coût total d’un achat', description: 'Notaire, agence, taxe foncière : le budget complet.' },
+  { href: route('ptz', lang), name: 'PTZ 2026', description: 'Le prêt à taux zéro selon la zone de la commune.' },
   { href: route('departements', lang), name: 'Frais par département', description: 'Les 101 départements, taux au 1er juin 2026.' },
   { href: route('comparer', lang), name: 'Comparer deux départements', description: 'Le même bien, deux taux, l’écart en euros.' },
   { href: route('neuf', lang), name: 'Frais de notaire dans le neuf', description: 'Taux réduit, VEFA et terrain de promoteur.' },
@@ -83,6 +89,9 @@ const jsonLd = [webApplicationSchema({ name: `Calcul des frais de notaire ${YEAR
     <h3>Donation, garage, plus-value</h3>
     <p>Une donation obéit à d’autres règles : droits de donation après abattement, émoluments propres. Le <a href={route('donation', lang)}>calculateur de donation</a> les applique. Pour un <a href={route('garage', lang)}>garage ou une place de parking</a>, le minimum de perception change la donne. Et à la revente, les frais payés à l’achat majorent le prix d’acquisition retenu pour la plus-value, au réel ou par un forfait de {pct(P.plus_value.forfait_frais_acquisition, lang, 1)} : voir <a href={route('plusvalue', lang)}>frais de notaire et plus-value</a>.</p>
     <AdSlot slot="home-2" />
+    <h2 id="tous-les-frais">Les autres frais et taxes de votre achat immobilier</h2>
+    <p>Les frais de notaire sont le premier poste, pas le seul. Ce site, Frais Immobilier, calcule avec le même soin chaque frais et chaque taxe d’un achat, hors crédit. Le <a href={route('couttotal', lang)}>coût total d’un achat</a> additionne le prix, les frais de notaire, la commission d’agence et la taxe foncière remboursée au vendeur : pour {$(250000)} à Paris avec {$(10000)} d’agence et une signature début juillet, il atteint {$(ct.total)}. Les <a href={route('agence', lang)}>frais d’agence immobilière</a> se décomposent en honoraires hors taxes et TVA, et leur présentation change l’assiette des droits.</p>
+    <p>Pour financer l’achat, le <a href={route('ptz', lang)}>simulateur PTZ {YEAR}</a> lit la zone de votre commune et applique le barème du prêt à taux zéro : {$(pz.montant)} pour un couple qui achète un appartement neuf à {$(250000)} à Nantes. Une fois propriétaire, la <a href={route('taxefonciere', lang)}>taxe foncière</a> se calcule avec les taux votés par chacune des communes, de {pct(TD.min)} à {pct(TD.max)}, et la <a href={route('taxeamenagement', lang)}>taxe d’aménagement</a> avec ceux de la commune et du département pour une construction ou une extension. Pour un investissement, le <a href={route('rendement', lang)}>rendement locatif</a> intègre les frais d’achat réels, et la <a href={route('plusvalueimmo', lang)}>plus-value immobilière</a> chiffre l’impôt prélevé à la revente.</p>
     <h2 id="populaires">Calculs fréquents par prix</h2>
     <ul>{AMOUNTS.map((a) => <li><a href={route(`amount-${a}`, lang)}>Frais de notaire pour un {amountLabel(a, lang).toLowerCase()}</a></li>)}</ul>
     <h2 id="conseils">Six façons légales de payer moins</h2>

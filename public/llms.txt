@@ -1,29 +1,48 @@
-# fraisdenotaire-calcul.fr
+# fraisimmobilier.fr
 
-> Calculateur des frais de notaire en France (2026), en français et en anglais, édité par Radif Partners. Il applique le taux des droits de mutation de chacun des 101 départements selon le tableau de la DGFiP au 1er juin 2026 (5 %, 4,50 % ou 3,80 %), le barème réglementé des émoluments (article A444-91 du code de commerce, barèmes propres à l'outre-mer), la contribution de sécurité immobilière, le forfait de formalités, la règle du primo-accédant (4,50 %) et la réduction « première propriété » de la Savoie (4,00 %). Calcul 100 % dans le navigateur.
+> Frais Immobilier : calculateurs des frais et taxes d'un achat immobilier en France (2026), hors crédit, en français et en anglais, édités par Radif Partners. Frais de notaire par département, PTZ selon la zone A/B/C de chaque commune (zonage du 26 juin 2026), taxe foncière et taxe d'aménagement avec les taux votés par chaque commune et département (DGFiP), plus-value immobilière, rendement locatif, frais d'agence et coût total. Il applique le taux des droits de mutation de chacun des 101 départements selon le tableau de la DGFiP au 1er juin 2026 (5 %, 4,50 % ou 3,80 %), le barème réglementé des émoluments (article A444-91 du code de commerce, barèmes propres à l'outre-mer), la contribution de sécurité immobilière, le forfait de formalités, la règle du primo-accédant (4,50 %) et la réduction « première propriété » de la Savoie (4,00 %). Calcul 100 % dans le navigateur.
 
 ## Outils
-- [Calcul des frais de notaire](https://fraisdenotaire-calcul.fr/fr/): ancien, neuf, primo-accédant, meubles, remise, débours
-- [Frais par département](https://fraisdenotaire-calcul.fr/fr/frais-de-notaire-par-departement/): les 101 départements, taux et frais
-- [Comparer deux départements](https://fraisdenotaire-calcul.fr/fr/comparer-frais-de-notaire-departements/)
-- [Tableau des frais par prix](https://fraisdenotaire-calcul.fr/fr/tableau-frais-de-notaire/)
-- [Frais dans le neuf](https://fraisdenotaire-calcul.fr/fr/frais-de-notaire-neuf/), [terrain](https://fraisdenotaire-calcul.fr/fr/frais-de-notaire-terrain/), [donation](https://fraisdenotaire-calcul.fr/fr/frais-de-notaire-donation/)
+- [Coût total d'un achat immobilier](https://fraisimmobilier.fr/fr/cout-achat-immobilier/): prix, notaire, agence, prorata de taxe foncière, travaux
+- [PTZ 2026](https://fraisimmobilier.fr/fr/ptz/): zone par commune, tranche, quotité, différé et durée
+- [Plus-value immobilière](https://fraisimmobilier.fr/fr/plus-value-immobiliere/): abattements, impôt 19 %, prélèvements 17,2 %, surtaxe
+- [Taxe foncière](https://fraisimmobilier.fr/fr/taxe-fonciere/): taux votés 2025 de 34 874 communes, revalorisation 2026, exonérations
+- [Taxe d'aménagement](https://fraisimmobilier.fr/fr/taxe-amenagement/): valeurs 2026, taux communaux et départementaux
+- [Rendement locatif](https://fraisimmobilier.fr/fr/rendement-locatif/): brut, net, net-net avec les frais réels
+- [Frais d'agence immobilière](https://fraisimmobilier.fr/fr/frais-agence-immobiliere/): honoraires TTC/HT, prix FAI, effet sur les frais de notaire
+- [Calcul des frais de notaire](https://fraisimmobilier.fr/fr/): ancien, neuf, primo-accédant, meubles, remise, débours
+- [Frais par département](https://fraisimmobilier.fr/fr/frais-de-notaire-par-departement/): les 101 départements, taux et frais
+- [Comparer deux départements](https://fraisimmobilier.fr/fr/comparer-frais-de-notaire-departements/)
+- [Tableau des frais par prix](https://fraisimmobilier.fr/fr/tableau-frais-de-notaire/)
+- [Frais dans le neuf](https://fraisimmobilier.fr/fr/frais-de-notaire-neuf/), [terrain](https://fraisimmobilier.fr/fr/frais-de-notaire-terrain/), [donation](https://fraisimmobilier.fr/fr/frais-de-notaire-donation/)
 
 ## Guides
-- [Droits de mutation](https://fraisdenotaire-calcul.fr/fr/droits-de-mutation/)
-- [Hausse à 5 %](https://fraisdenotaire-calcul.fr/fr/hausse-droits-de-mutation-5-pourcent/)
-- [Primo-accédant](https://fraisdenotaire-calcul.fr/fr/frais-de-notaire-primo-accedant/)
-- [Émoluments du notaire](https://fraisdenotaire-calcul.fr/fr/emoluments-notaire-bareme/)
-- [Outre-mer](https://fraisdenotaire-calcul.fr/fr/frais-de-notaire-outre-mer/)
-- [Méthodologie et sources](https://fraisdenotaire-calcul.fr/fr/methodologie/)
+- [Droits de mutation](https://fraisimmobilier.fr/fr/droits-de-mutation/)
+- [Hausse à 5 %](https://fraisimmobilier.fr/fr/hausse-droits-de-mutation-5-pourcent/)
+- [Primo-accédant](https://fraisimmobilier.fr/fr/frais-de-notaire-primo-accedant/)
+- [Émoluments du notaire](https://fraisimmobilier.fr/fr/emoluments-notaire-bareme/)
+- [Outre-mer](https://fraisimmobilier.fr/fr/frais-de-notaire-outre-mer/)
+- [Méthodologie et sources](https://fraisimmobilier.fr/fr/methodologie/)
 
 ## English
-- [French notary fees calculator](https://fraisdenotaire-calcul.fr/en/)
-- [Fees by département](https://fraisdenotaire-calcul.fr/en/notary-fees-by-departement/)
-- [First-time buyers](https://fraisdenotaire-calcul.fr/en/notary-fees-first-time-buyer/)
-- [Methodology](https://fraisdenotaire-calcul.fr/en/methodology/)
+- [Total cost of buying property in France](https://fraisimmobilier.fr/en/total-cost-buying-property-france/)
+- [PTZ zero-interest loan](https://fraisimmobilier.fr/en/ptz-zero-interest-loan/)
+- [Capital gains tax on French property](https://fraisimmobilier.fr/en/capital-gains-tax-property-france/)
+- [Taxe foncière (property tax)](https://fraisimmobilier.fr/en/property-tax-france-taxe-fonciere/)
+- [Development tax](https://fraisimmobilier.fr/en/development-tax-taxe-amenagement/)
+- [Rental yield](https://fraisimmobilier.fr/en/rental-yield-france/)
+- [Estate agency fees](https://fraisimmobilier.fr/en/estate-agency-fees-france/)
+- [French notary fees calculator](https://fraisimmobilier.fr/en/)
+- [Fees by département](https://fraisimmobilier.fr/en/notary-fees-by-departement/)
+- [First-time buyers](https://fraisimmobilier.fr/en/notary-fees-first-time-buyer/)
+- [Methodology](https://fraisimmobilier.fr/en/methodology/)
 
 ## Sources
 - DGFiP, taux applicables au 1er juin 2026 : https://www.impots.gouv.fr/sites/default/files/media/1_metier/3_partenaire/notaires/dmto/dmto_2026-06.pdf
 - Service-Public.fr, frais de notaire (barèmes) : https://www.service-public.gouv.fr/particuliers/vosdroits/F17701
 - Notaires de France, frais d'acquisition : https://www.notaires.fr/fr/immobilier-fiscalite/financement/les-frais-dacquisition
+- Service-Public.fr, prêt à taux zéro : https://www.service-public.gouv.fr/particuliers/vosdroits/F10871
+- Zonage A/B/C (ministère chargé du logement) : https://www.data.gouv.fr/datasets/liste-des-communes-selon-le-zonage-abc
+- DGFiP, fiscalité locale des particuliers : https://data.economie.gouv.fr/explore/dataset/fiscalite-locale-des-particuliers/
+- DGFiP, taux de taxe d'aménagement : https://data.economie.gouv.fr/explore/dataset/delta_deliberation_tam_17_01_23/
+- Service-Public.fr, plus-value immobilière : https://www.service-public.gouv.fr/particuliers/vosdroits/F10864

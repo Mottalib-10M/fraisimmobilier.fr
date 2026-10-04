@@ -1,0 +1,52 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import CoutTotalCalculator from '../../components/calc/CoutTotalCalculator';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, P, tauxGlobalNeuf } from '../../lib/tables';
+import { coutRows, ctCalc } from '../../lib/immo-tables';
+import { jourDeLAnnee } from '../../lib/engine/immobilier';
+import { src } from '../../lib/sources';
+const lang = 'fr';
+const ex = ctCalc({ prix: 280000, dep: '44', agenceTTC: 12000, travaux: 10000, taxeFonciereAnnuelle: 1300, jourSignature: jourDeLAnnee(1, 7) });
+const exV = ctCalc({ prix: 280000, dep: '44', agenceTTC: 12000, chargeAgence: 'vendeur', travaux: 10000, taxeFonciereAnnuelle: 1300, jourSignature: jourDeLAnnee(1, 7) });
+const neuf = ctCalc({ prix: 280000, dep: '44', type: 'neuf', taxeFonciereAnnuelle: 0 });
+const anc = ctCalc({ prix: 280000, dep: '44', taxeFonciereAnnuelle: 0 });
+const faqs = [
+  { q: 'Combien faut-il prévoir en plus du prix pour acheter un logement ?', a: `Dans l’ancien, comptez les frais de notaire, ${pct((anc.fraisNotaire / 280000) * 100, lang, 1)} du prix en Loire-Atlantique, département à 5 %, la commission d’agence si elle est à votre charge, puis le remboursement au vendeur de la taxe foncière de l’année. Pour ${$(280000)} en Loire-Atlantique avec ${$(12000)} d’agence et une signature en juillet, les frais et taxes atteignent ${$(ex.horsPrix)}, soit ${pct(ex.partHorsPrix, lang, 1)} du prix.` },
+  { q: 'Les frais de garantie et de dossier du prêt font-ils partie du coût d’achat ?', a: 'Oui pour votre budget, mais ce site ne les calcule pas : ils dépendent de la banque, de la garantie choisie (caution d’un organisme ou hypothèque) et du montant emprunté. Demandez-les dans l’offre de prêt, avec le coût de l’assurance emprunteur, et ajoutez-les au total affiché ici, qui couvre tout ce qui ne dépend pas du crédit.' },
+  { q: 'Quand paie-t-on chacun de ces frais ?', a: 'Le prix, les frais de notaire et le prorata de taxe foncière se règlent le jour de l’acte authentique, par virement reçu sur le compte du notaire. La commission d’agence est due à la signature de l’acte, souvent prélevée par le notaire sur les fonds. La taxe d’aménagement arrive après les travaux ; la première taxe foncière à votre nom, l’année suivante.' },
+  { q: 'Le dépôt de garantie versé au compromis s’ajoute-t-il au coût ?', a: 'Non : le dépôt de garantie, souvent 5 à 10 % du prix, est une avance sur le prix, versée sur le compte séquestre du notaire à la signature de la promesse. Il s’impute sur la somme due le jour de l’acte. Il ne coûte rien de plus, mais il doit être disponible plusieurs mois avant le déblocage du prêt.' },
+  { q: 'Pourquoi un logement neuf coûte-t-il moins en frais à prix égal ?', a: `Parce qu’une vente soumise à la TVA ne supporte pas les droits de mutation de droit commun mais une taxe réduite de ${pct(tauxGlobalNeuf(), lang, 3)}. À ${$(280000)} en Loire-Atlantique, le total hors prix passe de ${$(anc.horsPrix)} dans l’ancien à ${$(neuf.horsPrix)} dans le neuf. Le neuf s’accompagne souvent, en revanche, de frais de raccordement et d’une exonération de taxe foncière de deux ans à vérifier.` },
+];
+const related = [
+  { href: route('home', lang), name: 'Calcul des frais de notaire', description: 'Le premier poste, département par département.' },
+  { href: route('agence', lang), name: 'Frais d’agence immobilière', description: 'Commission, TVA, et qui la paie.' },
+  { href: route('taxefonciere', lang), name: 'Taxe foncière', description: 'Le prorata de l’année de l’achat, puis chaque année.' },
+  { href: route('ptz', lang), name: 'PTZ 2026', description: 'Le prêt à taux zéro qui finance une partie du coût.' },
+];
+---
+<GuideLayout lang={lang} id="couttotal" breadcrumbLabel="Coût total d’un achat"
+  title={`Coût d’un achat immobilier ${YEAR} : frais et taxes additionnés`}
+  h1={`Coût total d’un achat immobilier ${YEAR} : tous les frais et taxes, additionnés`}
+  description={`Coût d’un achat immobilier ${YEAR} : prix, frais de notaire du département, agence, prorata de taxe foncière, travaux et taxe d’aménagement. Le total hors crédit.`}
+  intro="Ce que vous décaissez vraiment, hors crédit : chaque poste calculé avec la règle qui le gouverne, dans votre département."
+  resume={`Le coût d’un achat immobilier ne se résume jamais au prix affiché. Il faut y ajouter les frais de notaire, essentiellement des droits de mutation dont le taux dépend du département ; la commission de l’agence lorsqu’elle est à la charge de l’acquéreur ; le remboursement au vendeur de la part de taxe foncière de l’année qui reste à courir ; puis, selon le projet, les travaux et la taxe d’aménagement d’une construction ou d’une extension. Pour une maison à ${$(280000)} net vendeur en Loire-Atlantique, avec ${$(12000)} de commission à la charge de l’acquéreur, ${$(10000)} de travaux et une taxe foncière de ${$(1300)}, signée le 1er juillet, le total atteint ${$(ex.total)}, dont ${$(ex.fraisNotaire)} de frais de notaire et ${$(ex.prorataTF)} de taxe foncière remboursée au vendeur. Le calculateur additionne ces postes avec les moteurs de ce site ; les frais du crédit, qui dépendent de la banque, restent à ajouter.`}
+  faqs={faqs} related={related}
+  sources={src(lang, 'dgfip_dmto', 'sp_frais_notaire', 'sp_tf', 'sp_agent')}>
+  <Fragment slot="tool"><div class="mb-8"><CoutTotalCalculator client:load lang={lang} methodHref={route('method', lang)} /></div></Fragment>
+  <MiniSim client:visible kind="ctneuf" lang={lang} href={route('couttotal', lang)} />
+  <h2>Les postes, dans l’ordre du décompte</h2>
+  <p>Le premier poste après le prix est presque toujours celui des <a href={route('home', lang)}>frais de notaire</a>. Le mot est trompeur : les quatre cinquièmes sont des <a href={route('dmto', lang)}>droits de mutation</a> reversés au département, à la commune et à l’État, au taux voté par le département au 1er juin {YEAR}. Le reste rémunère le notaire selon un tarif réglementé, finance la publicité foncière et rembourse les débours. Le calculateur les reprend en entier, y compris la règle du primo-accédant qui maintient le taux à 4,50 % dans les départements passés à 5 %.</p>
+  <p>Le deuxième est la <a href={route('agence', lang)}>commission d’agence</a>, quand l’annonce l’indique à la charge de l’acquéreur. Sa présentation compte : à la charge de l’acquéreur et inscrite à part dans l’acte, elle sort de l’assiette des droits ; comprise dans un prix « frais d’agence inclus » payé au vendeur, elle supporte les droits. Sur notre exemple, la même commission coûte {$(exV.total - ex.total)} de plus quand elle est incluse dans le prix.</p>
+  <p>Le troisième est le prorata de <a href={route('taxefonciere', lang)}>taxe foncière</a>. Le vendeur, propriétaire au 1er janvier, recevra l’avis de l’année ; l’acte prévoit que vous lui remboursiez la fraction des jours qui restent après la signature. Signer en juillet revient à rembourser environ la moitié de la taxe annuelle ; signer en décembre, presque rien. Viennent enfin les travaux de l’année d’achat et, si vous construisez ou agrandissez, la <a href={route('taxeamenagement', lang)}>taxe d’aménagement</a>.</p>
+  <ContentTable headers={['Département', 'Prix net vendeur', 'Agence', 'Frais de notaire', 'Taxe foncière remboursée', 'Coût total', 'Frais et taxes / prix']} align={['l', 'r', 'r', 'r', 'r', 'r', 'r']} rows={coutRows(lang)} caption="Ancien, agence à la charge de l’acquéreur, taxe foncière annuelle de 1 200 €, signature au 1er juillet, sans travaux." />
+  <h2>Pourquoi additionner avec les règles de votre département</h2>
+  <p>Chaque poste a sa propre règle, et les simulateurs qui donnent un pourcentage global en appliquent une seule. Les droits de mutation suivent le taux départemental ; la commission, le barème de l’agence ; le prorata, le nombre de jours ; la taxe d’aménagement, les taux votés par la commune et le département. Additionner des moyennes donne un total faux deux fois : sur le montant, et sur ce qu’il faut négocier. À prix égal, l’écart de frais entre l’Indre, seul département à 3,80 %, et un département à 5 % se lit directement dans le tableau.</p>
+  <h2>Neuf ou ancien : deux structures de coût</h2>
+  <p>Dans le neuf, les frais de notaire tombent à environ {pct((neuf.fraisNotaire / 280000) * 100, lang, 1)} du prix, contre {pct((anc.fraisNotaire / 280000) * 100, lang, 1)} dans l’ancien en Loire-Atlantique, grâce au taux réduit des ventes soumises à la TVA. La taxe foncière y est souvent exonérée deux ans, totalement ou en partie selon la commune, et le prêt à taux zéro y est ouvert dans toutes les zones. Le neuf apporte en revanche d’autres dépenses : frais de raccordement aux réseaux, éventuelle taxe d’aménagement pour une maison que vous faites construire, aménagements extérieurs. Le <a href={route('ptz', lang)}>simulateur PTZ</a> chiffre la part que l’État peut financer sans intérêts.</p>
+  <h2>Ce qui reste hors du total</h2>
+  <p>Ce calcul s’arrête volontairement à ce qui ne dépend pas du crédit. Les frais de dossier, la garantie du prêt (caution ou hypothèque), l’assurance emprunteur et les éventuels frais de courtage s’y ajoutent selon l’offre de la banque. Le déménagement, les ouvertures de compteurs et l’assurance habitation, obligatoire en copropriété, complètent le budget de la première année. Gardez une marge : le décompte définitif du notaire n’est connu qu’après la publication de la vente.</p>
+</GuideLayout>

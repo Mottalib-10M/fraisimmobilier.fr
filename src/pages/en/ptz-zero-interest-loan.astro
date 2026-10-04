@@ -1,0 +1,68 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import PTZCalculator from '../../components/calc/PTZCalculator';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, n, P } from '../../lib/tables';
+import { formatDecimal } from '../../lib/format';
+import { ptzPlafondsRows, ptzTranchesRows, ptzZonesRows, ptzCas, ptzCalc, STATS } from '../../lib/immo-tables';
+import { src } from '../../lib/sources';
+import C44 from '../../data/communes/44.json';
+import type { CommuneRow } from '../../lib/communes';
+const lang = 'en';
+const T = P.ptz;
+const ex = ptzCalc({ zone: 'A', personnes: 2, rfr: 38000, cout: 250000, type: 'neuf_collectif' });
+const exMaison = ptzCalc({ zone: 'A', personnes: 2, rfr: 38000, cout: 250000, type: 'neuf_individuel' });
+const exAncien = ptzCalc({ zone: 'C', personnes: 3, rfr: 36000, cout: 120000, travaux: 45000, type: 'ancien' });
+const plancher = ptzCalc({ zone: 'B1', personnes: 2, rfr: 20000, cout: 270000, type: 'neuf_collectif' });
+const cA = ptzCalc({ zone: 'A', personnes: 2, rfr: 30000, cout: 200000, type: 'neuf_collectif' }), cC = ptzCalc({ zone: 'C', personnes: 2, rfr: 30000, cout: 140000, type: 'neuf_collectif' });
+const coef = T.coefficient_familial.map((c) => formatDecimal(c, 1, lang));
+const faqs = [
+  { q: 'Can a foreign national living in France get a PTZ?', a: `Yes. The PTZ depends on where you live and what you buy, not on nationality: the home must become your main residence in France, occupied at least eight months a year, and none of the borrowers may have owned a main home in the previous ${T.primo_annees} years. Income earned abroad counts towards the ceiling and must be documented with your application.` },
+  { q: 'Which income figure does the bank use for a 2026 PTZ?', a: `The revenu fiscal de référence of year N-2, so 2024 for an offer issued in 2026, added up for everyone who will live in the home. It is the figure printed on the French tax notice. If the total cost of the purchase divided by ${T.revenu_plancher_diviseur} is higher, that floor replaces your income. Newcomers without a French notice provide the foreign equivalent.` },
+  { q: 'How much is the PTZ on a new house rather than a flat?', a: `Less. Since 1 April 2025 a new house qualifies everywhere in France, but its share of the cost is ${T.quotite_individuel_neuf.join(', ')}% by income bracket, against ${T.quotite_collectif_ancien.join(', ')}% for a flat in a building with more than two homes. On a €250,000 purchase in zone A for a couple declaring €38,000, that is ${$(exMaison.montant, lang)} instead of ${$(ex.montant, lang)}.` },
+  { q: 'Does the PTZ work for an old farmhouse I want to renovate?', a: `Only in zones B2 and C, which cover most rural France, and only if the works reach ${T.travaux_ancien_min_pct}% of the total cost of the project and leave the home at energy class D or better. The works must start after the loan is granted. In zones A bis, A and B1, older homes are excluded whatever the renovation budget.` },
+  { q: 'When do PTZ repayments start?', a: `It depends on your bracket. Bracket 1 repays nothing for ${T.differe_annees[0]} years, then over ${T.remboursement_annees[0]} years; bracket 2 defers ${T.differe_annees[1]} years then repays over ${T.remboursement_annees[1]}; bracket 3 defers ${T.differe_annees[2]} years then repays over ${T.remboursement_annees[2]}. Bracket 4 repays from the start over ${T.remboursement_annees[3]} years. The term cannot exceed that of your longest main loan.` },
+  { q: 'Is there a minimum size for the main mortgage alongside the PTZ?', a: `Yes. The PTZ may not exceed the other loans of more than two years that fund the purchase, or exceed them by more than 25% in bracket 1. A ${$(ex.montant, lang)} PTZ therefore needs at least ${$(ex.pretMinimum, lang)} of other borrowing, whatever your deposit. Lenders also remain free to refuse the PTZ.` },
+];
+const related = [
+  { href: route('couttotal', lang), name: 'Total cost of a purchase', description: 'Price, notary, agency and property tax in one budget.' },
+  { href: route('primo', lang), name: 'First-time buyer notary fees', description: 'The same two-year rule, 4.50% instead of 5%.' },
+  { href: route('neuf', lang), name: 'New-build notary fees', description: 'The reduced rate for VAT-able sales.' },
+  { href: route('taxefonciere', lang), name: 'Property tax', description: 'Two years’ exemption on new builds, depending on the town.' },
+];
+---
+<GuideLayout lang={lang} id="ptz" breadcrumbLabel="PTZ 2026"
+  title={`PTZ ${YEAR}: French zero-interest loan calculator by town`}
+  h1={`PTZ ${YEAR}: how much zero-interest loan you can get, town by town`}
+  description={`PTZ ${YEAR}: the French zero-interest loan for your main home, by the zone of your town, your income and household. New flat, new house, resale with works.`}
+  intro="The zone comes from the official list for your town; your income and household do the rest, under the rules for loan offers issued since April 2025."
+  resume={`The prêt à taux zéro, or PTZ, is a French state-backed loan with no interest and no arrangement fee that tops up the mortgage on your future main home, provided nobody in the household has owned a main home in the past ${T.primo_annees} years. Nationality does not matter, residence does. The amount follows a fixed scale in four steps: the zone of the town (A bis, A, B1, B2 or C) sets the ceilings; household income divided by a family coefficient sets your bracket; the purchase cost, capped, is multiplied by the share for that bracket; and the bracket sets the deferral and term. A couple in Nantes, zone A, declaring €38,000 and buying a new €250,000 flat, has a capped cost of ${$(ex.coutRetenu, lang)} and a ${ex.quotite}% share: a PTZ of ${$(ex.montant, lang)}, repaid over ${ex.duree} years with ${ex.differe} years deferred. The calculator reads the zone from the ministry’s list in force since 26 June ${YEAR}, covering ${n(STATS.communes, lang)} municipalities.`}
+  faqs={faqs} related={related}
+  sources={src(lang, 'sp_ptz', 'anil_ptz', 'eco_ptz', 'zonage_abc')}>
+  <Fragment slot="tool"><div class="mb-8"><PTZCalculator client:load lang={lang} initialRows={C44 as CommuneRow[]} initialDep="44" initialCode="44109" methodHref={route('method', lang)} /></div></Fragment>
+  <MiniSim client:visible kind="ptztranche" lang={lang} href={route('ptz', lang)} />
+  <h2>What the bank needs from you</h2>
+  <p>Every approved lender applies the same PTZ scale, so there is nothing to negotiate on the zero-interest part: competition happens on the main mortgage. Four facts determine the amount. The town where the home stands, because it carries the zone. The number of people who will live there as their main home, children included, a child in shared custody counting in both parents’ households. The household’s reference tax income from two years earlier, as printed on the French tax notice. And the total cost of the purchase including VAT and notary fees, only part of which is taken into account above a ceiling.</p>
+  <p>If you moved to France recently, the reference year may fall before your arrival. The rules do not exclude you: foreign income is taken into account, on documents, in place of the French notice. What they do require is the two-year no-ownership condition, assessed from your return to mainland France or an overseas département, and a home that will genuinely be your main residence.</p>
+  <ContentTable headers={['Occupants', 'Max. income A bis / A', 'B1', 'B2', 'C', 'Max. cost A bis / A', 'Max. cost C']} align={['l', 'r', 'r', 'r', 'r', 'r', 'r']} rows={ptzPlafondsRows(lang)} caption={`Ceilings for loan offers issued since 1 April 2025. Income ceilings keep rising beyond 5 occupants: ${$(T.plafond_ressources.A[7], lang)} in zone A for 8 or more.`} />
+  <h2>Why the town decides the amount</h2>
+  <p>Neighbouring villages can sit in different zones, and the consequences are large. For an older home, the zone decides whether a PTZ exists at all: only B2 and C allow it. For a new home, it sets the capped cost, from {$(T.plafond_operation.C[1], lang)} to {$(T.plafond_operation.A[1], lang)} for a couple, and the income ceiling. It also sets the bracket limits, which surprises many buyers: a couple declaring €30,000 is in bracket {cA.tranche} in zone A, with a {cA.quotite}% share and {cA.differe} years deferred, but in bracket {cC.tranche} in zone C, with {cC.quotite}% and {cC.differe} years deferred, because the limits follow local prices.</p>
+  <p>The A/B/C map is revised by decree. This site uses the list published by the housing ministry for 26 June {YEAR}: {n(STATS.par_zone[0], lang)} municipalities in A bis, {n(STATS.par_zone[1], lang)} in A, {n(STATS.par_zone[2], lang)} in B1, {n(STATS.par_zone[3], lang)} in B2 and {n(STATS.par_zone[4], lang)} in C. Most bank calculators ask you to know your zone; this one looks it up as soon as you pick the town, and keeps it in the shareable link.</p>
+  <ContentTable headers={['Zone', 'Municipalities', 'Share', 'PTZ available for']} align={['l', 'r', 'r', 'l']} rows={ptzZonesRows(lang)} caption="A/B/C zoning in force since 26 June 2026 (data.gouv.fr, housing ministry)." />
+  <h2>Bracket, share and repayment</h2>
+  <p>Retained income is divided by a family coefficient: {coef[0]} for one person, {coef[1]} for two, {coef[2]} for three, {coef[3]} for four and {coef[4]} from five. The result, compared with the limits of your zone, gives your bracket. The bracket then fixes the share of the cost financed, the deferral during which you repay nothing, and the length of the repayment that follows.</p>
+  <ContentTable headers={['Bracket', 'Zone A bis / A', 'B1', 'B2', 'C', 'Share, flat or resale', 'Share, new house', 'Deferral + repayment']} align={['l', 'r', 'r', 'r', 'r', 'r', 'r', 'l']} rows={ptzTranchesRows(lang)} caption="Income limits after the family coefficient (service-public.fr); deferrals and terms: ANIL." />
+  <p>For our Nantes couple in bracket {ex.tranche}, the monthly repayment in the second period is {$(ex.mensualite, lang)}. A deferral is total: during those years the PTZ costs nothing at all, which is why it weighs so little on the affordability calculation the bank makes for the main loan.</p>
+  <h2>Flat, house or renovation project</h2>
+  <p>New houses returned to the PTZ everywhere in France on 1 April 2025, with a reduced share of {T.quotite_individuel_neuf.join('%, ')}% depending on the bracket. Flats in buildings with more than two stacked homes keep {T.quotite_collectif_ancien.join('%, ')}%. Houses bought through rent-to-buy (PSLA), a bail réel solidaire or a reduced-VAT social ownership scheme also keep the full share.</p>
+  <p>For an older home, the PTZ funds a renovation project: works must reach {T.travaux_ancien_min_pct}% of the total cost, start after the loan offer and finish within three years. A €120,000 house in zone C with €45,000 of works gives a works share of {pct(exAncien.partTravaux, lang, 1)}; a household of three declaring €36,000 receives {$(exAncien.montant, lang)}. It is the PTZ route open to buyers of village and country houses, which mostly sit in zones B2 and C.</p>
+  <h2>The income floor most calculators skip</h2>
+  <p>Because the reference income is two years old, the rules use the higher of your reference income and the purchase cost divided by {T.revenu_plancher_diviseur}. A couple declaring €20,000 and buying for €270,000 in zone B1 is treated as earning {$(plancher.revenuRetenu, lang)}, moving from bracket 1 to bracket {plancher.tranche}. The calculator applies the floor and shows it on the first line of the breakdown.</p>
+  <h2>Worked examples</h2>
+  <ContentTable headers={['Place', 'Household and home', 'Income N-2', 'Purchase cost', 'Bracket', 'PTZ']} align={['l', 'l', 'r', 'r', 'r', 'r']} rows={ptzCas(lang)} caption="Calculated by the site’s engine; resale examples include works in the purchase cost." />
+  <h2>What stays outside the calculation</h2>
+  <p>A PTZ is a scale, not an entitlement to a loan: the lender assesses your overall ability to repay and may decline. This site does not simulate the main mortgage or your borrowing capacity, which belong to banks and brokers. It does cost the rest of the budget: the <a href={route('home', lang)}>notary fees</a> of the département, the <a href={route('couttotal', lang)}>total cost of the purchase</a> and the <a href={route('taxefonciere', lang)}>property tax</a> you will pay from the following year.</p>
+</GuideLayout>

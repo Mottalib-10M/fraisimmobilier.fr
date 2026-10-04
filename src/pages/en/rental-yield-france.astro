@@ -1,0 +1,52 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import RendementCalculator from '../../components/calc/RendementCalculator';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, P } from '../../lib/tables';
+import { rendementRows, rlCalc } from '../../lib/immo-tables';
+import { src } from '../../lib/sources';
+const lang = 'en';
+const L = P.location;
+const ex = rlCalc({ prix: 160000, dep: '59', loyerMensuel: 750, chargesAnnuelles: 700, taxeFonciere: 900, vacanceMois: 1, tmi: 30 });
+const exM = rlCalc({ prix: 160000, dep: '59', loyerMensuel: 750, chargesAnnuelles: 700, taxeFonciere: 900, vacanceMois: 1, tmi: 30, regime: 'meuble' });
+const faqs = [
+  { q: 'What is a good rental yield in France?', a: `There is no official benchmark. Gross yields in large cities are usually lower than in mid-sized towns because prices rise faster than rents. What matters is the net figure on the total cost: our northern France example falls from ${pct(ex.brut, lang)} gross to ${pct(ex.net, lang)} net once notary fees, charges, property tax and a month of vacancy are counted.` },
+  { q: 'Is French rental income taxed if I live abroad?', a: 'Yes. Rent from a French property is taxed in France whatever your country of residence, under the same micro-foncier or micro-BIC rules, with a minimum rate that the law sets for non-residents unless the average rate on your worldwide income is lower and you claim it. Social charges also apply, except for owners covered by another EEA country’s or Switzerland’s social security, who pay only the solidarity levy.' },
+  { q: 'Furnished or unfurnished letting: which is better for tax in France?', a: `A long-term furnished let under micro-BIC deducts a flat ${L.micro_bic_abattement}% of receipts, against ${L.micro_foncier_abattement}% for an unfurnished let under micro-foncier, but social charges are ${pct(L.ps_meuble, lang, 1)} instead of ${pct(L.ps_foncier, lang, 1)}. In our example, net-net yield goes from ${pct(ex.netNet, lang)} unfurnished to ${pct(exM.netNet, lang)} furnished at the same rent.` },
+  { q: 'Which charges can I pass on to a French tenant?', a: 'Recoverable charges listed by decree: common-area cleaning and lighting, lift maintenance, water, and the household waste collection tax. Major repairs, the managing agent’s fees for the building, landlord insurance and the property tax itself stay with you. Only these non-recoverable items belong in the yield calculation.' },
+  { q: 'Does the calculator include mortgage interest?', a: 'No. It measures yield on the cash you commit, without a loan, so two properties can be compared on the same basis. Interest, borrower insurance and depreciation under the actual furnished regime are not modelled; above the micro thresholds the calculator uses a simplified actual regime, rents minus charges, which overstates the tax of a borrower.' },
+];
+const related = [
+  { href: route('home', lang), name: 'Notary fees calculator', description: 'Actual purchase costs by département.' },
+  { href: route('taxefonciere', lang), name: 'Property tax', description: 'The town’s rate, the largest landlord charge.' },
+  { href: route('plusvalueimmo', lang), name: 'Capital gains on property', description: 'The tax when you sell the rental.' },
+  { href: route('couttotal', lang), name: 'Total cost of a purchase', description: 'What you need on completion day.' },
+];
+---
+<GuideLayout lang={lang} id="rendement" breadcrumbLabel="Rental yield"
+  title={`Rental yield in France ${YEAR}: gross, net and net-net`}
+  h1={`Rental yield in France ${YEAR}: gross, net and net-net with real purchase costs`}
+  description={`Rental yield in France ${YEAR}: gross on the price, net with the actual notary fees of the département and property tax, net-net after micro-foncier or micro-BIC.`}
+  intro="The yield of a French buy-to-let, calculated without a loan on the money you actually commit: price, real notary fees, works."
+  resume={`Rental yield compares rent with the money invested, and in France it is quoted three ways. Gross yield divides annual rent by the purchase price, the flattering figure in agents’ listings. Net yield divides rent actually collected, after vacancy and minus non-recoverable charges, property tax and management fees, by the total cost of the purchase, notary fees and works included. Net-net yield also deducts income tax and social charges, ${pct(L.ps_foncier, lang, 1)} on unfurnished lets and ${pct(L.ps_meuble, lang, 1)} on furnished lets for French residents. A flat bought for ${$(160000, lang)} in the Nord and let for ${$(750, lang)} a month, with ${$(700, lang)} of charges and ${$(900, lang)} of property tax, yields ${pct(ex.brut, lang)} gross, ${pct(ex.net, lang)} net once ${$(ex.fraisAcquisition, lang)} of notary fees are added, and ${pct(ex.netNet, lang)} net-net for a 30% taxpayer. The calculator uses the actual fees of the département rather than a national average.`}
+  faqs={faqs} related={related}
+  sources={src(lang, 'sp_foncier', 'sp_meuble', 'sp_ps', 'dgfip_dmto')}>
+  <Fragment slot="tool"><div class="mb-8"><RendementCalculator client:load lang={lang} methodHref={route('method', lang)} /></div></Fragment>
+  <MiniSim client:visible kind="rlprix" lang={lang} href={route('rendement', lang)} />
+  <h2>Three yields for three questions</h2>
+  <p>Gross yield tells you whether the asking price makes sense against local rents, and nothing more. Net yield tells you what the cash you hand over on completion earns each year, so it must be measured on the full cost of the purchase: notary fees, an agency commission paid by the buyer and initial works leave your account exactly like the price. Net-net yield tells you what remains after French tax. Comparing listings on gross yield alone favours cheap properties in high-tax towns and old buildings with heavy charges.</p>
+  <p>This site deliberately stops before the mortgage. Cash flow with a loan, leverage and borrowing capacity depend on the rate and insurance a bank offers you, which is a broker’s job. Yield without a loan keeps the comparison between two properties clean.</p>
+  <h2>Why real notary fees matter</h2>
+  <p>Many calculators add a flat percentage for notary fees. In France the cost depends on the département’s transfer tax rate and on whether the home is new or resale: on our {$(160000, lang)} example, fees are {$(ex.fraisAcquisition, lang)} on a resale flat in the Nord, far less on a new build. The calculator takes them from this site’s <a href={route('home', lang)}>notary fees engine</a> with the rate each département voted for 1 June {YEAR}. Property tax deserves the same care: the rate voted by the town, shown in the <a href={route('taxefonciere', lang)}>taxe foncière guide</a>, varies enormously between municipalities.</p>
+  <ContentTable headers={['Département', 'Price', 'Monthly rent', 'Gross', 'Net', 'Net-net (30% bracket)']} align={['l', 'r', 'r', 'r', 'r', 'r']} rows={rendementRows(lang)} caption="Unfurnished let under micro-foncier, €700 of charges, €900 of property tax, one month of vacancy; actual notary fees of the département." />
+  <h2>How net-net is taxed</h2>
+  <p>Unfurnished rent is property income. Up to {$(L.micro_foncier_plafond, lang)} a year, the micro-foncier regime applies a flat {L.micro_foncier_abattement}% allowance for all costs; the rest is taxed at your marginal income tax rate plus {pct(L.ps_foncier, lang, 1)} of social charges for a French resident. Long-term furnished lets by a non-professional landlord fall under micro-BIC up to {$(L.micro_bic_plafond, lang)} of receipts, with a {L.micro_bic_abattement}% allowance and {pct(L.ps_meuble, lang, 1)} of social charges. The actual regimes allow real costs and, for furnished lets, depreciation; that depreciation is now added back to the capital gain on sale.</p>
+  <p>Non-residents pay French income tax on French rent at the minimum rate set for them, or at the average rate of their worldwide income if lower: select the bracket closest to the rate the tax office applies to you. If you are covered by the social security system of another EEA country or Switzerland, only the solidarity levy applies, which the calculator does not separate; your net-net will then be higher than shown.</p>
+  <h2>Charges that belong in the calculation</h2>
+  <p>Charges you can recover from the tenant do not reduce your yield; only non-recoverable ones do: major works, the building manager’s fees, the reserve fund, landlord insurance, small repairs and, if you use one, an agency’s management fee on collected rent. The waste collection tax printed on the property tax notice is recoverable, so enter the property tax alone.</p>
+  <h2>What a yield leaves out</h2>
+  <p>A yield is a snapshot of a typical year. It ignores rent increases, which are capped in some cities, energy-efficiency works that letting rules increasingly require, and the <a href={route('plusvalueimmo', lang)}>capital gain</a> or loss on resale. Keep the same assumptions when comparing properties and look at the difference in net yield first.</p>
+</GuideLayout>

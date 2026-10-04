@@ -2,6 +2,7 @@
 import { DEPARTEMENTS, fraisNotaire, emolumentsVente, emolumentsAuDelaSeuil, csi, tauxGlobalAncien, tauxGlobalNeuf, economieMobilier, fraisAcquisitionPlusValue, apportNecessaire, getDep, PARAMS, type Zone } from './engine/notaire';
 import { formatMoney, formatRate } from './format';
 import type { MiniSpec } from './mini-types';
+import { ptz, abattementsDetention, surtaxePlusValue, prorataTaxeFonciere, jourDeLAnnee, taxeAmenagement, fraisAgence, coutTotalAchat, ZONES_ABC } from './engine/immobilier';
 
 type L = 'fr' | 'en';
 const T = <A>(l: L, fr: A, en: A) => (l === 'fr' ? fr : en);
@@ -21,9 +22,9 @@ const SPECS: Record<string, (l: L) => MiniSpec> = {
     const n = fraisNotaire({ prix: p, dep: dep(d).id, type: 'neuf' }); const a = fraisNotaire({ prix: p, dep: dep(d).id });
     return { head: [T(l, 'Frais en VEFA', 'Fees on an off-plan purchase'), $(n.total)], rows: [[T(l, 'Même prix dans l’ancien', 'Same price, resale'), $(a.total)], [T(l, 'Économie', 'Saving'), $(a.total - n.total)], [T(l, 'Droits en VEFA', 'Transfer tax off-plan'), $(n.droits)]] };
   } }; },
-  droits: (l) => { const $ = (x: number) => formatMoney(x, 0, l); return { title: T(l, 'Vos droits de mutation', 'Your transfer tax'), cta: cta(l), inputs: [prixInput(l), depInput(l)], run: ({ p, d }) => {
-    const f = fraisNotaire({ prix: p, dep: dep(d).id });
-    return { head: [T(l, 'Droits de mutation', 'Transfer tax'), $(f.droits)], rows: [[T(l, 'Taxe départementale', 'Départemental tax'), $(f.droitsDepartement)], [T(l, 'Taxe communale (1,20 %)', 'Municipal tax (1.20%)'), $(f.droitsCommune)], [T(l, 'Frais d’assiette (2,37 % du départemental)', 'Collection fee (2.37% of départemental)'), $(f.droitsAssiette)]] };
+  droits: (l) => { const $ = (x: number) => formatMoney(x, 0, l); return { title: T(l, 'Vos droits de mutation', 'Your transfer tax'), cta: cta(l), inputs: [prixInput(l), depInput(l), { id: 's', label: T(l, 'Situation', 'Situation'), def: 0, options: [{ value: '0', label: T(l, 'Cas général', 'Standard case') }, { value: '1', label: T(l, 'Primo-accédant', 'First-time buyer') }] }], run: ({ p, d, s }) => {
+    const f = fraisNotaire({ prix: p, dep: dep(d).id, situation: s === 1 ? 'primo' : 'standard' });
+    return { head: [T(l, 'Droits de mutation', 'Transfer tax'), $(f.droits)], rows: [[T(l, `Taxe départementale (${formatRate(f.tauxDep, 2, l)})`, `Départemental tax (${formatRate(f.tauxDep, 2, l)})`), $(f.droitsDepartement)], [T(l, `Taxe communale (${formatRate(PARAMS.dmto.taxe_communale, 2, l)})`, `Municipal tax (${formatRate(PARAMS.dmto.taxe_communale, 2, l)})`), $(f.droitsCommune)], [T(l, `Frais d’assiette (${formatRate(PARAMS.dmto.frais_assiette_droit_commun, 2, l)} du départemental)`, `Collection fee (${formatRate(PARAMS.dmto.frais_assiette_droit_commun, 2, l)} of départemental)`), $(f.droitsAssiette)]] };
   } }; },
   hausse: (l) => { const $ = (x: number) => formatMoney(x, 0, l); return { title: T(l, 'Ce que coûte la hausse à 5 %', 'What the rise to 5% costs'), cta: cta(l), inputs: [prixInput(l), depInput(l, '13')], run: ({ p, d }) => {
     const x = dep(d); const voted = x.voted != null; const surcout = voted ? (p * (tauxGlobalAncien(x.voted!) - tauxGlobalAncien(x.base))) / 100 : 0;
@@ -80,6 +81,45 @@ const SPECS: Record<string, (l: L) => MiniSpec> = {
   neuf: (l) => { const $ = (x: number) => formatMoney(x, 0, l); return { title: T(l, 'Taux réduit des ventes soumises à la TVA', 'Reduced rate on VAT-able sales'), cta: cta(l), inputs: [prixInput(l, 280000)], run: ({ p }) => {
     const n = fraisNotaire({ prix: p, dep: '75', type: 'neuf' });
     return { head: [T(l, 'Frais dans le neuf', 'New-build fees'), $(n.total)], rows: [[T(l, 'Taux des droits', 'Transfer tax rate'), formatRate(tauxGlobalNeuf(), 3, l)], [T(l, 'Droits', 'Transfer tax'), $(n.droits)]] };
+  } }; },
+  ptztranche: (l) => { const $ = (x: number) => formatMoney(x, 0, l); return { title: T(l, 'Votre tranche de revenus PTZ', 'Your PTZ income bracket'), cta: T(l, 'Simulateur PTZ complet', 'Full PTZ simulator'), inputs: [
+    { id: 'r', label: T(l, 'Revenu fiscal de référence (N-2)', 'Reference tax income (N-2)'), def: 32000, unit: '€', max: 2_000_000 },
+    { id: 'n', label: T(l, 'Personnes logées', 'Occupants'), def: 2, options: [1, 2, 3, 4, 5, 6, 7, 8].map((x) => ({ value: String(x), label: String(x) })) },
+    { id: 'z', label: T(l, 'Zone de la commune', 'Zone of the municipality'), def: 3, options: ZONES_ABC.map((z, i) => ({ value: String(i), label: z === 'Abis' ? 'A bis' : z })) }], run: ({ r, n, z }) => {
+    const x = ptz({ zone: ZONES_ABC[z] ?? 'B2', personnes: n, rfr: r, cout: 1, type: 'neuf_collectif' });
+    const ok = r <= x.plafondRessources;
+    return { head: [T(l, 'Tranche', 'Bracket'), ok ? String(x.tranche) : T(l, 'hors plafond', 'above ceiling')], rows: [[T(l, 'Revenu ÷ coefficient familial', 'Income ÷ household coefficient'), $(r / x.coefficient)], [T(l, 'Plafond de ressources', 'Income ceiling'), $(x.plafondRessources)], [T(l, 'Quotité appartement / maison neuve', 'Share flat / new house'), ok ? `${PARAMS.ptz.quotite_collectif_ancien[x.tranche - 1]} % / ${PARAMS.ptz.quotite_individuel_neuf[x.tranche - 1]} %` : '—'], [T(l, 'Différé puis remboursement', 'Deferral then repayment'), ok ? T(l, `${x.differe} + ${x.remboursement} ans`, `${x.differe} + ${x.remboursement} years`) : '—']] };
+  } }; },
+  pvduree: (l) => { const $ = (x: number) => formatMoney(x, 0, l); return { title: T(l, 'Ce que la durée de détention efface', 'What years of ownership remove'), cta: T(l, 'Calcul complet de la plus-value', 'Full capital gains calculator'), inputs: [
+    { id: 'g', label: T(l, 'Plus-value brute', 'Gross gain'), def: 80000, unit: '€', max: 50_000_000 }, { id: 'a', label: T(l, 'Années pleines de détention', 'Full years of ownership'), def: 15, unit: T(l, 'ans', 'yrs'), max: 99 }], run: ({ g, a }) => {
+    const ab = abattementsDetention(a); const bi = g * (1 - ab.ir / 100), bp = g * (1 - ab.ps / 100);
+    const tot = Math.round(bi * PARAMS.plus_value.taux_ir / 100) + Math.round(bp * PARAMS.plus_value.taux_ps / 100) + surtaxePlusValue(bi);
+    return { head: [T(l, 'Impôt et prélèvements', 'Tax and charges'), $(tot)], rows: [[T(l, 'Abattement impôt sur le revenu', 'Income tax allowance'), formatRate(ab.ir, 2, l)], [T(l, 'Abattement prélèvements sociaux', 'Social charges allowance'), formatRate(ab.ps, 2, l)], [T(l, 'Surtaxe', 'Surtax'), $(surtaxePlusValue(bi))], [T(l, 'Sans aucun abattement', 'With no allowance'), $(Math.round(g * PARAMS.plus_value.taux_ir / 100) + Math.round(g * PARAMS.plus_value.taux_ps / 100) + surtaxePlusValue(g))]] };
+  } }; },
+  tfprorata: (l) => { const $ = (x: number) => formatMoney(x, 0, l); const M = T(l, ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'], ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']); return { title: T(l, 'La taxe foncière de l’année de l’achat', 'Property tax in the year of purchase'), cta: T(l, 'Calcul complet de la taxe foncière', 'Full property tax calculator'), inputs: [
+    { id: 't', label: T(l, 'Dernière taxe foncière connue', 'Last known property tax'), def: 1400, unit: '€', max: 500_000 }, { id: 'm', label: T(l, 'Signature le 15 du mois de', 'Signing on the 15th of'), def: 6, options: M.map((x, i) => ({ value: String(i + 1), label: x })) }], run: ({ t, m }) => {
+    const p = prorataTaxeFonciere(t, jourDeLAnnee(15, m));
+    return { head: [T(l, 'Remboursé au vendeur', 'Refunded to the seller'), $(p.acquereur)], rows: [[T(l, 'Jours restants dans l’année', 'Days left in the year'), String(p.joursRestants)], [T(l, 'Part gardée par le vendeur', 'Share kept by the seller'), $(p.vendeur)], [T(l, 'Avis à votre nom', 'Notice in your name'), T(l, 'l’année suivante', 'the following year')]] };
+  } }; },
+  taabri: (l) => { const $ = (x: number) => formatMoney(x, 0, l); return { title: T(l, 'Abri de jardin, véranda, garage : la taxe', 'Garden shed, conservatory, garage: the tax'), cta: T(l, 'Calcul complet de la taxe d’aménagement', 'Full development tax calculator'), inputs: [
+    { id: 's', label: T(l, 'Surface close et couverte', 'Enclosed, roofed area'), def: 12, unit: 'm²', max: 10_000, decimals: 1 }, { id: 't', label: T(l, 'Taux communal + départemental', 'Municipal + département rate'), def: 7.5, unit: '%', max: 25, decimals: 2 },
+    { id: 'i', label: T(l, 'Lieu', 'Location'), def: 0, options: [{ value: '0', label: T(l, 'Hors Île-de-France', 'Outside Île-de-France') }, { value: '1', label: 'Île-de-France' }] }], run: ({ s, t, i }) => {
+    const x = taxeAmenagement({ surface: s, idf: i === 1, tauxCommune: t, tauxDep: 0 });
+    return { head: [T(l, 'Taxe d’aménagement', 'Development tax'), $(x.total)], rows: [[T(l, 'Valeur au m² 2026', '2026 value per m²'), $(x.valeurM2)], [T(l, 'Valeur taxable', 'Taxable value'), $(x.valeurTaxable)], [T(l, 'Exonéré (5 m² ou moins) ?', 'Exempt (5 m² or less)?'), x.exonereSurface ? T(l, 'oui', 'yes') : T(l, 'non', 'no')]] };
+  } }; },
+  rlprix: (l) => { const $ = (x: number) => formatMoney(x, 0, l); return { title: T(l, 'Le prix maximum pour le rendement visé', 'Maximum price for a target yield'), cta: T(l, 'Calcul complet du rendement', 'Full yield calculator'), inputs: [
+    { id: 'y', label: T(l, 'Loyer mensuel hors charges', 'Monthly rent excl. charges'), def: 800, unit: '€', max: 500_000 }, { id: 'r', label: T(l, 'Rendement brut visé', 'Target gross yield'), def: 6, unit: '%', max: 30, decimals: 1 }, depInput(l, '59')], run: ({ y, r, d }) => {
+    const prixMax = r > 0 ? (y * 12) / (r / 100) : 0; const f = fraisNotaire({ prix: prixMax, dep: dep(d).id });
+    return { head: [T(l, 'Prix d’achat maximum', 'Maximum purchase price'), $(prixMax)], rows: [[T(l, 'Frais de notaire à ce prix', 'Notary fees at that price'), $(f.total)], [T(l, 'Rendement sur le coût total', 'Yield on the total cost'), formatRate(prixMax + f.total > 0 ? (y * 12 / (prixMax + f.total)) * 100 : 0, 2, l)]] };
+  } }; },
+  agfai: (l) => { const $ = (x: number) => formatMoney(x, 0, l); return { title: T(l, 'Retrouver la commission dans un prix FAI', 'Find the commission inside a fees-included price'), cta: T(l, 'Calcul complet des frais d’agence', 'Full agency fees calculator'), inputs: [
+    { id: 'p', label: T(l, 'Prix affiché FAI', 'Advertised price incl. fees'), def: 315000, unit: '€', max: 50_000_000 }, { id: 't', label: T(l, 'Honoraires annoncés (sur le net)', 'Advertised fees (on the net price)'), def: 5, unit: '%', max: 30, decimals: 2 }], run: ({ p, t }) => {
+    const net = p / (1 + t / 100); const a = fraisAgence({ prixNetVendeur: net, tauxTTC: t, charge: 'acquereur', dep: '75' });
+    return { head: [T(l, 'Commission TTC', 'Commission incl. VAT'), $(a.honorairesTTC)], rows: [[T(l, 'Prix net vendeur', 'Net seller price'), $(net)], [T(l, 'Part de la commission dans le prix FAI', 'Commission share of the price'), formatRate(a.tauxSurFAI, 2, l)], [T(l, 'Dont TVA', 'Of which VAT'), $(a.tva)]] };
+  } }; },
+  ctneuf: (l) => { const $ = (x: number) => formatMoney(x, 0, l); return { title: T(l, 'Même prix, neuf ou ancien : le coût réel', 'Same price, new or resale: the real cost'), cta: T(l, 'Coût total détaillé', 'Detailed total cost'), inputs: [prixInput(l, 260000), depInput(l, '44')], run: ({ p, d }) => {
+    const a = coutTotalAchat({ prix: p, dep: dep(d).id }); const n = coutTotalAchat({ prix: p, dep: dep(d).id, type: 'neuf' });
+    return { head: [T(l, 'Écart de frais', 'Difference in costs'), $(a.total - n.total)], rows: [[T(l, 'Coût total dans l’ancien', 'Total cost, resale'), $(a.total)], [T(l, 'Coût total dans le neuf', 'Total cost, new build'), $(n.total)], [T(l, 'Frais en part du prix (ancien)', 'Costs as a share of price (resale)'), formatRate(a.partHorsPrix, 1, l)]] };
   } }; },
 };
 

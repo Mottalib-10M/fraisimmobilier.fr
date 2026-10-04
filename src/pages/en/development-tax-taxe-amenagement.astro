@@ -1,0 +1,57 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import TACalculator from '../../components/calc/TACalculator';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, n, P } from '../../lib/tables';
+import { taDepRows, taDepStats, taCas, taCalc, tfDistribution } from '../../lib/immo-tables';
+import { src } from '../../lib/sources';
+import C33 from '../../data/communes/33.json';
+import type { CommuneRow } from '../../lib/communes';
+const lang = 'en';
+const A = P.taxe_amenagement;
+const S = taDepStats(); const D = tfDistribution();
+const maison = taCalc({ surface: 120, abattement: true, tauxCommune: 5, tauxDep: 2.5 });
+const pool = taCalc({ surface: 0, piscine: 40, tauxCommune: 5, tauxDep: 2.5 });
+const gite = taCalc({ surface: 60, tauxCommune: 5, tauxDep: 2.5 });
+const faqs = [
+  { q: 'How much development tax will my swimming pool cost in France?', a: `The basin is taxed at a flat ${$(A.valeur_piscine_m2, lang)} per square metre in ${YEAR}, multiplied by the municipal and département rates. A 40 m² pool in a town at 5% and a département at 2.5% costs ${$(pool.total, lang)}, paid once. The pool also raises the cadastral value of the property, and so the annual taxe foncière, from the following year.` },
+  { q: 'Does converting a barn into a holiday let trigger the development tax?', a: `Yes, when the works create taxable floor area, enclosed and roofed with at least 1.80 m of headroom, and need a planning permission or prior declaration. A 60 m² conversion that is not your main home gets no allowance: at 5% plus 2.5%, it costs ${$(gite.total, lang)}. Some councils exempt buildings converted into housing in specific zones; the town hall knows.` },
+  { q: 'Who sends the development tax bill, the town hall or the tax office?', a: `The tax office. Since the reform of September 2022, you declare the works on impots.gouv.fr, under “Biens immobiliers”, within 90 days of completion, and the DGFiP issues the bill. Above ${$(A.paiement_deux_fois_au_dela, lang)} it is split into two instalments, due 90 days and nine months after completion. The town hall still issues the planning permission.` },
+  { q: 'Are the development tax rates the same across a whole town?', a: `Not always. The municipal rate usually ranges from ${pct(A.taux_communal_min, lang, 0)} to ${pct(A.taux_communal_max, lang, 0)}, but councils can raise it to ${pct(A.taux_communal_majore_max, lang, 0)} in sectors needing heavy public works. The calculator loads the single municipal rate where one exists; in a higher-rate sector, replace it with the rate the town hall gives you.` },
+  { q: 'Is a small garden shed exempt from the development tax?', a: `A building of ${A.surface_exoneree_max} m² or less is always exempt. Above that, a shed is taxed like any enclosed space and gets no main-home allowance, although councils may exempt garden sheds of 20 m² or less by local decision. A 12 m² shed at 7.5% combined costs ${$(taCalc({ surface: 12, tauxCommune: 5, tauxDep: 2.5 }).total, lang)} in ${YEAR}.` },
+];
+const related = [
+  { href: route('taxefonciere', lang), name: 'Property tax', description: 'The annual tax that follows the works.' },
+  { href: route('couttotal', lang), name: 'Total cost of a purchase', description: 'Plot, notary and taxes added up.' },
+  { href: route('terrain', lang), name: 'Notary fees on land', description: 'Buying the plot before building.' },
+  { href: route('ptz', lang), name: 'PTZ 2026', description: 'The zero-interest loan for a new house.' },
+];
+---
+<GuideLayout lang={lang} id="taxeamenagement" breadcrumbLabel="Development tax"
+  title={`Taxe d’aménagement ${YEAR}: French development tax calculator`}
+  h1={`Taxe d’aménagement ${YEAR}: the French development tax on building works`}
+  description={`Taxe d’aménagement ${YEAR}: ${$(A.valeur_m2, lang)} per m² (${$(A.valeur_m2_idf, lang)} in Île-de-France) times the voted rates of your town and département. Main home, extension, pool, garden shed.`}
+  intro="House, extension, barn conversion, pool or shed: choose the town and the rates voted by the municipality and the département are loaded."
+  resume={`The taxe d’aménagement is a one-off tax on building works that create enclosed, roofed floor space under a planning permission or prior declaration: a new house, an extension, a garage, a conservatory, a garden building over ${A.surface_exoneree_max} m². It is the floor area times a flat value per square metre, set for ${YEAR} at ${$(A.valeur_m2, lang)} outside the Paris region and ${$(A.valeur_m2_idf, lang)} inside it, times the sum of the rates voted locally: the municipality’s (${pct(A.taux_communal_min, lang, 0)} to ${pct(A.taux_communal_max, lang, 0)}, up to ${pct(A.taux_communal_majore_max, lang, 0)} in special sectors), the département’s (at most ${pct(A.taux_departemental_max, lang, 1)}) and, around Paris, the region’s. The first ${A.abattement_m2} m² of a main home count at half value. For a new 120 m² main home in a town at 5% and a département at 2.5%, the tax is ${$(maison.total, lang)}. The calculator loads the rates in force on 1 January ${YEAR} from the DGFiP’s published deliberations, for ${n(D.taN, lang)} municipalities and all ${S.nb} départements.`}
+  faqs={faqs} related={related}
+  sources={src(lang, 'sp_ta', 'sp_ta_2026', 'dgfip_ta')}>
+  <Fragment slot="tool"><div class="mb-8"><TACalculator client:load lang={lang} initialRows={C33 as CommuneRow[]} initialDep="33" initialCode="33063" methodHref={route('method', lang)} /></div></Fragment>
+  <MiniSim client:visible kind="taabri" lang={lang} href={route('taxeamenagement', lang)} />
+  <h2>What counts as taxable space</h2>
+  <p>The tax applies to works that need a permis de construire, a permis d’aménager or a déclaration préalable and that create taxable floor area: the inside surface of enclosed and roofed spaces with at least 1.80 m of headroom. Open terraces, pergolas and carports open on their sides create none; a closed conservatory, a garage or an attic converted into rooms do. A building of {A.surface_exoneree_max} m² or less is exempt outright, as is rebuilding identically within ten years of a demolition.</p>
+  <p>Some features are taxed by unit rather than floor area: a pool at {$(A.valeur_piscine_m2, lang)} per square metre of basin, an outdoor parking space at {$(A.valeur_stationnement, lang)} (up to {$(A.valeur_stationnement_max, lang)} where the council decided so), ground-mounted solar panels, wind turbines over 12 m. Many foreign buyers discover the tax only when the bill arrives after the renovation of a country house; running the calculation before applying for permission avoids the surprise.</p>
+  <h2>Why the town and the département set the price</h2>
+  <p>The flat value per square metre is the same everywhere outside Île-de-France; the rates make the difference. Each département votes one rate for its whole territory, up to {pct(A.taux_departemental_max, lang, 1)}: {S.max} of {S.nb} départements charge the maximum and the lowest charge {pct(S.min, lang, 1)}. {S.changes2026.length} départements changed their rate on 1 January {YEAR}. Municipalities vote their own: of the {n(D.taN, lang)} that set a single rate, {n(D.ta5, lang)} charge 5% and {n(D.taSup5, lang)} go higher across their whole territory.</p>
+  <p>The calculator reads both rates from the deliberations the DGFiP publishes, taking for each authority the latest final decision in force on 1 January {YEAR}. Where a town only votes rates by sector, or has not introduced the tax, the field is left for you to complete with the rate from the town hall.</p>
+  <ContentTable headers={['Code', 'Département', 'Département rate', 'In force since']} align={['l', 'l', 'r', 'r']} rows={taDepRows(lang)} caption={`Département share of the development tax on 1 January ${YEAR} (DGFiP). Île-de-France adds a 1% regional share.`} />
+  <h2>The main-home allowance</h2>
+  <p>The first {A.abattement_m2} square metres of a main home and its annexes are taxed on half the flat value: {$(A.valeur_m2 / 2, lang)} instead of {$(A.valeur_m2, lang)} per m² outside Île-de-France. A holiday home, a gîte or a garden studio for guests gets no allowance, which is why the same project can cost almost twice as much for a second-home owner. Councils may also exempt, wholly or partly, homes financed with a zero-interest loan or garden sheds of 20 m² or less.</p>
+  <ContentTable headers={['Project', 'Taxable value', 'Combined rate', 'Development tax']} align={['l', 'r', 'r', 'r']} rows={taCas(lang)} caption={`Examples at a 5% municipal and 2.5% département rate; Île-de-France with the 1% regional share. ${YEAR} values.`} />
+  <h2>Lower values in {YEAR}</h2>
+  <p>The flat values follow Insee’s construction cost index, as last published on 1 January. For {YEAR} that is the third-quarter {YEAR - 1} index, {n(A.icc_t3_2025, lang)}, against {n(A.icc_t3_2024, lang)} a year earlier, so the value per square metre falls to {$(A.valeur_m2, lang)} outside Île-de-France and {$(A.valeur_m2_idf, lang)} inside it. The rate that applies is the one in force when the permission is granted or the prior declaration is cleared.</p>
+  <h2>Declaring and paying</h2>
+  <p>Declare the works on impots.gouv.fr, under “Biens immobiliers”, within 90 days of completion, together with the property declaration that feeds the <a href={route('taxefonciere', lang)}>taxe foncière</a>. The bill follows; above {$(A.paiement_deux_fois_au_dela, lang)} it comes in two instalments. For a self-build, the tax adds to the price of the plot, the <a href={route('terrain', lang)}>notary fees on the land</a> and the works: the <a href={route('couttotal', lang)}>total cost calculator</a> brings them together.</p>
+</GuideLayout>

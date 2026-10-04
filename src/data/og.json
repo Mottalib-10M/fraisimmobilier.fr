@@ -4,17 +4,17 @@
  "variants": [
   {
    "file": "og-fr.png",
-   "title": "Frais de notaire 2026\npar département",
-   "subtitle": "Droits de mutation 5 %, 4,5 % ou 3,8 % · émoluments · CSI · neuf, terrain",
-   "badge": "Tableau DGFiP au 1er juin 2026",
-   "brand": "fraisdenotaire-calcul.fr"
+   "title": "Frais immobilier 2026\nnotaire, PTZ, taxes",
+   "subtitle": "Frais de notaire par département · PTZ par commune · taxe foncière · plus-value",
+   "badge": "Taux officiels 2026, commune par commune",
+   "brand": "fraisimmobilier.fr"
   },
   {
    "file": "og-en.png",
-   "title": "French notary fees 2026\nby département",
-   "subtitle": "Transfer tax · notary tariff · new build · land · first-time buyers",
-   "badge": "DGFiP rates as of 1 June 2026",
-   "brand": "fraisdenotaire-calcul.fr"
+   "title": "French property costs 2026\nnotary, PTZ, taxes",
+   "subtitle": "Notary fees by département · PTZ by town · property tax · capital gains",
+   "badge": "Official 2026 rates, town by town",
+   "brand": "fraisimmobilier.fr"
   }
  ]
 }

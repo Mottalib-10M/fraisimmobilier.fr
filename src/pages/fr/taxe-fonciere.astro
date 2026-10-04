@@ -1,0 +1,65 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import TaxeFonciereCalculator from '../../components/calc/TaxeFonciereCalculator';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { $, pct, n, P } from '../../lib/tables';
+import { formatDecimal } from '../../lib/format';
+const i24 = formatDecimal(P.taxe_fonciere.ipch_nov_2024, 2, 'fr'), i25 = formatDecimal(P.taxe_fonciere.ipch_nov_2025, 2, 'fr');
+import { villesTFRows, tfCalc, tfDistribution, STATS } from '../../lib/immo-tables';
+import { prorataTaxeFonciere, jourDeLAnnee, plafondRfrTF } from '../../lib/engine/immobilier';
+import { src } from '../../lib/sources';
+import C33 from '../../data/communes/33.json';
+import type { CommuneRow } from '../../lib/communes';
+const lang = 'fr';
+const T = P.taxe_fonciere;
+const bdx = (C33 as CommuneRow[]).find((r) => r[0] === '33063')!;
+const ex = tfCalc({ base: 2200, tauxTfb: bdx[3] ?? 0, tauxTeom: bdx[4] ?? 0, revaloriser: true });
+const D = tfDistribution();
+const pro = prorataTaxeFonciere(1500, jourDeLAnnee(21, 5));
+const v = STATS.villes;
+const paris = v.find((x) => x.code === '75056')!, gre = v.find((x) => x.code === '38185')!;
+const tParis = tfCalc({ base: 2000, tauxTfb: paris.tfb ?? 0 }), tGre = tfCalc({ base: 2000, tauxTfb: gre.tfb ?? 0 });
+const faqs = [
+  { q: 'Comment trouver la valeur locative de mon logement ?', a: 'Elle figure sur votre avis de taxe foncière, dans la colonne « base » de chaque collectivité : c’est déjà la moitié de la valeur locative cadastrale, ce que le simulateur appelle la base d’imposition. Pour un logement que vous allez acheter, demandez au vendeur son dernier avis : la base change peu d’une année à l’autre, hors revalorisation et travaux déclarés.' },
+  { q: 'Pourquoi ma taxe foncière augmente-t-elle chaque année sans changement de taux ?', a: `Parce que la valeur locative est revalorisée automatiquement chaque 1er janvier, selon l’évolution de l’indice des prix à la consommation harmonisé de novembre à novembre. Pour ${YEAR}, l’indice est passé de ${i24} à ${i25}, soit une hausse de ${pct(T.revalorisation_2026_pct, lang, 1)} de toutes les bases, avant même que les communes votent leurs taux.` },
+  { q: 'Qui paie la taxe foncière l’année de l’achat ?', a: `Le vendeur, qui était propriétaire au 1er janvier, reçoit l’avis à son nom et le paie en entier. L’acte de vente prévoit presque toujours que l’acheteur lui rembourse la part de l’année qui reste à courir. Pour une signature le 21 mai et une taxe de ${$(1500)}, l’exemple de service-public.fr met ${$(pro.acquereur)} à la charge de l’acheteur, sur ${pro.joursRestants} jours.` },
+  { q: 'Un logement neuf est-il exonéré de taxe foncière ?', a: `Oui, pendant ${T.exoneration_neuf_annees} ans à compter du 1er janvier qui suit l’achèvement, à condition de déposer la déclaration du bien dans les 90 jours. Depuis la suppression de la part départementale, la commune peut limiter cette exonération entre ${T.exoneration_neuf_min_pct} % et 90 % de la base ; elle reste totale si la commune n’a rien voté. La taxe d’ordures ménagères, elle, est due dès la première année.` },
+  { q: 'À partir de quel âge ne paie-t-on plus la taxe foncière ?', a: `À plus de 75 ans au 1er janvier, si le revenu fiscal de référence ne dépasse pas ${$(plafondRfrTF(1))} pour une part en ${YEAR} (revenus de ${YEAR - 1}), avec des majorations par demi-part : la résidence principale est alors exonérée. Entre 65 et 75 ans, sous le même plafond, la taxe est réduite de ${$(T.degrevement_65_75)}. La taxe d’ordures ménagères reste due dans les deux cas.` },
+  { q: 'Le propriétaire peut-il faire payer la taxe foncière au locataire ?', a: 'Non, la taxe foncière reste à la charge du propriétaire. Seule la taxe d’enlèvement des ordures ménagères, qui figure sur le même avis, fait partie des charges récupérables : le propriétaire peut en demander le remboursement au locataire. Le simulateur affiche cette taxe sur une ligne séparée pour cette raison.' },
+];
+const related = [
+  { href: route('couttotal', lang), name: 'Coût total d’un achat', description: 'Le prorata de taxe foncière dans le budget complet.' },
+  { href: route('rendement', lang), name: 'Rendement locatif', description: 'La taxe foncière pèse sur le rendement net.' },
+  { href: route('taxeamenagement', lang), name: 'Taxe d’aménagement', description: 'L’autre impôt local d’une construction neuve.' },
+  { href: route('ptz', lang), name: 'PTZ 2026', description: 'Le prêt à taux zéro du même achat neuf.' },
+];
+---
+<GuideLayout lang={lang} id="taxefonciere" breadcrumbLabel="Taxe foncière"
+  title={`Taxe foncière ${YEAR} : calcul avec le taux de votre commune`}
+  h1={`Taxe foncière ${YEAR} : le calcul avec les taux votés par votre commune`}
+  description={`Taxe foncière ${YEAR} : base, taux communal et intercommunal de ${n(D.n)} communes, revalorisation de ${pct(T.revalorisation_2026_pct, lang, 1)}, TEOM, exonérations du neuf et des propriétaires âgés.`}
+  intro="Choisissez la commune : les taux votés y sont déjà, avec la taxe d’ordures ménagères. Saisissez la base de votre avis, le calcul fait le reste."
+  resume={`La taxe foncière sur les propriétés bâties est due par celui qui est propriétaire au 1er janvier. Son calcul tient en une multiplication : la base d’imposition, égale à ${pct(T.abattement_base_pct, lang, 0)} de la valeur locative cadastrale du logement, par le taux voté par la commune et l’intercommunalité, auquel s’ajoutent d’éventuelles taxes spéciales. La valeur locative est revalorisée chaque année : ${pct(T.revalorisation_2026_pct, lang, 1)} en ${YEAR}, selon l’indice des prix harmonisé. Le même avis porte la taxe d’enlèvement des ordures ménagères, calculée sur la même base. Pour un appartement de Bordeaux dont la base était de ${$(2200)} sur l’avis ${YEAR - 1}, le taux de ${pct(bdx[3] ?? 0, lang)} donne ${$(ex.tfDue)} de foncier bâti, plus ${$(ex.teom)} d’ordures ménagères. Le simulateur charge les taux votés pour ${T.taux_exercice} par les ${n(D.n)} communes, publiés par la DGFiP, et applique les exonérations du neuf et des propriétaires âgés aux revenus modestes.`}
+  faqs={faqs} related={related}
+  sources={src(lang, 'sp_tf', 'dgfip_flp', 'insee_ipch')}>
+  <Fragment slot="tool"><div class="mb-8"><TaxeFonciereCalculator client:load lang={lang} initialRows={C33 as CommuneRow[]} initialDep="33" initialCode="33063" methodHref={route('method', lang)} /></div></Fragment>
+  <MiniSim client:visible kind="tfprorata" lang={lang} href={route('taxefonciere', lang)} />
+  <h2>La formule, et les deux chiffres à trouver</h2>
+  <p>La taxe foncière se calcule une fois par an, pour l’année entière, d’après la situation au 1er janvier. Le premier chiffre est la base : l’administration fiscale estime ce que rapporterait le logement s’il était loué, à partir de sa surface, de sa catégorie et de ses éléments de confort, puis elle en retient la moitié. Cette valeur locative cadastrale repose sur une grille qui date de 1970, mise à jour par des coefficients : c’est pourquoi deux logements semblables, de deux quartiers proches, peuvent avoir des bases très différentes. On la lit sur l’avis, dans la colonne « base ».</p>
+  <p>Le second chiffre est le taux. Depuis la réforme de 2021, la commune encaisse l’ancienne part du département et vote un taux qui l’inclut ; l’intercommunalité vote le sien ; des syndicats, la taxe spéciale d’équipement et la taxe de gestion des milieux aquatiques peuvent s’y ajouter. Le simulateur additionne ces taux pour vous, à partir du fichier « Fiscalité locale des particuliers » de la DGFiP, et laisse le champ modifiable : les taux {YEAR} votés au printemps peuvent différer légèrement de ceux de {T.taux_exercice}.</p>
+  <h2>Pourquoi le taux de la commune change tout</h2>
+  <p>Avec la même base de {$(2000)}, un propriétaire paie {$(tParis.tfDue)} de foncier bâti à Paris, au taux de {pct(paris.tfb ?? 0, lang)}, et {$(tGre.tfDue)} à Grenoble, au taux de {pct(gre.tfb ?? 0, lang)}. Sur l’ensemble du pays, le taux global va de {pct(D.min, lang)} à {pct(D.max, lang)} ; le taux médian des communes atteint {pct(D.mediane, lang)}, et {n(D.plus50)} communes dépassent 50 %. Un simulateur qui applique un « taux moyen » se trompe donc de plusieurs centaines d’euros sur un logement ordinaire. Le tableau ci-dessous donne, pour les vingt communes les plus peuplées, la taxe due sur une base de {$(2000)}.</p>
+  <ContentTable headers={['Commune', 'Département', 'Taux foncier bâti', 'Taux TEOM', 'Foncier bâti', 'Avec TEOM']} align={['l', 'l', 'r', 'r', 'r', 'r']} rows={villesTFRows(lang)} caption={`Taux votés pour ${T.taux_exercice} (DGFiP, Fiscalité locale des particuliers) ; base de 2 000 €, hors frais de gestion et exonérations.`} />
+  <h2>La revalorisation {YEAR}</h2>
+  <p>Chaque 1er janvier, toutes les valeurs locatives des logements sont multipliées par un coefficient que fixe la loi : l’article 1518 bis du code général des impôts le calcule à partir de l’indice des prix à la consommation harmonisé publié par l’Insee, de novembre à novembre. L’indice est passé de {i24} en novembre {YEAR - 2} à {i25} en novembre {YEAR - 1} : les bases {YEAR} augmentent donc de {pct(T.revalorisation_2026_pct, lang, 1)}. Si vous saisissez la base lue sur l’avis {YEAR - 1}, laissez l’option activée pour estimer l’avis {YEAR}.</p>
+  <h2>Exonérations et réductions</h2>
+  <p>Une construction neuve, une reconstruction ou un agrandissement à usage d’habitation est exonéré pendant {T.exoneration_neuf_annees} ans à partir du 1er janvier suivant l’achèvement, à condition d’être déclaré dans les 90 jours. La commune peut limiter cette exonération à un pourcentage compris entre {T.exoneration_neuf_min_pct} et 90 % de la base : le simulateur demande ce pourcentage, qu’indique la mairie. Certaines communes exonèrent en outre, pendant cinq ans, les logements neufs à très haute performance énergétique.</p>
+  <p>Les propriétaires âgés aux revenus modestes sont protégés pour leur résidence principale. Au-delà de 75 ans au 1er janvier, l’exonération est totale si le revenu fiscal de référence ne dépasse pas {$(plafondRfrTF(1))} pour une part en métropole, {$(plafondRfrTF(2))} pour deux parts ; entre 65 et 75 ans, sous le même plafond, la taxe est réduite de {$(T.degrevement_65_75)}. Les bénéficiaires de l’allocation de solidarité aux personnes âgées ou de l’allocation supplémentaire d’invalidité sont exonérés quel que soit leur âge, ceux de l’allocation aux adultes handicapés sous condition de revenus. Enfin, la taxe peut être plafonnée à {pct(T.plafonnement_revenus_pct, lang, 0)} des revenus du foyer, sur réclamation, sous un autre plafond de ressources.</p>
+  <h2>L’année de l’achat : le prorata chez le notaire</h2>
+  <p>L’administration ne tient pas compte des ventes en cours d’année : l’avis de septembre arrive au nom du vendeur, propriétaire au 1er janvier. L’usage, repris dans presque tous les actes, veut que l’acheteur rembourse au vendeur la fraction correspondant aux jours restants, calculée sur le dernier avis connu. Pour une vente signée le 21 mai, il reste {pro.joursRestants} jours : sur {$(1500)}, l’acheteur rembourse {$(pro.acquereur)}. Ce montant figure sur le décompte du notaire, à côté des <a href={route('home', lang)}>frais de notaire</a> ; le <a href={route('couttotal', lang)}>calcul du coût total</a> l’intègre automatiquement.</p>
+  <h2>Ce que le calcul n’inclut pas</h2>
+  <p>L’avis ajoute aux cotisations des frais de gestion perçus par l’État, que le simulateur ne chiffre pas, ainsi que, le cas échéant, la taxe d’enlèvement des ordures ménagères incitative ou une redevance à la place de la taxe. Les dépendances (garage séparé, terrain) peuvent avoir leur propre base. Une commune nouvelle, née d’une fusion, peut appliquer pendant quelques années des taux lissés différents d’un quartier à l’autre. Pour toutes ces raisons, le chiffre est une estimation : seul l’avis fait foi.</p>
+</GuideLayout>

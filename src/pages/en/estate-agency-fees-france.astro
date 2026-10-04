@@ -1,31 +1,41 @@
 ---
 import GuideLayout from '../../components/GuideLayout.astro';
 import MiniSim from '../../components/calc/MiniSim';
+import AgenceCalculator from '../../components/calc/AgenceCalculator';
 import ContentTable from '../../components/ContentTable.astro';
 import { YEAR } from '../../data/site-config';
 import { route } from '../../i18n/routes';
 import { $, pct, F, tauxGlobalNeuf } from '../../lib/tables';
 import { src } from '../../lib/sources';
+import { agenceRows, agCalc } from '../../lib/immo-tables';
+import { P } from '../../lib/tables';
+const ag = agCalc({ prixNetVendeur: 280000, tauxTTC: 5, charge: 'acquereur', dep: '69m' });
 const lang = 'en';
 const acq = F(280000, '69m'), vend = F(294000, '69m');
 const faqs = [
   { q: 'Are estate agency fees included in French notary fees?', a: `Only if they are built into the price paid to the seller. When the mandate makes the commission payable by the buyer and the deed shows it separately, it comes out of the base for transfer tax and emoluments. For a property at €280,000 net to the seller with a €14,000 commission in Lyon, notary fees fall from ${$(vend.total, lang)} to ${$(acq.total, lang)}.` },
   { q: 'Who decides whether the buyer pays the commission?', a: 'The mandate signed between the seller and the agency. It states who pays the commission and its amount or rate, and the listing must show that information. The split cannot be changed at the deed stage if the mandate says otherwise: negotiate it before the preliminary contract, with the agent and the seller.' },
   { q: 'What does “FAI” mean in a French property listing?', a: 'FAI stands for “frais d’agence inclus”, agency fees included: the advertised price includes the commission. If the seller pays the commission, the whole FAI price bears transfer tax. If the buyer pays it, the listing must also show the price excluding fees and the commission amount, and it is the price excluding fees that serves as the tax base.' },
-  { q: 'Does the calculator take agency fees into account?', a: 'It calculates the fees on the price you enter. Enter the net seller price if the commission is payable by you and shown separately in the deed; enter the price including commission if it is part of the price paid to the seller. The mini-calculator on this page shows the gap between the two presentations directly.' },
+  { q: 'Can I negotiate estate agency fees in France?', a: `Yes. No legal scale sets the commission on a sale: each agency publishes its own scale, displayed in the office and on its website, and the mandate can provide for less. The scale must be stated including VAT and, when the buyer pays, as a percentage of the price excluding fees. On ${$(280000, lang)}, one point of commission is ${$(2800, lang)} including VAT.` },
   { q: 'Can the agency commission be financed with the mortgage?', a: 'Yes, most banks finance the commission as part of the acquisition cost, like the price, provided it is identified in the financing plan. Like notary fees, it is sometimes excluded by the most cautious banks, which ask for it to be covered by the deposit.' },
   { q: 'Does the commission count when calculating capital gains on resale?', a: 'A commission you paid as the buyer is part of your acquisition costs. On resale, these costs increase the purchase price used to calculate the capital gain, either at their actual documented amount or through the flat 7.5% of the purchase price. Keep the agency’s invoice with the notary’s statement: the actual amount may exceed the flat rate.' },
 ];
 ---
 <GuideLayout lang={lang} id="agence" breadcrumbLabel="Agency fees"
-  title={`Agency fees and French notary fees ${YEAR}: who pays, impact`}
-  h1="Agency fees and French notary fees: why one line in the mandate changes the bill"
-  description={`French estate agency fees ${YEAR}: payable by the buyer, the commission leaves the base for transfer tax. FAI price, net seller price, the gap on your purchase.`}
-  intro="Two ways of presenting the same price, two amounts of transfer tax."
-  resume={`An estate agency commission is never a notary fee in France, but how it is presented changes the notary fees. If the mandate makes the commission payable by the seller, it is part of the price paid and, like the rest, bears transfer tax, emoluments and the land registry contribution. If the mandate makes it payable by the buyer and the deed shows it separately, it comes out of the taxable base: tax is due only on the net seller price. For a €280,000 flat net to the seller with a €14,000 commission in the Lyon Metropolis, the difference reaches ${$(vend.total - acq.total, lang)} in notary fees. The choice is made in the mandate, before the preliminary contract: it cannot be made up for on the day of the deed. The mini-calculator below shows the gap on your own figures.`}
+  title={`Estate agency fees in France ${YEAR}: calculator, VAT, who pays`}
+  h1={`Estate agency fees in France ${YEAR}: commission, VAT and the effect on notary fees`}
+  description={`Estate agency fees in France ${YEAR}: commission including and excluding VAT, price with fees, net seller price, and how a buyer-paid commission cuts notary fees.`}
+  intro="The commission, its VAT, the advertised price and what one line in the mandate changes to your notary fees."
+  resume={`Estate agency fees in France are not regulated: each agency sets its own scale, displayed including VAT and applied to the price excluding fees. A 5% commission on a home sold for ${$(280000, lang)} net to the seller is ${$(ag.honorairesTTC, lang)} including ${$(ag.tva, lang)} of VAT at ${P.agence.tva}%. An estate agency commission is never a notary fee in France, but how it is presented changes the notary fees. If the mandate makes the commission payable by the seller, it is part of the price paid and, like the rest, bears transfer tax, emoluments and the land registry contribution. If the mandate makes it payable by the buyer and the deed shows it separately, it comes out of the taxable base: tax is due only on the net seller price. For a €280,000 flat net to the seller with a €14,000 commission in the Lyon Metropolis, the difference reaches ${$(vend.total - acq.total, lang)} in notary fees. The choice is made in the mandate, before the preliminary contract: it cannot be made up for on the day of the deed. The mini-calculator below shows the gap on your own figures.`}
   faqs={faqs}
   related={[{ href: route('mobilier', lang), name: 'Deducting furniture', description: 'The other item that leaves the base.' }, { href: route('lyon', lang), name: 'Fees in Lyon', description: 'Metropolis and Rhône, two decisions.' }, { href: route('reduire', lang), name: 'Reducing your fees', description: 'All the levers compared.' }]}
-  sources={src(lang, 'notaires_frais', 'dgfip_dmto')}>
+  sources={src(lang, 'sp_agent', 'notaires_frais', 'dgfip_dmto')}>
+  <Fragment slot="tool"><div class="mb-8"><AgenceCalculator client:load lang={lang} methodHref={route('method', lang)} /></div></Fragment>
+  <MiniSim client:visible kind="agfai" lang={lang} href={route('agence', lang)} />
+  <h2>How a French agency commission is worked out</h2>
+  <p>No law caps the fees on a property sale in France. The agent sets them freely in a scale that must be displayed in the office and on the agency’s website, always including VAT. It may be a single percentage, a flat fee or price bands, in which case it says whether the bands add up. When the buyer pays, the listing shows the price with and without fees and states the fees as a percentage of the price excluding fees, as service-public.fr explains. Buyers used to markets where the seller always pays the agent are often surprised to see “honoraires charge acquéreur” in a French listing: both models coexist.</p>
+  <p>The commission includes {P.agence.tva}% VAT, since the agent is a VAT-registered business: of {$(ag.honorairesTTC, lang)}, {$(ag.honorairesHT, lang)} goes to the agency and {$(ag.tva, lang)} to the State. It is only due once the final deed is signed at the notary’s: a preliminary contract that falls through triggers no commission, and a viewing slip is not a mandate.</p>
+  <ContentTable headers={['Net seller price', 'Scale incl. VAT', 'Fees incl. VAT', 'Fees excl. VAT', 'Price incl. fees', 'Notary fees saved (buyer pays)']} align={['r', 'r', 'r', 'r', 'r', 'r']} rows={agenceRows(lang)} caption="Gironde, a 5% département; difference between notary fees on the price including fees and on the net seller price." />
   <MiniSim client:visible kind="agence" lang={lang} href={route('home', lang)} />
   <h2>Two presentations, two bills</h2>
   <ContentTable headers={['', 'Commission paid by the seller', 'Commission paid by the buyer']} align={['l', 'r', 'r']} rows={[
