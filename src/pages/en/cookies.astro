@@ -1,34 +1,32 @@
 ---
 import PageLayout from '../../layouts/PageLayout.astro';
-import { CONTACT_EMAIL, GA4_ID } from '../../data/site-config';
+import { CONTACT_EMAIL } from '../../data/site-config';
 import { route } from '../../i18n/routes';
 import { displayDate } from '../../lib/format';
 const lang = 'en';
-const UPDATED = '2026-10-05';
-const gaCookie = `_ga_${GA4_ID.replace(/^G-/, '')}`;
+const UPDATED = '2026-10-06';
 ---
-<PageLayout title="Cookies and analytics: notary fees calculator in France" description="Cookies on the notary fees calculator in France: Microsoft Clarity and Google Analytics, how long each cookie lasts, masked prices and how to block them." lang={lang} noindex={true} breadcrumbs={[{ label: 'Cookies' }]} showAuthor={false}>
+<PageLayout title="Cookies: none on the notary fees calculator in France" description="The French notary fees calculator sets no cookies and keeps no price or département. Only site stability is measured, anonymously and without any cookie." lang={lang} noindex={true} breadcrumbs={[{ label: 'Cookies' }]} showAuthor={false}>
   <div class="prose prose-slate max-w-none">
     <h1>Cookies</h1>
-    <p>Notary fees, transfer tax and capital gains are calculated in your browser: the property price, département and options you choose are never written to a cookie. The cookies on this site are only used to measure its audience, with no consent banner. See also the <a href={route('privacy', lang)}>privacy policy</a>.</p>
+    <p>This site <strong>sets no cookies</strong>. No pop-up asks for your agreement, because there is nothing to allow. Details of processing are in the <a href={route('privacy', lang)}>privacy policy</a>.</p>
+
+    <h2>A notary fees simulation that leaves nothing behind</h2>
+    <p>Purchase price, département, old or new property, loan amount, first-time buyer status: the notary’s fees, transfer duties and disbursements are calculated in your browser. Nothing is sent to a server or stored in a cookie or in browser storage (<code>localStorage</code>, <code>sessionStorage</code>); it is all gone when you close the tab. The publisher records no personal data.</p>
 
     <table>
-      <thead><tr><th>Category</th><th>Status</th><th>Tool</th></tr></thead>
+      <thead><tr><th>Category</th><th>On this site</th></tr></thead>
       <tbody>
-        <tr><td>Strictly necessary</td><td>none</td><td>–</td></tr>
-        <tr><td>Analytics / audience measurement</td><td><strong>active</strong></td><td>Microsoft Clarity, Google Analytics 4</td></tr>
-        <tr><td>Advertising</td><td>none</td><td>–</td></tr>
-        <tr><td>Social networks</td><td>none</td><td>–</td></tr>
+        <tr><td>Cookies of any kind</td><td>none</td></tr>
+        <tr><td>Traffic statistics, advertising, social media</td><td>no tool</td></tr>
+        <tr><td>Technical stability measurement</td><td>Microsoft Clarity, cookie-free</td></tr>
       </tbody>
     </table>
 
-    <h2>Microsoft Clarity</h2>
-    <p>Loaded as soon as the page opens, Clarity shows us how the simulations and guides are used (clicks, scrolling, pages viewed) through session recordings and heatmaps. Prices, deposits and other values entered in the calculator are masked in your browser before anything is sent, and updates to the page address are not picked up by Clarity. Cookies: <code>_clck</code>, visitor identifier, one year; <code>_clsk</code>, groups the pages of a visit, one day. Microsoft may also set <code>MUID</code> and <code>CLID</code> on its own domains.</p>
+    <h2>Stability measurement</h2>
+    <p>Microsoft Clarity, set up <strong>without cookies</strong>, tells us about errors, slow pages, clicks that do nothing and how the page scrolls, so that we can fix what is broken. It sets no <code>_clck</code> or <code>_clsk</code>; Microsoft sets no <code>MUID</code> or <code>CLID</code>. Each page view has its own identifier, no visit is matched with another, and page content as well as the amounts entered are masked in the browser. Provider: Microsoft Ireland Operations Limited, One Microsoft Place, South County Business Park, Leopardstown, Dublin 18, Ireland. Retention: 30 days for recordings, 13 months for aggregates. Basis: the publisher’s legitimate interest (Art. 6(1)(f) GDPR).</p>
 
-    <h2>Google Analytics 4</h2>
-    <p>Provided by Google Ireland Limited and loaded the same way, Google Analytics counts page views and reports where visits come from, how long they last, device type and approximate location. Cookies: <code>_ga</code>, two years; <code>{gaCookie}</code>, two years. Data is kept for 14 months.</p>
-
-    <h2>Blocking these cookies</h2>
-    <p>No banner is shown. To refuse audience measurement, block third-party cookies or the <code>clarity.ms</code> and <code>google-analytics.com</code> domains in your browser, or install the <a href="https://tools.google.com/dlpage/gaoptout" rel="nofollow noopener" target="_blank">Google Analytics opt-out add-on</a>, then clear the site data. The calculator remains fully usable. Questions: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. Last updated: {displayDate(UPDATED, 'en-GB')}.</p>
+    <h2>Objecting</h2>
+    <p>Block the <code>clarity.ms</code> domain in your browser or content blocker: the calculator stays fully usable. Questions: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>; complaints may go to the CNIL, the French data protection authority. Last updated: {displayDate(UPDATED, 'en-GB')}.</p>
   </div>
 </PageLayout>

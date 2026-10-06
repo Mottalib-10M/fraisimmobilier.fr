@@ -1,34 +1,32 @@
 ---
 import PageLayout from '../../layouts/PageLayout.astro';
-import { CONTACT_EMAIL, GA4_ID } from '../../data/site-config';
+import { CONTACT_EMAIL } from '../../data/site-config';
 import { route } from '../../i18n/routes';
 import { displayDate } from '../../lib/format';
 const lang = 'fr';
-const UPDATED = '2026-10-05';
-const gaCookie = `_ga_${GA4_ID.replace(/^G-/, '')}`;
+const UPDATED = '2026-10-06';
 ---
-<PageLayout title="Cookies et mesure d’audience des frais de notaire en France" description="Cookies du calcul des frais de notaire en France : Microsoft Clarity et Google Analytics, durée de chaque cookie, prix saisis masqués et moyens de les bloquer." lang={lang} noindex={true} breadcrumbs={[{ label: 'Cookies' }]} showAuthor={false}>
+<PageLayout title="Cookies : aucun sur le calcul des frais de notaire en France" description="Le calcul des frais de notaire ne dépose aucun cookie et ne conserve ni prix ni département. Seule la stabilité du site est mesurée, de façon anonyme et sans cookie." lang={lang} noindex={true} breadcrumbs={[{ label: 'Cookies' }]} showAuthor={false}>
   <div class="prose prose-slate max-w-none">
     <h1>Cookies</h1>
-    <p>Le calcul des frais de notaire, des droits de mutation ou de la plus-value se fait dans votre navigateur : le prix du bien, le département et vos options ne sont écrits dans aucun cookie. Les cookies présents sur le site servent uniquement à mesurer son audience, sans bandeau de consentement. Voir aussi la <a href={route('privacy', lang)}>politique de confidentialité</a>.</p>
+    <p>Ce site <strong>ne dépose aucun cookie</strong>. Aucune fenêtre ne vous demande votre accord, puisqu’il n’y a rien à autoriser. Le détail des traitements se trouve dans la <a href={route('privacy', lang)}>politique de confidentialité</a>.</p>
+
+    <h2>Une simulation de frais de notaire qui ne laisse rien derrière elle</h2>
+    <p>Prix d’achat, département, ancien ou neuf, montant du prêt, statut de primo-accédant : le calcul des émoluments, des droits de mutation et des débours se fait dans votre navigateur. Rien n’est envoyé à un serveur ni rangé dans un cookie ou dans le stockage du navigateur (<code>localStorage</code>, <code>sessionStorage</code>) ; tout s’efface à la fermeture de l’onglet. L’éditeur n’enregistre aucune donnée personnelle.</p>
 
     <table>
-      <thead><tr><th>Catégorie</th><th>Statut</th><th>Outil</th></tr></thead>
+      <thead><tr><th>Catégorie</th><th>Sur ce site</th></tr></thead>
       <tbody>
-        <tr><td>Strictement nécessaires</td><td>aucun</td><td>–</td></tr>
-        <tr><td>Analytics / mesure d’audience</td><td><strong>actif</strong></td><td>Microsoft Clarity, Google Analytics 4</td></tr>
-        <tr><td>Publicité</td><td>aucun</td><td>–</td></tr>
-        <tr><td>Réseaux sociaux</td><td>aucun</td><td>–</td></tr>
+        <tr><td>Cookies, quels qu’ils soient</td><td>aucun</td></tr>
+        <tr><td>Statistiques de fréquentation, publicité, réseaux sociaux</td><td>aucun outil</td></tr>
+        <tr><td>Mesure technique de stabilité</td><td>Microsoft Clarity, sans cookie</td></tr>
       </tbody>
     </table>
 
-    <h2>Microsoft Clarity</h2>
-    <p>Chargé dès l’ouverture de la page, Clarity nous montre comment les simulations et les guides sont utilisés (clics, défilement, pages vues), au moyen d’enregistrements de session et de cartes de chaleur. Les prix, apports et autres valeurs saisis dans le calculateur sont masqués dans votre navigateur avant tout envoi, et la mise à jour de l’adresse de la page échappe à Clarity. Cookies : <code>_clck</code>, identifiant de visiteur, un an ; <code>_clsk</code>, regroupement des pages d’une visite, un jour. Microsoft peut aussi déposer <code>MUID</code> et <code>CLID</code> sur ses propres domaines.</p>
+    <h2>La mesure de stabilité</h2>
+    <p>Microsoft Clarity, configuré <strong>sans cookie</strong>, nous signale les erreurs, les pages lentes, les clics qui restent sans effet et la façon dont la page défile, pour corriger ce qui ne marche pas. Il ne pose ni <code>_clck</code> ni <code>_clsk</code> ; Microsoft ne pose ni <code>MUID</code> ni <code>CLID</code>. Chaque page vue a son propre identifiant, aucune visite n’est rapprochée d’une autre, et le contenu de la page comme les montants saisis sont masqués dans le navigateur. Responsable : Microsoft Ireland Operations Limited, One Microsoft Place, South County Business Park, Leopardstown, Dublin 18, Irlande. Conservation : 30 jours pour les enregistrements, 13 mois pour les agrégats. Base : intérêt légitime de l’éditeur (art. 6-1 f du RGPD).</p>
 
-    <h2>Google Analytics 4</h2>
-    <p>Fourni par Google Ireland Limited et chargé de la même façon, Google Analytics compte les pages vues et indique la provenance des visites, leur durée, le type d’appareil et une localisation approximative. Cookies : <code>_ga</code>, deux ans ; <code>{gaCookie}</code>, deux ans. Les données sont conservées 14 mois.</p>
-
-    <h2>Bloquer ces cookies</h2>
-    <p>Aucun bandeau ne vous est présenté. Pour refuser la mesure d’audience, bloquez les cookies tiers ou les domaines <code>clarity.ms</code> et <code>google-analytics.com</code> dans votre navigateur, ou installez le <a href="https://tools.google.com/dlpage/gaoptout" rel="nofollow noopener" target="_blank">module de désactivation de Google Analytics</a>, puis effacez les données du site. Le calculateur reste entièrement utilisable. Questions : <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. Dernière mise à jour : {displayDate(UPDATED, 'fr-FR')}.</p>
+    <h2>Vous y opposer</h2>
+    <p>Bloquez le domaine <code>clarity.ms</code> dans votre navigateur ou votre bloqueur : le calculateur reste entièrement utilisable. Questions : <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> ; recours possible auprès de la CNIL. Dernière mise à jour : {displayDate(UPDATED, 'fr-FR')}.</p>
   </div>
 </PageLayout>
