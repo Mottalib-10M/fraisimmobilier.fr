@@ -26,7 +26,7 @@ const faqs = [
   faqs={faqs}
   related={[{ href: route('neuf', lang), name: 'New-build fees', description: 'The reduced-rate calculator.' }, { href: route('terrain', lang), name: 'Buying land', description: 'Private seller or developer: two regimes.' }, { href: route('pret', lang), name: 'Financing the fees', description: 'Deposit and loan.' }]}
   sources={src(lang, 'notaires_frais', 'sp_frais_notaire', 'dgfip_dmto')}>
-  <MiniSim client:visible kind="vefa" lang={lang} href={route('neuf', lang)} />
+  <MiniSim client:load lead kind="vefa" lang={lang} href={route('neuf', lang)} />
   <h2>Why off-plan pays so little tax</h2>
   <p>A VEFA is sold by a developer registered for VAT: the sale bears VAT, usually at 20%, included in the advertised price. To avoid double taxation, the General Tax Code replaces registration duties with land publicity tax at the reduced rate of {pct(P.dmto.taux_reduit_neuf, lang)}, plus a {pct(P.dmto.frais_assiette_taux_reduit, lang)} collection fee. The département cannot change this rate: it is the same in Paris, Lozère and Réunion.</p>
   <ContentTable headers={['Item', 'Off-plan, €300,000', 'Resale, €300,000']} align={['l', 'r', 'r']} rows={[

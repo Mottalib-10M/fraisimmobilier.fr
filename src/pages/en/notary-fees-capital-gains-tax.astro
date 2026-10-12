@@ -29,7 +29,7 @@ const faqs = [
   faqs={faqs}
   related={[{ href: route('home', lang), name: 'Notary fees calculator', description: 'Your actual costs on purchase.' }, { href: route('debours', lang), name: 'Disbursements and statement', description: 'The document to keep.' }, { href: route('donation', lang), name: 'Gifts', description: 'Another fee regime.' }]}
   sources={src(lang, 'sp_plus_value', 'sp_frais_notaire')}>
-  <MiniSim client:visible kind="plusvalue" lang={lang} href={route('home', lang)} />
+  <MiniSim client:load lead kind="plusvalue" lang={lang} href={route('home', lang)} />
   <h2>Flat rate or actual costs: the comparison</h2>
   <ContentTable headers={['Purchase', 'Estimated actual costs', `Flat rate ${pct(fp, lang, 1)}`, 'More favourable']} align={['l', 'r', 'r', 'l']} rows={[
     ['Resale, €200,000, Paris', $(anc.total, lang), $(xa.forfait, lang), xa.meilleur === 'forfait' ? 'flat rate' : 'actual'],

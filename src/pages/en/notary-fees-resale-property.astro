@@ -26,7 +26,7 @@ const faqs = [
   faqs={faqs}
   related={[{ href: route('home', lang), name: 'Notary fees calculator', description: 'The exact breakdown for your purchase.' }, { href: route('neuf', lang), name: 'New-build fees', description: 'The reduced rate and its conditions.' }, { href: route('mobilier', lang), name: 'Deducting furniture', description: 'A legal lever, to be used with care.' }]}
   sources={src(lang, 'dgfip_dmto', 'sp_frais_notaire', 'notaires_frais')}>
-  <MiniSim client:visible kind="ancien" lang={lang} href={route('home', lang)} />
+  <MiniSim client:load lead kind="ancien" lang={lang} href={route('home', lang)} />
   <h2>Examples in a 5% département</h2>
   <ContentTable headers={['Price', 'Transfer tax', 'Emoluments and formalities incl. VAT', 'CSI and disbursements', 'Total', 'Share of price']} align={['r', 'r', 'r', 'r', 'r', 'r']} rows={exempleRows(lang, '59', [100000, 150000, 180000, 250000, 350000, 500000])} />
   <h2>Why resale homes cost more in fees</h2>

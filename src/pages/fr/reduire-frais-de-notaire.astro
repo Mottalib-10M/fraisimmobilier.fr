@@ -32,7 +32,7 @@ const faqs = [
   faqs={faqs}
   related={[{ href: route('primo', lang), name: 'Primo-accédant', description: 'Le premier levier, sans condition de revenus.' }, { href: route('mobilier', lang), name: 'Déduire les meubles', description: 'Ce qui se liste et ce qui ne se liste pas.' }, { href: route('agence', lang), name: 'Frais d’agence', description: 'La ligne du mandat qui compte.' }]}
   sources={src(lang, 'dgfip_dmto', 'notaires_frais')}>
-  <MiniSim client:visible kind="reduire" lang={lang} href={route('home', lang)} />
+  <MiniSim client:load lead kind="reduire" lang={lang} href={route('home', lang)} />
   <h2>Les leviers côte à côte</h2>
   <ContentTable headers={['Levier', 'Frais après', 'Économie', 'Condition']} align={['l', 'r', 'r', 'l']} rows={[
     ['Aucun', $(base.total), '—', '—'],

@@ -26,7 +26,7 @@ const faqs = [
   faqs={faqs}
   related={[{ href: route('remise', lang), name: 'Notary fee discount', description: 'Up to 20%, above €100,000.' }, { href: route('debours', lang), name: 'Disbursements and formalities', description: 'The other sums on the statement.' }, { href: route('outremer', lang), name: 'Overseas France', description: 'A higher scale, a different VAT.' }]}
   sources={src(lang, 'sp_frais_notaire', 'notaires_frais')}>
-  <MiniSim client:visible kind="emol" lang={lang} href={route('home', lang)} />
+  <MiniSim client:load lead kind="emol" lang={lang} href={route('home', lang)} />
   <h2>The scale for a sale</h2>
   <ContentTable headers={['Price bracket', 'Rate excl. VAT']} align={['l', 'r']} rows={tranchesRows(lang)} caption="French Commercial Code, art. A444-91. Rates apply bracket by bracket, like an income tax scale." />
   <p>The calculation does not apply a single rate to the whole price. Each bracket is charged at its own rate, then the four amounts are added together. For €200,000: {$(6500 * P.emoluments.zones.metro.taux[0] / 100, lang, 2)} on the first bracket, {$(10500 * P.emoluments.zones.metro.taux[1] / 100, lang, 2)} on the second, {$(43000 * P.emoluments.zones.metro.taux[2] / 100, lang, 2)} on the third and {$(140000 * P.emoluments.zones.metro.taux[3] / 100, lang, 2)} on the remaining €140,000. Most of the emoluments on an ordinary purchase therefore come from the last bracket, at {pct(P.emoluments.zones.metro.taux[3], lang, 3)}, which is why the effective rate keeps falling as the price rises.</p>

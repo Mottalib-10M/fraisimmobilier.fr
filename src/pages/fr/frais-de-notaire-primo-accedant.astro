@@ -27,7 +27,7 @@ const faqs = [
   faqs={faqs}
   related={[{ href: route('home', lang), name: 'Calcul des frais de notaire', description: 'Choisissez « primo-accédant » dans le formulaire.' }, { href: route('savoie', lang), name: 'Savoie : 4,00 %', description: 'La première propriété la mieux traitée de France.' }, { href: route('pret', lang), name: 'Financer les frais', description: 'Apport, prêt, PTZ.' }]}
   sources={src(lang, 'dgfip_dmto', 'notaires_frais', 'sp_ptz')}>
-  <MiniSim client:visible kind="primo" lang={lang} href={route('home', lang)} />
+  <MiniSim client:load lead kind="primo" lang={lang} href={route('home', lang)} />
   <h2>Les trois conditions</h2>
   <p>La première porte sur votre passé : ne pas avoir été propriétaire de votre résidence principale au cours des deux années qui précèdent l’achat. On regarde le logement que vous occupiez, pas votre patrimoine : un studio loué à un tiers ou une maison de vacances ne comptent pas. La deuxième porte sur l’usage : le bien acheté doit devenir votre résidence principale, celle que vous occupez au moins huit mois par an. La troisième porte sur la nature de l’achat : une acquisition à titre onéreux dans l’ancien, dans un département qui a voté le taux de 5 %. Dans les autres, la règle n’a pas d’objet.</p>
   <p>Aucune limite de revenus, de prix ou de surface ne s’ajoute. C’est la principale différence avec le prêt à taux zéro, qui reprend la même définition du primo-accédant mais impose des plafonds de ressources et des zones géographiques.</p>

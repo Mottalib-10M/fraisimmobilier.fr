@@ -32,7 +32,7 @@ const faqs = [
   faqs={faqs}
   related={[{ href: route('primo', lang), name: 'First-time buyers', description: 'The first lever, with no income test.' }, { href: route('mobilier', lang), name: 'Deducting furniture', description: 'What can and cannot be listed.' }, { href: route('agence', lang), name: 'Agency fees', description: 'The line in the mandate that counts.' }]}
   sources={src(lang, 'dgfip_dmto', 'notaires_frais')}>
-  <MiniSim client:visible kind="reduire" lang={lang} href={route('home', lang)} />
+  <MiniSim client:load lead kind="reduire" lang={lang} href={route('home', lang)} />
   <h2>The levers side by side</h2>
   <ContentTable headers={['Lever', 'Fees after', 'Saving', 'Condition']} align={['l', 'r', 'r', 'l']} rows={[
     ['None', $(base.total, lang), '—', '—'],

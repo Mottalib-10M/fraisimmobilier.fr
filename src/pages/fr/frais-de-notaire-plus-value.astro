@@ -29,7 +29,7 @@ const faqs = [
   faqs={faqs}
   related={[{ href: route('home', lang), name: 'Calcul des frais de notaire', description: 'Vos frais réels à l’achat.' }, { href: route('debours', lang), name: 'Débours et décompte', description: 'Le document à conserver.' }, { href: route('donation', lang), name: 'Donation', description: 'Un autre régime de frais.' }]}
   sources={src(lang, 'sp_plus_value', 'sp_frais_notaire')}>
-  <MiniSim client:visible kind="plusvalue" lang={lang} href={route('home', lang)} />
+  <MiniSim client:load lead kind="plusvalue" lang={lang} href={route('home', lang)} />
   <h2>Forfait ou réel : la comparaison</h2>
   <ContentTable headers={['Achat', 'Frais réels estimés', `Forfait ${pct(fp, lang, 1)}`, 'Le plus favorable']} align={['l', 'r', 'r', 'l']} rows={[
     ['Ancien, 200 000 €, Paris', $(anc.total), $(xa.forfait), xa.meilleur === 'forfait' ? 'forfait' : 'réel'],

@@ -27,7 +27,7 @@ const faqs = [
   faqs={faqs}
   related={[{ href: route('home', lang), name: 'Notary fees calculator', description: 'The CSI with every other item.' }, { href: route('debours', lang), name: 'Disbursements and formalities', description: 'The other small lines.' }, { href: route('garage', lang), name: 'Garage and parking', description: 'When the minimum comes into play.' }]}
   sources={src(lang, 'notaires_frais', 'sp_frais_notaire')}>
-  <MiniSim client:visible kind="csi" lang={lang} href={route('home', lang)} />
+  <MiniSim client:load lead kind="csi" lang={lang} href={route('home', lang)} />
   <h2>The amount by price</h2>
   <ContentTable headers={['Price', 'CSI', 'Share of total fees (resale, 5%)']} align={['r', 'r', 'r']} rows={[5000, 15000, 100000, 250000, 500000, 1000000].map((x) => { const g = F(x, '75'); return [$(x, lang), $(g.csi, lang), pct((g.csi / g.total) * 100, lang, 2)]; })} />
   <h2>What the land registry is for</h2>

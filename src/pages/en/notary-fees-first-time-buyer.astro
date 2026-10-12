@@ -27,7 +27,7 @@ const faqs = [
   faqs={faqs}
   related={[{ href: route('home', lang), name: 'Notary fees calculator', description: 'Choose “first-time buyer” in the form.' }, { href: route('savoie', lang), name: 'Savoie: 4.00%', description: 'The best treatment for a first property.' }, { href: route('pret', lang), name: 'Financing the fees', description: 'Deposit, loan, PTZ.' }]}
   sources={src(lang, 'dgfip_dmto', 'notaires_frais', 'sp_ptz')}>
-  <MiniSim client:visible kind="primo" lang={lang} href={route('home', lang)} />
+  <MiniSim client:load lead kind="primo" lang={lang} href={route('home', lang)} />
   <h2>The three conditions</h2>
   <p>The first concerns your past: you must not have owned your main home during the two years before the purchase. What matters is the home you lived in, not your wealth: a studio let to a tenant or a holiday cottage does not count. The second concerns use: the property you buy must become your main home, the one you live in at least eight months a year. The third concerns the type of purchase: buying a resale property in a département that voted the 5% rate. Elsewhere the rule has no effect.</p>
   <p>No income, price or size limit applies. That is the main difference with the zero-interest loan, which uses the same first-time buyer definition but imposes income ceilings and geographic zones. It also means that a foreign national moving to France, who rented before buying, qualifies on exactly the same terms as a French buyer.</p>

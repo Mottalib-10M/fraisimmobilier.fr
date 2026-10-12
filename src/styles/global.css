@@ -46,3 +46,17 @@ h1 { font-weight: 700; } h2 { font-weight: 650; } h3 { font-weight: 600; }
 .prose table, table.journal { font-variant-numeric: tabular-nums; border-collapse: collapse; }
 .prose thead th, table.journal thead th { font-variant: small-caps; letter-spacing: .02em; border-bottom: 1px solid var(--color-navy-300); background: transparent; }
 .prose td, .prose th, table.journal td, table.journal th { border-left: 0; border-right: 0; }
+
+/* Chapeau replié sur trois lignes (RECETTE §5 et §26, premier écran 2026-10-11) : le texte reste
+   entier dans le HTML, « Lire la suite » le déplie sans script. */
+.clamp { position: relative; }
+.clamp-toggle { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.clamp-text { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; }
+.clamp-toggle:checked ~ .clamp-text { display: block; -webkit-line-clamp: unset; line-clamp: none; overflow: visible; }
+.clamp-toggle:checked ~ .clamp-more { display: none; }
+/* Fermé, le lien se pose au bout de la troisième ligne au lieu de prendre une ligne à lui. */
+.clamp-more { position: absolute; right: 0; bottom: 0; padding-left: 2.5rem; background: linear-gradient(to right, rgb(255 255 255 / 0), #fff 2rem); line-height: inherit; display: inline-block; cursor: pointer; font-size: 0.875rem; font-weight: 600; color: var(--color-accent-700, #1d4ed8); text-decoration: underline; text-underline-offset: 3px; }
+.clamp-toggle:focus-visible ~ .clamp-more { outline: 2px solid #111827; outline-offset: 3px; }
+/* Les règles .prose ci-dessus, hors couche, passaient aussi sur les blocs not-prose (mini-simulateurs) :
+   leurs paragraphes et tableaux reprennent les marges de leurs classes. */
+.prose .not-prose p, .prose .not-prose table { margin-top: revert-layer; margin-bottom: revert-layer; }

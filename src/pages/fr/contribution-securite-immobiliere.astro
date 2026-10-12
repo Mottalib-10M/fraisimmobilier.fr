@@ -27,7 +27,7 @@ const faqs = [
   faqs={faqs}
   related={[{ href: route('home', lang), name: 'Calcul des frais de notaire', description: 'La CSI avec tous les autres postes.' }, { href: route('debours', lang), name: 'Débours et formalités', description: 'Les autres petites lignes.' }, { href: route('garage', lang), name: 'Garage et parking', description: 'Quand le minimum entre en jeu.' }]}
   sources={src(lang, 'notaires_frais', 'sp_frais_notaire')}>
-  <MiniSim client:visible kind="csi" lang={lang} href={route('home', lang)} />
+  <MiniSim client:load lead kind="csi" lang={lang} href={route('home', lang)} />
   <h2>Le montant selon le prix</h2>
   <ContentTable headers={['Prix', 'CSI', 'Part des frais totaux (ancien, 5 %)']} align={['r', 'r', 'r']} rows={[5000, 15000, 100000, 250000, 500000, 1000000].map((x) => { const g = F(x, '75'); return [$(x), $(g.csi), pct((g.csi / g.total) * 100, lang, 2)]; })} />
   <h2>À quoi sert la publicité foncière</h2>

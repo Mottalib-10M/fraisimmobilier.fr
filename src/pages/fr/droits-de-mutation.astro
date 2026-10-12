@@ -27,7 +27,7 @@ const faqs = [
   faqs={faqs}
   related={[{ href: route('home', lang), name: 'Calcul des frais de notaire', description: 'Tous les postes, votre département.' }, { href: route('hausse', lang), name: 'Hausse à 5 %', description: 'Qui l’a votée, jusqu’à quand.' }, { href: route('departements', lang), name: 'Taux par département', description: 'Le tableau des 101 départements.' }]}
   sources={src(lang, 'dgfip_dmto', 'notaires_frais', 'impots_droits')}>
-  <MiniSim client:visible kind="droits" lang={lang} href={route('home', lang)} />
+  <MiniSim client:load lead kind="droits" lang={lang} href={route('home', lang)} />
   <h2>Trois taxes dans un seul chiffre</h2>
   <p>Sur le décompte du notaire, les droits de mutation apparaissent souvent en une ligne. Ils réunissent pourtant trois bénéficiaires. Le département encaisse la part principale : c’est l’une de ses ressources majeures, et c’est pourquoi son produit suit de près le nombre de ventes immobilières sur son territoire. La commune reçoit la taxe additionnelle de {pct(P.dmto.taxe_communale)}, sauf exceptions locales rarissimes : au 1er juin {YEAR}, seules Lamentin en Guadeloupe et Tsingoni à Mayotte ont réduit leur taux. L’État, enfin, prélève des frais d’assiette et de recouvrement pour le travail de ses services.</p>
   <ContentTable headers={['Composante', 'Bénéficiaire', 'Taux', 'Sur 300 000 € (Bouches-du-Rhône)']} align={['l', 'l', 'r', 'r']} rows={[

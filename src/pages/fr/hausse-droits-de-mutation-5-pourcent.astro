@@ -27,7 +27,7 @@ const faqs = [
   faqs={faqs}
   related={[{ href: route('primo', lang), name: 'Primo-accédant', description: 'L’exemption et ses conditions.' }, { href: route('taux450', lang), name: 'Départements à 4,50 %', description: 'Les onze qui n’ont pas augmenté.' }, { href: route('dmto', lang), name: 'Droits de mutation', description: 'Les trois taxes, l’assiette.' }]}
   sources={src(lang, 'dgfip_dmto', 'notaires_frais', 'impots_droits')}>
-  <MiniSim client:visible kind="hausse" lang={lang} href={route('home', lang)} />
+  <MiniSim client:load lead kind="hausse" lang={lang} href={route('home', lang)} />
   <h2>Ce que dit la loi</h2>
   <p>L’article 116 de la loi n° 2025-127 du 14 février 2025 de finances pour 2025 a ajouté une faculté au code général des impôts : pour les actes passés entre le 1er avril 2025 et le 31 mars 2028, le conseil départemental peut relever le taux de la taxe de publicité foncière ou du droit d’enregistrement jusqu’à 5 %. La mesure visait à compenser la baisse des recettes des départements après le recul des ventes immobilières de 2023 et 2024. Elle ne touche pas la taxe communale, restée à {pct(P.dmto.taxe_communale)}, mais les frais d’assiette de l’État, calculés en pourcentage de la taxe départementale, augmentent mécaniquement avec elle.</p>
   <p>Le texte prévoit une exception : le nouveau taux ne s’applique pas lorsque l’acheteur est primo-accédant et acquiert sa résidence principale. La loi de finances pour 2026 en a précisé les contours sans la modifier, et l’administration fiscale l’a commentée dans sa doctrine publiée en juin {YEAR}. La définition reprend celle du prêt à taux zéro : ne pas avoir été propriétaire de sa résidence principale au cours des deux années précédant l’achat.</p>

@@ -26,7 +26,7 @@ const faqs = [
   faqs={faqs}
   related={[{ href: route('neuf', lang), name: 'Frais de notaire dans le neuf', description: 'Le calculateur du taux réduit.' }, { href: route('terrain', lang), name: 'Achat d’un terrain', description: 'Particulier ou promoteur : deux régimes.' }, { href: route('pret', lang), name: 'Financer les frais', description: 'Apport et prêt.' }]}
   sources={src(lang, 'notaires_frais', 'sp_frais_notaire', 'dgfip_dmto')}>
-  <MiniSim client:visible kind="vefa" lang={lang} href={route('neuf', lang)} />
+  <MiniSim client:load lead kind="vefa" lang={lang} href={route('neuf', lang)} />
   <h2>Pourquoi la VEFA paie si peu de droits</h2>
   <p>Une VEFA est vendue par un promoteur, assujetti à la TVA : la vente supporte une TVA de 20 % en général, incluse dans le prix affiché. Pour éviter une double imposition, le code général des impôts remplace les droits d’enregistrement par une taxe de publicité foncière au taux réduit de {pct(P.dmto.taux_reduit_neuf)}, à laquelle s’ajoutent {pct(P.dmto.frais_assiette_taux_reduit)} de frais d’assiette. Le département ne peut pas moduler ce taux : il est le même à Paris, en Lozère et à La Réunion.</p>
   <ContentTable headers={['Poste', 'VEFA, 300 000 €', 'Ancien, 300 000 €']} align={['l', 'r', 'r']} rows={[

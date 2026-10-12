@@ -27,7 +27,7 @@ const faqs = [
   faqs={faqs}
   related={[{ href: route('home', lang), name: 'Notary fees calculator', description: 'Every item, your département.' }, { href: route('hausse', lang), name: 'The rise to 5%', description: 'Who voted it, until when.' }, { href: route('departements', lang), name: 'Rates by département', description: 'The table of all 101.' }]}
   sources={src(lang, 'dgfip_dmto', 'notaires_frais', 'impots_droits')}>
-  <MiniSim client:visible kind="droits" lang={lang} href={route('home', lang)} />
+  <MiniSim client:load lead kind="droits" lang={lang} href={route('home', lang)} />
   <h2>Three taxes in one figure</h2>
   <p>On the notary’s statement, transfer tax often appears as a single line. It actually goes to three beneficiaries. The département takes the main share: it is one of its key revenue sources, which is why its income tracks the number of property sales in its area. The municipality (commune) receives the {pct(P.dmto.taxe_communale, lang)} surcharge, with very rare local exceptions: as of 1 June {YEAR}, only Lamentin in Guadeloupe and Tsingoni in Mayotte had cut their rate. The State takes a collection fee for the work of its services.</p>
   <ContentTable headers={['Component', 'Goes to', 'Rate', 'On €300,000 (Bouches-du-Rhône)']} align={['l', 'l', 'r', 'r']} rows={[

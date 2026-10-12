@@ -26,7 +26,7 @@ const faqs = [
   faqs={faqs}
   related={[{ href: route('home', lang), name: 'Calcul des frais de notaire', description: 'La répartition exacte de votre achat.' }, { href: route('emoluments', lang), name: 'Émoluments du notaire', description: 'Ce qui revient vraiment au notaire.' }, { href: route('plusvalue', lang), name: 'Frais et plus-value', description: 'Ce que deviennent les frais à la revente.' }]}
   sources={src(lang, 'sp_frais_notaire', 'notaires_frais', 'dgfip_dmto')}>
-  <MiniSim client:visible kind="quipaie" lang={lang} href={route('home', lang)} />
+  <MiniSim client:load lead kind="quipaie" lang={lang} href={route('home', lang)} />
   <h2>À qui revient chaque euro</h2>
   <ContentTable headers={['Destinataire', 'Ce qu’il perçoit', 'Montant (240 000 €, Nord)']} align={['l', 'l', 'r']} rows={[
     ['Département', 'Taxe départementale', $(f.droitsDepartement)],

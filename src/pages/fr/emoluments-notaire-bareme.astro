@@ -26,7 +26,7 @@ const faqs = [
   faqs={faqs}
   related={[{ href: route('remise', lang), name: 'Remise sur les émoluments', description: 'Au plus 20 %, au-delà de 100 000 €.' }, { href: route('debours', lang), name: 'Débours et formalités', description: 'Les autres sommes du décompte.' }, { href: route('outremer', lang), name: 'Outre-mer', description: 'Un barème plus élevé, une autre TVA.' }]}
   sources={src(lang, 'sp_frais_notaire', 'notaires_frais')}>
-  <MiniSim client:visible kind="emol" lang={lang} href={route('home', lang)} />
+  <MiniSim client:load lead kind="emol" lang={lang} href={route('home', lang)} />
   <h2>Le barème de la vente</h2>
   <ContentTable headers={['Tranche du prix', 'Taux HT']} align={['l', 'r']} rows={tranchesRows(lang)} caption="Code de commerce, art. A444-91. Les taux s’appliquent tranche par tranche, comme un barème d’impôt sur le revenu." />
   <p>Le calcul ne consiste pas à appliquer un taux unique au prix entier. Chaque tranche est taxée à son propre taux, puis les quatre montants s’additionnent. Pour 200 000 € : {$(6500 * 0.0387, lang, 2)} sur la première tranche, {$(10500 * 0.01596, lang, 2)} sur la deuxième, {$(43000 * 0.01064, lang, 2)} sur la troisième et {$(140000 * 0.00799, lang, 2)} sur les 140 000 € restants. L’essentiel des émoluments d’un achat courant provient donc de la dernière tranche, à {pct(P.emoluments.zones.metro.taux[3], lang, 3)}.</p>

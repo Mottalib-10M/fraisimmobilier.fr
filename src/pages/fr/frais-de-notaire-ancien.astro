@@ -26,7 +26,7 @@ const faqs = [
   faqs={faqs}
   related={[{ href: route('home', lang), name: 'Calcul des frais de notaire', description: 'Le détail exact pour votre achat.' }, { href: route('neuf', lang), name: 'Frais dans le neuf', description: 'Le taux réduit et ses conditions.' }, { href: route('mobilier', lang), name: 'Déduire les meubles', description: 'Un levier légal, à manier avec prudence.' }]}
   sources={src(lang, 'dgfip_dmto', 'sp_frais_notaire', 'notaires_frais')}>
-  <MiniSim client:visible kind="ancien" lang={lang} href={route('home', lang)} />
+  <MiniSim client:load lead kind="ancien" lang={lang} href={route('home', lang)} />
   <h2>Exemples dans un département à 5 %</h2>
   <ContentTable headers={['Prix', 'Droits de mutation', 'Émoluments et formalités TTC', 'CSI et débours', 'Total', 'Part du prix']} align={['r', 'r', 'r', 'r', 'r', 'r']} rows={exempleRows(lang, '59', [100000, 150000, 180000, 250000, 350000, 500000])} />
   <h2>Pourquoi l’ancien coûte plus cher en frais</h2>

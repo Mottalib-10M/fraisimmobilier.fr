@@ -5,6 +5,7 @@ import SelectField from '../ui/SelectField';
 import { DEPARTEMENTS, comparer, type Situation } from '../../lib/engine/notaire';
 import { formatMoney, formatRate } from '../../lib/format';
 import { readParams, num, str, updateURL } from '../../lib/url-state';
+import { KeyBar } from './parts';
 
 export default function CompareCalculator({ lang, defaultA = '75', defaultB = '36', defaultPrix = 300000 }: { lang: 'fr' | 'en'; defaultA?: string; defaultB?: string; defaultPrix?: number }) {
   const fr = lang === 'fr';
@@ -26,8 +27,9 @@ export default function CompareCalculator({ lang, defaultA = '75', defaultB = '3
           <SelectField id="cb" label={fr ? 'Second département' : 'Second département'} value={ok(b, defaultB)} onChange={setB} options={opts} />
           <SelectField id="csit" label={fr ? 'Votre situation' : 'Your situation'} value={sit} onChange={(v) => setSit(v === 'primo' ? 'primo' : 'standard')} options={[{ value: 'standard', label: fr ? 'Cas général' : 'Standard case' }, { value: 'primo', label: fr ? 'Primo-accédant (résidence principale)' : 'First-time buyer (main home)' }]} />
         </form>
-        <div className="lg:col-span-3" aria-live="polite">
+        <div className="lg:col-span-3" aria-live="polite" data-resultat>
           <div className="rounded-xl border border-accent-200 bg-white p-5 shadow-sm">
+            <KeyBar label={fr ? 'Écart de frais pour le même bien' : 'Difference in fees for the same property'} value={$(diff)} />
             <p className="text-center text-sm font-medium text-navy-600">{fr ? 'Écart de frais pour le même bien' : 'Difference in fees for the same property'}</p>
             <p className="tabular-nums mt-1 text-center text-4xl font-bold text-navy-900">{$(diff)}</p>
             <p className="mt-1 text-center text-sm text-navy-600">{diff < 1 ? (fr ? 'Même taux dans les deux départements.' : 'Same rate in both départements.') : (fr ? `de plus en ${nom(cher)} qu’en ${nom(moins)}` : `more in ${nom(cher)} than in ${nom(moins)}`)}</p>

@@ -27,7 +27,7 @@ const faqs = [
   faqs={faqs}
   related={[{ href: route('emoluments', lang), name: 'Notary emoluments', description: 'The scale the discount applies to.' }, { href: route('reduire', lang), name: 'Reducing your fees', description: 'Levers that save more.' }, { href: route('amount-500000', lang), name: '€500,000 purchase', description: 'Where the discount starts to count.' }]}
   sources={src(lang, 'notaires_frais', 'sp_frais_notaire')}>
-  <MiniSim client:visible kind="remise" lang={lang} href={route('home', lang)} />
+  <MiniSim client:load lead kind="remise" lang={lang} href={route('home', lang)} />
   <h2>What a 20% discount is worth</h2>
   <ContentTable headers={['Price', 'Emoluments incl. VAT, no discount', 'Maximum discount incl. VAT', 'Share of total fees']} align={['r', 'r', 'r', 'r']} rows={[100000, 200000, 300000, 450000, 600000, 1000000].map((x) => { const a = emolumentsVente(x), b = emolumentsVente(x, 'metro', 20), f = F(x, '75'); return [$(x, lang), $(a.ttc, lang), $(b.remise * 1.2, lang), pct((b.remise * 1.2 / f.total) * 100, lang, 2)]; })} caption="5% département, disbursements estimated at €500." />
   <p>At €100,000 the discount is nil: there is no fraction above the threshold. At €200,000 it remains modest, a little over €190 including VAT. It only approaches a thousand euros around €600,000. Above all, the table shows that the discount never exceeds 2% of total fees, because it only touches the notary’s pay and not the tax, which makes up most of the bill.</p>

@@ -29,7 +29,7 @@ const faqs = [
   faqs={faqs}
   related={[{ href: route('emoluments', lang), name: 'Mainland emoluments', description: 'The reference scale.' }, { href: route('departements', lang), name: 'All départements', description: 'All 101, overseas included.' }, { href: route('home', lang), name: 'Notary fees calculator', description: 'Choose your overseas département.' }]}
   sources={src(lang, 'sp_frais_notaire', 'dgfip_dmto')}>
-  <MiniSim client:visible kind="outremer" lang={lang} href={route('home', lang)} />
+  <MiniSim client:load lead kind="outremer" lang={lang} href={route('home', lang)} />
   <h2>Emolument scales by département</h2>
   <ContentTable headers={['Bracket', 'Mainland', 'Guadeloupe', 'Martinique', 'French Guiana', 'Réunion and Mayotte']} align={['l', 'r', 'r', 'r', 'r', 'r']} rows={tranchesRows(lang).map((row, i) => [row[0], row[1], pct(P.emoluments.zones.gp.taux[i], lang, 3), pct(P.emoluments.zones.mq.taux[i], lang, 3), pct(P.emoluments.zones.gf.taux[i], lang, 3), pct(P.emoluments.zones.re.taux[i], lang, 3)])} caption="Rates excluding VAT, applicable since 1 March 2024 (service-public.fr, page F17701)." />
   <h2>Full fees for the same purchase</h2>

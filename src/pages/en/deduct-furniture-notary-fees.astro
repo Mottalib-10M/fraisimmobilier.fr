@@ -27,7 +27,7 @@ const faqs = [
   faqs={faqs}
   related={[{ href: route('reduire', lang), name: 'Reducing your fees', description: 'The other legal levers.' }, { href: route('agence', lang), name: 'Agency fees', description: 'Another item that leaves the taxable base.' }, { href: route('home', lang), name: 'Notary fees calculator', description: '“Furniture” option in the form.' }]}
   sources={src(lang, 'dgfip_dmto', 'notaires_frais')}>
-  <MiniSim client:visible kind="mobilier" lang={lang} href={route('home', lang)} />
+  <MiniSim client:load lead kind="mobilier" lang={lang} href={route('home', lang)} />
   <h2>What a furniture list saves</h2>
   <ContentTable headers={['Property price', 'Furniture listed', 'Total saving', 'of which transfer tax']} align={['r', 'r', 'r', 'r']} rows={[[200000, 5000], [250000, 8000], [320000, 12000], [400000, 15000], [600000, 20000]].map(([p, m]) => { const x = economieMobilier(p, m, '44'); return [$(p, lang), $(m, lang), $(x.economie, lang), $(x.droitsEvites, lang)]; })} caption="Loire-Atlantique, 5% département." />
   <h2>Movable or not: where the line runs</h2>

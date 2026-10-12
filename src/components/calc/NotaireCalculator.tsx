@@ -10,6 +10,7 @@ import StackedBar from '../ui/StackedBar';
 import { DEPARTEMENTS, fraisNotaire, tauxGlobalAncien, type Situation, type TypeBien, PARAMS } from '../../lib/engine/notaire';
 import { formatMoney, formatRate } from '../../lib/format';
 import { readParams, num, str, updateURL } from '../../lib/url-state';
+import { KeyBar } from './parts';
 
 const T = {
   fr: {
@@ -84,8 +85,9 @@ export default function NotaireCalculator({ lang, defaultPrix = 250000, defaultD
           </details>
           <p className="text-xs text-navy-500">{t.trust}</p>
         </form>
-        <div className="lg:col-span-3" aria-live="polite">
+        <div className="lg:col-span-3" aria-live="polite" data-resultat>
           <div className="rounded-xl border border-accent-200 bg-white p-5 shadow-sm">
+            <KeyBar label={`${t.result} · ${fr ? r.dep.fr : r.dep.en}`} value={$(r.total)} />
             <div className="mb-4 text-center">
               <p className="text-sm font-medium text-navy-600">{t.result} · {fr ? r.dep.fr : r.dep.en}</p>
               <p className="tabular-nums mt-1 text-4xl font-bold text-navy-900 sm:text-5xl">{$(r.total)}</p>

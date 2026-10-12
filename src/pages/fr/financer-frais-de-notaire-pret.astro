@@ -28,7 +28,7 @@ const faqs = [
   faqs={faqs}
   related={[{ href: route('primo', lang), name: 'Primo-accédant', description: 'Moins de droits, donc moins d’apport.' }, { href: route('neuf', lang), name: 'Frais dans le neuf', description: 'L’apport le plus faible.' }, { href: route('home', lang), name: 'Calcul des frais de notaire', description: 'Le montant exact à couvrir.' }]}
   sources={src(lang, 'sp_ptz', 'sp_frais_notaire', 'dgfip_dmto')}>
-  <MiniSim client:visible kind="pret" lang={lang} href={route('home', lang)} />
+  <MiniSim client:load lead kind="pret" lang={lang} href={route('home', lang)} />
   <h2>L’apport minimal selon le prix</h2>
   <ContentTable headers={['Prix', 'Frais ancien (5 %)', 'Frais ancien, primo-accédant', 'Frais neuf']} align={['r', 'r', 'r', 'r']} rows={[150000, 200000, 260000, 350000, 500000].map((x) => [$(x), $(F(x, '35').total), $(F(x, '35', 'ancien', 'primo').total), $(F(x, '35', 'neuf').total)])} caption="Ille-et-Vilaine. Hors frais de garantie du prêt et de dossier." />
   <h2>Pourquoi la banque rechigne à financer les frais</h2>

@@ -27,7 +27,7 @@ const faqs = [
   faqs={faqs}
   related={[{ href: route('emoluments', lang), name: 'Émoluments du notaire', description: 'Le barème de l’acte de vente.' }, { href: route('csi', lang), name: 'Contribution de sécurité immobilière', description: '0,10 % pour la publicité foncière.' }, { href: route('home', lang), name: 'Calcul des frais de notaire', description: 'Saisissez vos débours dans les options.' }]}
   sources={src(lang, 'notaires_frais', 'sp_frais_notaire')}>
-  <MiniSim client:visible kind="debours" lang={lang} href={route('home', lang)} />
+  <MiniSim client:load lead kind="debours" lang={lang} href={route('home', lang)} />
   <h2>Les débours les plus courants</h2>
   <ContentTable headers={['Pièce ou démarche', 'Pourquoi le notaire en a besoin', 'Toujours nécessaire ?']} align={['l', 'l', 'l']} rows={[
     ['État hypothécaire', 'Vérifier qu’aucune hypothèque ni saisie ne grève le bien', 'Oui'],

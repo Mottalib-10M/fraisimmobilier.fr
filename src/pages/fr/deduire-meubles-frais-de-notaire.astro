@@ -27,7 +27,7 @@ const faqs = [
   faqs={faqs}
   related={[{ href: route('reduire', lang), name: 'Réduire ses frais', description: 'Les autres leviers légaux.' }, { href: route('agence', lang), name: 'Frais d’agence', description: 'Un autre élément qui sort de l’assiette.' }, { href: route('home', lang), name: 'Calcul des frais de notaire', description: 'Option « meubles » dans le formulaire.' }]}
   sources={src(lang, 'dgfip_dmto', 'notaires_frais')}>
-  <MiniSim client:visible kind="mobilier" lang={lang} href={route('home', lang)} />
+  <MiniSim client:load lead kind="mobilier" lang={lang} href={route('home', lang)} />
   <h2>Ce que rapporte une liste de meubles</h2>
   <ContentTable headers={['Prix du bien', 'Meubles listés', 'Économie totale', 'dont droits de mutation']} align={['r', 'r', 'r', 'r']} rows={[[200000, 5000], [250000, 8000], [320000, 12000], [400000, 15000], [600000, 20000]].map(([p, m]) => { const x = economieMobilier(p, m, '44'); return [$(p), $(m), $(x.economie), $(x.droitsEvites)]; })} caption="Loire-Atlantique, département à 5 %." />
   <h2>Meuble ou immeuble : la frontière</h2>

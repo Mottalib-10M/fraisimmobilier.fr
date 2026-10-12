@@ -27,7 +27,7 @@ const faqs = [
   faqs={faqs}
   related={[{ href: route('emoluments', lang), name: 'Notary emoluments', description: 'The scale for the deed of sale.' }, { href: route('csi', lang), name: 'Land registry contribution', description: '0.10% for registration.' }, { href: route('home', lang), name: 'Notary fees calculator', description: 'Enter your disbursements in the options.' }]}
   sources={src(lang, 'notaires_frais', 'sp_frais_notaire')}>
-  <MiniSim client:visible kind="debours" lang={lang} href={route('home', lang)} />
+  <MiniSim client:load lead kind="debours" lang={lang} href={route('home', lang)} />
   <h2>The most common disbursements</h2>
   <ContentTable headers={['Document or step', 'Why the notary needs it', 'Always needed?']} align={['l', 'l', 'l']} rows={[
     ['Mortgage search (état hypothécaire)', 'Check that no mortgage or seizure burdens the property', 'Yes'],

@@ -29,7 +29,7 @@ const faqs = [
   faqs={faqs}
   related={[{ href: route('emoluments', lang), name: 'Émoluments en métropole', description: 'Le barème de référence.' }, { href: route('departements', lang), name: 'Tous les départements', description: 'Les 101, outre-mer compris.' }, { href: route('home', lang), name: 'Calcul des frais de notaire', description: 'Choisissez votre DOM dans la liste.' }]}
   sources={src(lang, 'sp_frais_notaire', 'dgfip_dmto')}>
-  <MiniSim client:visible kind="outremer" lang={lang} href={route('home', lang)} />
+  <MiniSim client:load lead kind="outremer" lang={lang} href={route('home', lang)} />
   <h2>Les barèmes d’émoluments, département par département</h2>
   <ContentTable headers={['Tranche', 'Métropole', 'Guadeloupe', 'Martinique', 'Guyane', 'La Réunion et Mayotte']} align={['l', 'r', 'r', 'r', 'r', 'r']} rows={tranchesRows(lang).map((row, i) => [row[0], row[1], pct(P.emoluments.zones.gp.taux[i], lang, 3), pct(P.emoluments.zones.mq.taux[i], lang, 3), pct(P.emoluments.zones.gf.taux[i], lang, 3), pct(P.emoluments.zones.re.taux[i], lang, 3)])} caption="Taux hors taxes, applicables depuis le 1er mars 2024 (service-public.fr, fiche F17701)." />
   <h2>Les frais complets pour un même achat</h2>

@@ -6,6 +6,7 @@ import Toggle from '../ui/Toggle';
 import { droitsDonation, emolumentsDonation, type Lien } from '../../lib/engine/notaire';
 import { formatMoney } from '../../lib/format';
 import { readParams, num, str, updateURL } from '../../lib/url-state';
+import { KeyBar } from './parts';
 
 const LIENS: Array<[Lien, string, string]> = [
   ['enfant', 'Enfant', 'Child'], ['petit_enfant', 'Petit-enfant', 'Grandchild'], ['arriere_petit_enfant', 'Arrière-petit-enfant', 'Great-grandchild'],
@@ -29,8 +30,9 @@ export default function DonationCalculator({ lang }: { lang: 'fr' | 'en' }) {
           <SelectField id="lien" label={fr ? 'Lien avec le donateur' : 'Relationship to the donor'} value={lien} onChange={(v) => setLien(v as Lien)} options={LIENS.map(([v, f, en]) => ({ value: v, label: fr ? f : en }))} />
           <Toggle id="handicap" label={fr ? 'Bénéficiaire handicapé ?' : 'Disabled recipient?'} options={[{ value: '0', label: fr ? 'Non' : 'No' }, { value: '1', label: fr ? 'Oui' : 'Yes' }]} value={handicap ? '1' : '0'} onChange={(v) => setHandicap(v === '1')} />
         </form>
-        <div className="lg:col-span-3" aria-live="polite">
+        <div className="lg:col-span-3" aria-live="polite" data-resultat>
           <div className="rounded-xl border border-accent-200 bg-white p-5 shadow-sm">
+            <KeyBar label={fr ? 'Droits de donation et émoluments' : 'Gift tax and notary emoluments'} value={$(d.droits + e.ttc)} />
             <p className="text-center text-sm font-medium text-navy-600">{fr ? 'Droits de donation et émoluments' : 'Gift tax and notary emoluments'}</p>
             <p className="tabular-nums mt-1 text-center text-4xl font-bold text-navy-900">{$(d.droits + e.ttc)}</p>
             <table className="mt-4 w-full text-sm"><tbody className="divide-y divide-navy-100">

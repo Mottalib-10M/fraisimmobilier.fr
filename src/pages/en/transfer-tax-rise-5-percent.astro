@@ -27,7 +27,7 @@ const faqs = [
   faqs={faqs}
   related={[{ href: route('primo', lang), name: 'First-time buyers', description: 'The exemption and its conditions.' }, { href: route('taux450', lang), name: 'Départements at 4.50%', description: 'The eleven that did not raise it.' }, { href: route('dmto', lang), name: 'Transfer tax', description: 'The three taxes, the base.' }]}
   sources={src(lang, 'dgfip_dmto', 'notaires_frais', 'impots_droits')}>
-  <MiniSim client:visible kind="hausse" lang={lang} href={route('home', lang)} />
+  <MiniSim client:load lead kind="hausse" lang={lang} href={route('home', lang)} />
   <h2>What the law says</h2>
   <p>Article 116 of Law no. 2025-127 of 14 February 2025, the 2025 Finance Act, added an option to the General Tax Code: for deeds signed between 1 April 2025 and 31 March 2028, a départemental council may raise its land publicity tax or registration duty to as much as 5%. The measure was designed to shore up départements’ finances after property sales slumped in 2023 and 2024. It leaves the municipal surcharge at {pct(P.dmto.taxe_communale, lang)}, but the State’s collection fee, a percentage of the départemental tax, rises with it automatically.</p>
   <p>The text includes one exception: the new rate does not apply when the buyer is a first-time buyer purchasing a main home. The 2026 Finance Act clarified its scope without changing it, and the tax administration published its guidance in June {YEAR}. The definition is the one used for the zero-interest loan: not having owned your main home in the two years before the purchase.</p>

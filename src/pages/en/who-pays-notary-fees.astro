@@ -26,7 +26,7 @@ const faqs = [
   faqs={faqs}
   related={[{ href: route('home', lang), name: 'Notary fees calculator', description: 'The exact split for your purchase.' }, { href: route('emoluments', lang), name: 'Notary emoluments', description: 'What really goes to the notary.' }, { href: route('plusvalue', lang), name: 'Fees and capital gains', description: 'What happens to the fees on resale.' }]}
   sources={src(lang, 'sp_frais_notaire', 'notaires_frais', 'dgfip_dmto')}>
-  <MiniSim client:visible kind="quipaie" lang={lang} href={route('home', lang)} />
+  <MiniSim client:load lead kind="quipaie" lang={lang} href={route('home', lang)} />
   <h2>Where every euro goes</h2>
   <ContentTable headers={['Recipient', 'What it receives', 'Amount (€240,000, Nord)']} align={['l', 'l', 'r']} rows={[
     ['Département', 'Départemental tax', $(f.droitsDepartement, lang)],

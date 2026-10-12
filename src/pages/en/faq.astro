@@ -28,5 +28,5 @@ const jsonLd = [webPageSchema({ name: title, description, path, lang }), faqSche
     <h1>Frequently asked questions about French notary fees</h1>
     <p>The questions that come up most often and do not fit into a single guide. Each guide on the site has its own questions: first-time buyers, new builds, gifts, emoluments, départements. For a figure, the mini-calculator below gives your resale fees in two entries.</p>
   </div>
-  <MiniSim client:visible kind="ancien" lang={lang} href={route('home', lang)} />
+  <MiniSim client:load lead kind="ancien" lang={lang} href={route('home', lang)} />
 </PageLayout>

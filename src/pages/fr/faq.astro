@@ -28,5 +28,5 @@ const jsonLd = [webPageSchema({ name: title, description, path, lang }), faqSche
     <h1>Questions fréquentes sur les frais de notaire</h1>
     <p>Les questions qui reviennent le plus, et qui ne trouvent pas leur place dans un guide thématique. Chaque guide du site a ses propres questions : primo-accédant, neuf, donation, émoluments, département. Pour un chiffre, le mini-calculateur ci-dessous donne vos frais dans l’ancien en deux saisies.</p>
   </div>
-  <MiniSim client:visible kind="ancien" lang={lang} href={route('home', lang)} />
+  <MiniSim client:load lead kind="ancien" lang={lang} href={route('home', lang)} />
 </PageLayout>
