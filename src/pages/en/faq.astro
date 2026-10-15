@@ -22,7 +22,7 @@ const faqs = [
 ];
 const jsonLd = [webPageSchema({ name: title, description, path, lang }), faqSchema(faqs, lang), breadcrumbSchema([{ name: 'Home', path: route('home', lang) }, { name: 'FAQ', path }])];
 ---
-<PageLayout title={title} description={description} lang={lang} jsonLd={jsonLd} faqs={faqs} breadcrumbs={[{ label: 'FAQ' }]}
+<PageLayout title={title} description={description} lang={lang} jsonLd={jsonLd} faqs={faqs} breadcrumbs={[{ label: 'FAQ' }]} anneeEnHaut
   related={[{ href: route('home', lang), name: 'Notary fees calculator', description: 'Your case, in detail.' }, { href: route('method', lang), name: 'Methodology', description: 'Formula, sources, limits.' }, { href: route('glossary', lang), name: 'Glossary', description: 'The words on the statement.' }]}>
   <div class="prose prose-slate max-w-none">
     <h1>Frequently asked questions about French notary fees</h1>

@@ -14,7 +14,7 @@ const hasTool = Astro.slots.has('tool');
 const jsonLd = [articleSchema({ title: h1, description, path, lang }), webPageSchema({ name: h1, description, path, lang }), breadcrumbSchema([{ name: t(lang).breadcrumbHome, path: route('home', lang) }, { name: breadcrumbLabel, path }])];
 if (faqs.length) jsonLd.push(faqSchema(faqs, lang));
 ---
-<PageLayout title={title} description={description} lang={lang} jsonLd={jsonLd} faqs={faqs} related={related} sources={sources} breadcrumbs={[{ label: breadcrumbLabel }]} noindex={noindex} showAuthor={showAuthor}>
+<PageLayout title={title} description={description} lang={lang} jsonLd={jsonLd} faqs={faqs} related={related} sources={sources} breadcrumbs={[{ label: breadcrumbLabel }]} noindex={noindex} showAuthor={showAuthor} anneeEnHaut={!/20\d\d/.test(h1 + (intro ?? ''))}>
   <article>
     {/* Premier écran (RECETTE §5, règle du 2026-10-11) : titre, réponse courte, chapeau replié sur
         trois lignes (le texte reste entier dans le HTML), puis le simulateur ; la ligne « Vérifié par »

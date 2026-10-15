@@ -22,7 +22,7 @@ const faqs = [
 ];
 const jsonLd = [webPageSchema({ name: title, description, path, lang }), faqSchema(faqs, lang), breadcrumbSchema([{ name: 'Accueil', path: route('home', lang) }, { name: 'FAQ', path }])];
 ---
-<PageLayout title={title} description={description} lang={lang} jsonLd={jsonLd} faqs={faqs} breadcrumbs={[{ label: 'FAQ' }]}
+<PageLayout title={title} description={description} lang={lang} jsonLd={jsonLd} faqs={faqs} breadcrumbs={[{ label: 'FAQ' }]} anneeEnHaut
   related={[{ href: route('home', lang), name: 'Calcul des frais de notaire', description: 'Votre cas, en détail.' }, { href: route('method', lang), name: 'Méthodologie', description: 'Formule, sources, limites.' }, { href: route('glossary', lang), name: 'Glossaire', description: 'Les mots du décompte.' }]}>
   <div class="prose prose-slate max-w-none">
     <h1>Questions fréquentes sur les frais de notaire</h1>
